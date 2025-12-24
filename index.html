@@ -7,6 +7,12 @@
      <link rel="manifest" href="/workout-diary/manifest.json" crossorigin="use-credentials">
      <meta name="theme-color" content="#9d4edd">
      <meta name="mobile-web-app-capable" content="yes">    
+	 <meta http-equiv="Content-Security-Policy" 
+      content="default-src 'self'; 
+               script-src 'self' https://cdn.jsdelivr.net; 
+               style-src 'self' https://cdnjs.cloudflare.com; 
+               img-src 'self' data:; 
+               font-src 'self' https://cdnjs.cloudflare.com;">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -3222,6 +3228,20 @@ function initReportFunctionality() {
         </div>
     </div>
 </div>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/workout-diary/service-worker.js')
+      .then(registration => {
+        console.log('ServiceWorker зарегистрирован:', registration.scope);
+      })
+      .catch(error => {
+        console.log('Ошибка регистрации ServiceWorker:', error);
+      });
+  });
+}
+</script>
 </body>
 </html>
+
 
