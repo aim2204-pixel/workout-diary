@@ -7,6 +7,7 @@ const PRECACHE_RESOURCES = [
   './',
   './index.html',
   './manifest.json',
+  './icon-144.png',
   './icon-192.png',
   './icon-512.png',
   'https://cdn.jsdelivr.net/npm/chart.js', // Кэшируем CDN ресурсы
