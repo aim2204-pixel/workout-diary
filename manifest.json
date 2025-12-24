@@ -2,7 +2,7 @@
   "name": "Мой Дневник Тренировок",
   "short_name": "Тренировки",
   "description": "Персональный дневник для отслеживания тренировок, веса и прогресса",
-  "id": "/workout-diary/",
+  "id": "/",
   "start_url": "/workout-diary/",
   "display": "standalone",
   "background_color": "#1a1a2e",
