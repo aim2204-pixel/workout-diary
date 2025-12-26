@@ -1641,7 +1641,7 @@ if (noteInput) {
     }, 10);
 }
             
-  const container = row.querySelector('.weight-sets-container');
+const container = row.querySelector('.weight-sets-container');
 if (container) {
     container.innerHTML = '';
     
@@ -1661,10 +1661,12 @@ if (container) {
                 <input type="text" class="weight-set-input" placeholder="Вес" value="${set.weight || ''}">
                 <input type="number" class="sets-input" placeholder="Подходы" value="${set.sets || ''}" min="1" max="20">
                 <input type="number" class="reps-input" placeholder="Раз" value="${set.reps || ''}" min="1" max="100">
-                ${removeButtonHtml}
-                <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${row.id}')" title="Добавить ещё подход">
-                    <i class="fas fa-plus"></i>
-                </button>
+                <div class="weight-set-buttons">
+                    ${removeButtonHtml}
+                    <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${row.id}')" title="Добавить ещё подход">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
             `;
             container.appendChild(setRow);
         });
@@ -1677,9 +1679,11 @@ if (container) {
             <input type="text" class="weight-set-input" placeholder="Вес">
             <input type="number" class="sets-input" placeholder="Подходы" min="1" max="20">
             <input type="number" class="reps-input" placeholder="Раз" min="1" max="100">
-            <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${row.id}')" title="Добавить ещё подход">
-                <i class="fas fa-plus"></i>
-            </button>
+            <div class="weight-set-buttons">
+                <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${row.id}')" title="Добавить ещё подход">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
         `;
         container.appendChild(setRow);
     }
@@ -1807,16 +1811,22 @@ function addWeightSet(rowId) {
     setRow.className = 'weight-set-row';
     setRow.dataset.setIndex = newIndex;
     
+    // Для второго и последующих подходов добавляем кнопку удаления
+    const removeButtonHtml = newIndex === 0 ? '' : 
+        `<button type="button" class="btn-remove-weight-set" onclick="window.removeWeightSet('${rowId}', ${newIndex})" title="Удалить подход">
+            <i class="fas fa-trash"></i>
+        </button>`;
+    
     setRow.innerHTML = `
         <input type="text" class="weight-set-input" placeholder="Вес">
         <input type="number" class="sets-input" placeholder="Подходы" min="1" max="20">
         <input type="number" class="reps-input" placeholder="Раз" min="1" max="100">
-        <button type="button" class="btn-remove-weight-set" onclick="window.removeWeightSet('${rowId}', ${newIndex})" title="Удалить подход">
-            <i class="fas fa-trash"></i>
-        </button>
-        <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${rowId}')" title="Добавить ещё подход">
-            <i class="fas fa-plus"></i>
-        </button>
+        <div class="weight-set-buttons">
+            ${removeButtonHtml}
+            <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${rowId}')" title="Добавить ещё подход">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
     `;
     
     container.appendChild(setRow);
@@ -1863,20 +1873,20 @@ function updateWeightSetIndexes(rowId) {
     allSets.forEach((set, index) => {
         set.dataset.setIndex = index;
         
-        // Обновляем onclick атрибуты для кнопок
-        const removeBtn = set.querySelector('.btn-remove-weight-set');
-        const addBtn = set.querySelector('.btn-add-weight-set');
-        
-        if (removeBtn) {
-            removeBtn.setAttribute('onclick', `window.removeWeightSet('${rowId}', ${index})`);
-        }
-        if (addBtn) {
-            addBtn.setAttribute('onclick', `window.addWeightSet('${rowId}')`);
-        }
-        
-        // Скрываем кнопку удаления у первого подхода
-        if (index === 0 && removeBtn) {
-            removeBtn.style.display = 'none';
+        // Обновляем кнопки внутри контейнера
+        const buttonsContainer = set.querySelector('.weight-set-buttons');
+        if (buttonsContainer) {
+            const removeBtn = buttonsContainer.querySelector('.btn-remove-weight-set');
+            const addBtn = buttonsContainer.querySelector('.btn-add-weight-set');
+            
+            if (removeBtn) {
+                removeBtn.setAttribute('onclick', `window.removeWeightSet('${rowId}', ${index})`);
+                // Скрываем кнопку удаления у первого подхода
+                removeBtn.style.display = index === 0 ? 'none' : 'flex';
+            }
+            if (addBtn) {
+                addBtn.setAttribute('onclick', `window.addWeightSet('${rowId}')`);
+            }
         }
     });
 }
@@ -3574,4 +3584,5 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
+
 
