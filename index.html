@@ -504,21 +504,23 @@
             .workout-date { padding-right: 80px; }
         }
     /* Авторастягивающийся textarea для примечаний */
+/* ========== АВТОРАСТЯГИВАЮЩИЙСЯ TEXTAREA ========== */
 .exercise-note-input {
     width: 100%;
     min-height: 38px;
-    max-height: 150px;
+    max-height: 200px;
     padding: 8px 12px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 6px;
+    border-radius: 8px;
     color: #fff;
     font-size: 0.95rem;
-    font-family: inherit;
-    resize: none;
-    overflow-y: hidden;
-    transition: all 0.2s;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    resize: none; /* Убираем стандартный ресайзер */
+    overflow-y: hidden; /* Скрываем скроллбар */
     line-height: 1.4;
+    transition: border-color 0.2s, background 0.2s;
+    box-sizing: border-box; /* Важно! */
 }
 
 .exercise-note-input:focus {
@@ -527,12 +529,23 @@
     background: rgba(255, 255, 255, 0.15);
 }
 
-/* Для мобильных устройств */
+/* Улучшение для мобильных */
 @media (max-width: 768px) {
     .exercise-note-input {
-        font-size: 16px;
+        font-size: 16px; /* Убирает зум на iOS */
         min-height: 44px;
     }
+    
+    /* Для мобильных в таблице */
+    .exercises-table td[data-label="Примечание"] {
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+}
+
+/* Для десктопа при наведении */
+.exercise-note-input:hover {
+    border-color: rgba(255, 255, 255, 0.5);
 }
 	</style>
 </head>
@@ -1430,7 +1443,15 @@ function resetTimer() {
             }
             
             row.querySelector('.exercise-spec-input').value = exercise.spec || '';
-            row.querySelector('.exercise-note-input').value = exercise.note || '';
+            const noteInput = row.querySelector('.exercise-note-input');
+if (noteInput) {
+    noteInput.value = exercise.note || '';
+    // Триггерим авто-высоту для уже существующего текста
+    setTimeout(() => {
+        noteInput.style.height = 'auto';
+        noteInput.style.height = (noteInput.scrollHeight) + 'px';
+    }, 10);
+}
             
             const container = row.querySelector('.weight-sets-container');
             if (container) {
@@ -1490,57 +1511,66 @@ function resetTimer() {
 
         // Добавить строку упражнения
         function addNewExerciseRow() {
-            const tbody = document.getElementById('exercisesTableBody');
-            const exercises = loadExercises();
-            const rowId = `exerciseRow_${exerciseRowCounter++}`;
-            
-            const row = document.createElement('tr');
-            row.id = rowId;
-            
-            let optionsHtml = '<option value="" disabled selected>Выберите...</option>';
-            exercises.forEach(ex => {
-                optionsHtml += `<option value="${ex}">${ex}</option>`;
-            });
-            optionsHtml += '<option value="_other_">Другое (ввести)</option>';
-            
-            row.innerHTML = `
-                <td data-label="Упражнение">
-                    <select class="exercise-name-select" style="width: 100%;" onchange="window.handleExerciseSelectChange(this, '${rowId}')">
-                        ${optionsHtml}
-                    </select>
-                    <input type="text" class="exercise-name-other" placeholder="Введите название" style="margin-top: 8px; display: none;">
-                </td>
-                <td data-label="Спецификация">
-                    <input type="text" class="exercise-spec-input" placeholder="Например: широкий хват">
-                </td>
-                <td data-label="Вес/Подходы">
-                    <div class="weight-sets-container">
-                        <div class="weight-set-row">
-                            <input type="text" class="weight-set-input" placeholder="Вес">
-                            <input type="number" class="sets-input" placeholder="Подходы" min="1" max="20">
-                            <input type="number" class="reps-input" placeholder="Раз" min="1" max="100">
-                            <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${rowId}')">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                </td>
-                <td data-label="Примечание">
-    			<textarea class="exercise-note-input" placeholder="Заметка..." 
-             			 rows="1" 
-             			 oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';">
-				</textarea>
-				</td>
-                <td class="exercise-row-actions" data-label="Действия">
-                    <button type="button" class="btn-remove-row" onclick="window.removeExerciseRow('${rowId}')">
-                        <i class="fas fa-trash-alt"></i>
+    const tbody = document.getElementById('exercisesTableBody');
+    const exercises = loadExercises();
+    const rowId = `exerciseRow_${exerciseRowCounter++}`;
+    
+    const row = document.createElement('tr');
+    row.id = rowId;
+    
+    let optionsHtml = '<option value="" disabled selected>Выберите...</option>';
+    exercises.forEach(ex => {
+        optionsHtml += `<option value="${ex}">${ex}</option>`;
+    });
+    optionsHtml += '<option value="_other_">Другое (ввести)</option>';
+    
+    row.innerHTML = `
+        <td data-label="Упражнение">
+            <select class="exercise-name-select" style="width: 100%;" onchange="window.handleExerciseSelectChange(this, '${rowId}')">
+                ${optionsHtml}
+            </select>
+            <input type="text" class="exercise-name-other" placeholder="Введите название" style="margin-top: 8px; display: none;">
+        </td>
+        <td data-label="Спецификация">
+            <input type="text" class="exercise-spec-input" placeholder="Например: широкий хват">
+        </td>
+        <td data-label="Вес/Подходы">
+            <div class="weight-sets-container">
+                <div class="weight-set-row">
+                    <input type="text" class="weight-set-input" placeholder="Вес">
+                    <input type="number" class="sets-input" placeholder="Подходы" min="1" max="20">
+                    <input type="number" class="reps-input" placeholder="Раз" min="1" max="100">
+                    <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${rowId}')">
+                        <i class="fas fa-plus"></i>
                     </button>
-                </td>
-            `;
-            
-            tbody.appendChild(row);
-            return rowId;
-        }
+                </div>
+            </div>
+        </td>
+        <td data-label="Примечание">
+            <!-- ВНИМАНИЕ: Это textarea, а не input -->
+            <textarea class="exercise-note-input" placeholder="Заметка..." 
+                      rows="1"></textarea>
+        </td>
+        <td class="exercise-row-actions" data-label="Действия">
+            <button type="button" class="btn-remove-row" onclick="window.removeExerciseRow('${rowId}')">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </td>
+    `;
+    
+    tbody.appendChild(row);
+    
+    // ВАЖНО: Добавляем обработчик авто-высоты ПОСЛЕ создания элемента
+    const textarea = row.querySelector('.exercise-note-input');
+    if (textarea) {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    }
+    
+    return rowId;
+}
 
         // Обработка выбора упражнения
         function handleExerciseSelectChange(select, rowId) {
@@ -3271,6 +3301,7 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
