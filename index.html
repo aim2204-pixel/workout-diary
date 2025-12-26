@@ -547,6 +547,88 @@
 .exercise-note-input:hover {
     border-color: rgba(255, 255, 255, 0.5);
 }
+	/* ========== СТИЛИ ДЛЯ УПРАВЛЕНИЯ ПОДХОДАМИ ========== */
+.weight-set-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+    position: relative;
+}
+
+.weight-set-input {
+    flex: 2;
+    min-width: 120px;
+}
+
+.sets-input, .reps-input {
+    flex: 1;
+    min-width: 70px;
+}
+
+/* Кнопки управления подходами */
+.btn-add-weight-set, .btn-remove-weight-set {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.btn-add-weight-set {
+    background: rgba(72, 187, 120, 0.2);
+    color: #c6f6d5;
+    border-color: rgba(72, 187, 120, 0.4);
+}
+
+.btn-add-weight-set:hover {
+    background: rgba(72, 187, 120, 0.4);
+    transform: translateY(-1px);
+}
+
+.btn-remove-weight-set {
+    background: rgba(220, 53, 69, 0.2);
+    color: #f8a5a5;
+    border-color: rgba(220, 53, 69, 0.4);
+    margin-right: 4px;
+}
+
+.btn-remove-weight-set:hover {
+    background: rgba(220, 53, 69, 0.4);
+    transform: translateY(-1px);
+}
+
+/* Скрываем кнопку удаления у первого подхода */
+.weight-set-row[data-set-index="0"] .btn-remove-weight-set {
+    display: none !important;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .weight-set-row {
+        flex-wrap: wrap;
+    }
+    
+    .weight-set-input,
+    .sets-input,
+    .reps-input {
+        min-width: calc(33.333% - 20px);
+        flex: 1;
+    }
+    
+    .btn-add-weight-set,
+    .btn-remove-weight-set {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+    }
+}
 	</style>
 </head>
 <body>
@@ -1453,38 +1535,52 @@ if (noteInput) {
     }, 10);
 }
             
-            const container = row.querySelector('.weight-sets-container');
-            if (container) {
-                container.innerHTML = '';
-                
-                if (exercise.weightSets && exercise.weightSets.length > 0) {
-                    exercise.weightSets.forEach((set, setIndex) => {
-                        const setRow = document.createElement('div');
-                        setRow.className = 'weight-set-row';
-                        setRow.innerHTML = `
-                            <input type="text" class="weight-set-input" placeholder="Вес" value="${set.weight || ''}">
-                            <input type="number" class="sets-input" placeholder="Подходы" value="${set.sets || ''}" min="1" max="20">
-                            <input type="number" class="reps-input" placeholder="Раз" value="${set.reps || ''}" min="1" max="100">
-                            <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${row.id}')" ${setIndex > 0 ? 'style="opacity:0.5; disabled"' : ''}>
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        `;
-                        container.appendChild(setRow);
-                    });
-                } else {
-                    const setRow = document.createElement('div');
-                    setRow.className = 'weight-set-row';
-                    setRow.innerHTML = `
-                        <input type="text" class="weight-set-input" placeholder="Вес">
-                        <input type="number" class="sets-input" placeholder="Подходы" min="1" max="20">
-                        <input type="number" class="reps-input" placeholder="Раз" min="1" max="100">
-                        <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${row.id}')">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    `;
-                    container.appendChild(setRow);
-                }
-            }
+  const container = row.querySelector('.weight-sets-container');
+if (container) {
+    container.innerHTML = '';
+    
+    if (exercise.weightSets && exercise.weightSets.length > 0) {
+        exercise.weightSets.forEach((set, setIndex) => {
+            const setRow = document.createElement('div');
+            setRow.className = 'weight-set-row';
+            setRow.dataset.setIndex = setIndex;
+            
+            // Для первого подхода не показываем кнопку удаления
+            const removeButtonHtml = setIndex === 0 ? '' : 
+                `<button type="button" class="btn-remove-weight-set" onclick="window.removeWeightSet('${row.id}', ${setIndex})" title="Удалить подход">
+                    <i class="fas fa-trash"></i>
+                </button>`;
+            
+            setRow.innerHTML = `
+                <input type="text" class="weight-set-input" placeholder="Вес" value="${set.weight || ''}">
+                <input type="number" class="sets-input" placeholder="Подходы" value="${set.sets || ''}" min="1" max="20">
+                <input type="number" class="reps-input" placeholder="Раз" value="${set.reps || ''}" min="1" max="100">
+                ${removeButtonHtml}
+                <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${row.id}')" title="Добавить ещё подход">
+                    <i class="fas fa-plus"></i>
+                </button>
+            `;
+            container.appendChild(setRow);
+        });
+    } else {
+        // Если нет подходов, создаём один пустой
+        const setRow = document.createElement('div');
+        setRow.className = 'weight-set-row';
+        setRow.dataset.setIndex = 0;
+        setRow.innerHTML = `
+            <input type="text" class="weight-set-input" placeholder="Вес">
+            <input type="number" class="sets-input" placeholder="Подходы" min="1" max="20">
+            <input type="number" class="reps-input" placeholder="Раз" min="1" max="100">
+            <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${row.id}')" title="Добавить ещё подход">
+                <i class="fas fa-plus"></i>
+            </button>
+        `;
+        container.appendChild(setRow);
+    }
+    
+    // Обновляем индексы после загрузки
+    setTimeout(() => updateWeightSetIndexes(row.id), 50);
+}
         }
 
         // Сброс формы
@@ -1536,14 +1632,15 @@ if (noteInput) {
         </td>
         <td data-label="Вес/Подходы">
             <div class="weight-sets-container">
-                <div class="weight-set-row">
-                    <input type="text" class="weight-set-input" placeholder="Вес">
-                    <input type="number" class="sets-input" placeholder="Подходы" min="1" max="20">
-                    <input type="number" class="reps-input" placeholder="Раз" min="1" max="100">
-                    <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${rowId}')">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
+<div class="weight-set-row" data-set-index="0">
+    <input type="text" class="weight-set-input" placeholder="Вес">
+    <input type="number" class="sets-input" placeholder="Подходы" min="1" max="20">
+    <input type="number" class="reps-input" placeholder="Раз" min="1" max="100">
+    <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${rowId}')">
+        <i class="fas fa-plus"></i>
+    </button>
+    <!-- Кнопка удаления НЕ показывается для первого подхода -->
+</div>
             </div>
         </td>
         <td data-label="Примечание">
@@ -1588,26 +1685,96 @@ if (noteInput) {
         }
 
         // Добавление набора веса/подходов
-        function addWeightSet(rowId) {
-            const row = document.getElementById(rowId);
-            if (!row) return;
-            
-            const container = row.querySelector('.weight-sets-container');
-            if (!container) return;
-            
-            const setRow = document.createElement('div');
-            setRow.className = 'weight-set-row';
-            setRow.innerHTML = `
-                <input type="text" class="weight-set-input" placeholder="Вес">
-                <input type="number" class="sets-input" placeholder="Подходы" min="1" max="20">
-                <input type="number" class="reps-input" placeholder="Раз" min="1" max="100">
-                <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${rowId}')" style="opacity: 0.5;" disabled>
-                    <i class="fas fa-plus"></i>
-                </button>
-            `;
-            container.appendChild(setRow);
-        }
+function addWeightSet(rowId) {
+    const row = document.getElementById(rowId);
+    if (!row) return;
+    
+    const container = row.querySelector('.weight-sets-container');
+    if (!container) return;
+    
+    // Считаем сколько подходов уже есть
+    const existingSets = container.querySelectorAll('.weight-set-row');
+    const newIndex = existingSets.length;
+    
+    // Создаём новый подход
+    const setRow = document.createElement('div');
+    setRow.className = 'weight-set-row';
+    setRow.dataset.setIndex = newIndex;
+    
+    setRow.innerHTML = `
+        <input type="text" class="weight-set-input" placeholder="Вес">
+        <input type="number" class="sets-input" placeholder="Подходы" min="1" max="20">
+        <input type="number" class="reps-input" placeholder="Раз" min="1" max="100">
+        <button type="button" class="btn-remove-weight-set" onclick="window.removeWeightSet('${rowId}', ${newIndex})" title="Удалить подход">
+            <i class="fas fa-trash"></i>
+        </button>
+        <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${rowId}')" title="Добавить ещё подход">
+            <i class="fas fa-plus"></i>
+        </button>
+    `;
+    
+    container.appendChild(setRow);
+    
+    // Обновляем индексы всех подходов
+    updateWeightSetIndexes(rowId);
+}
+function removeWeightSet(rowId, setIndex) {
+    const row = document.getElementById(rowId);
+    if (!row) return;
+    
+    const container = row.querySelector('.weight-sets-container');
+    if (!container) return;
+    
+    // Находим подход для удаления
+    const setToRemove = container.querySelector(`.weight-set-row[data-set-index="${setIndex}"]`);
+    if (!setToRemove) return;
+    
+    // Не позволяем удалить первый подход
+    const firstSet = container.querySelector('.weight-set-row[data-set-index="0"]');
+    if (setToRemove === firstSet) {
+        showNotification('Первый подход нельзя удалить', false);
+        return;
+    }
+    
+    // Удаляем подход
+    setToRemove.remove();
+    
+    // Обновляем индексы оставшихся подходов
+    updateWeightSetIndexes(rowId);
+    
+    showNotification('Подход удалён');
+}
 
+function updateWeightSetIndexes(rowId) {
+    const row = document.getElementById(rowId);
+    if (!row) return;
+    
+    const container = row.querySelector('.weight-sets-container');
+    if (!container) return;
+    
+    const allSets = container.querySelectorAll('.weight-set-row');
+    
+    allSets.forEach((set, index) => {
+        set.dataset.setIndex = index;
+        
+        // Обновляем onclick атрибуты для кнопок
+        const removeBtn = set.querySelector('.btn-remove-weight-set');
+        const addBtn = set.querySelector('.btn-add-weight-set');
+        
+        if (removeBtn) {
+            removeBtn.setAttribute('onclick', `window.removeWeightSet('${rowId}', ${index})`);
+        }
+        if (addBtn) {
+            addBtn.setAttribute('onclick', `window.addWeightSet('${rowId}')`);
+        }
+        
+        // Скрываем кнопку удаления у первого подхода
+        if (index === 0 && removeBtn) {
+            removeBtn.style.display = 'none';
+        }
+    });
+}
+		
         // Удаление строки упражнения
         function removeExerciseRow(rowId) {
             const row = document.getElementById(rowId);
@@ -3301,6 +3468,7 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
