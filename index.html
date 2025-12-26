@@ -724,6 +724,18 @@
         font-size: 0.8rem;
     }
 }
+		/* Общий стиль для всех инпутов в форме */
+.form-group input,
+.form-group select,
+.form-group textarea,
+.weight-set-input,
+.sets-input,
+.reps-input,
+.exercise-note-input {
+    min-height: 38px; /* ← Одинаковая минимальная высота */
+    padding: 8px 12px; /* ← Одинаковые отступы */
+    box-sizing: border-box; /* ← Важно для расчёта высоты */
+}
 	</style>
 </head>
 <body>
@@ -3563,6 +3575,7 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
