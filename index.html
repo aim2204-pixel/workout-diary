@@ -503,7 +503,38 @@
             .workout-actions { top: 10px; right: 10px; }
             .workout-date { padding-right: 80px; }
         }
-    </style>
+    /* Авторастягивающийся textarea для примечаний */
+.exercise-note-input {
+    width: 100%;
+    min-height: 38px;
+    max-height: 150px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.95rem;
+    font-family: inherit;
+    resize: none;
+    overflow-y: hidden;
+    transition: all 0.2s;
+    line-height: 1.4;
+}
+
+.exercise-note-input:focus {
+    outline: none;
+    border-color: #00b4d8;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .exercise-note-input {
+        font-size: 16px;
+        min-height: 44px;
+    }
+}
+	</style>
 </head>
 <body>
     <!-- ШАПКА -->
@@ -1495,8 +1526,11 @@ function resetTimer() {
                     </div>
                 </td>
                 <td data-label="Примечание">
-                    <input type="text" class="exercise-note-input" placeholder="Заметка...">
-                </td>
+    			<textarea class="exercise-note-input" placeholder="Заметка..." 
+             			 rows="1" 
+             			 oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';">
+				</textarea>
+				</td>
                 <td class="exercise-row-actions" data-label="Действия">
                     <button type="button" class="btn-remove-row" onclick="window.removeExerciseRow('${rowId}')">
                         <i class="fas fa-trash-alt"></i>
@@ -3237,5 +3271,6 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
+
 
 
