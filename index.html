@@ -734,7 +734,72 @@
         font-size: 0.8rem;
     }
 }
+/* ========== ЕДИНЫЕ СТИЛИ ДЛЯ ВСЕХ ПОЛЕЙ В ТАБЛИЦЕ УПРАЖНЕНИЙ ========== */
+.exercises-table input,
+.exercises-table select,
+.exercises-table textarea {
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.95rem;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
 
+.exercises-table input:focus,
+.exercises-table select:focus,
+.exercises-table textarea:focus {
+    outline: none;
+    border-color: #00b4d8;
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 2px rgba(0, 180, 216, 0.1);
+}
+
+/* Специальные стили для селекта */
+.exercise-name-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 35px;
+    cursor: pointer;
+}
+
+.exercise-name-select:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Поля в подходах (уже есть, но для гарантии) */
+.weight-set-input,
+.sets-input,
+.reps-input {
+    height: 38px;
+}
+
+/* Для textarea примечаний (уже есть, но пусть будет здесь) */
+.exercise-note-input {
+    resize: none;
+    overflow-y: hidden;
+    line-height: 1.4;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .exercises-table input,
+    .exercises-table select {
+        font-size: 16px; /* Убирает зум на iOS */
+    }
+    
+    .exercise-name-select {
+        background-position: right 10px center;
+    }
+}
 	</style>
 </head>
 <body>
@@ -3629,6 +3694,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
