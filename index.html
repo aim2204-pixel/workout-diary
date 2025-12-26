@@ -1651,12 +1651,10 @@ if (container) {
                 <input type="text" class="weight-set-input" placeholder="Вес" value="${set.weight || ''}">
                 <input type="number" class="sets-input" placeholder="Подходы" value="${set.sets || ''}" min="1" max="20">
                 <input type="number" class="reps-input" placeholder="Раз" value="${set.reps || ''}" min="1" max="100">
-<div class="weight-set-buttons">
-    ${removeButtonHtml}
-    <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${row.id}')" title="Добавить ещё подход">
-        <i class="fas fa-plus"></i>
-    </button>
-</div>
+                ${removeButtonHtml}
+                <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${row.id}')" title="Добавить ещё подход">
+                    <i class="fas fa-plus"></i>
+                </button>
             `;
             container.appendChild(setRow);
         });
@@ -1799,19 +1797,17 @@ function addWeightSet(rowId) {
     setRow.className = 'weight-set-row';
     setRow.dataset.setIndex = newIndex;
     
-setRow.innerHTML = `
-    <input type="text" class="weight-set-input" placeholder="Вес">
-    <input type="number" class="sets-input" placeholder="Подходы" min="1" max="20">
-    <input type="number" class="reps-input" placeholder="Раз" min="1" max="100">
-    <div class="weight-set-buttons">
+    setRow.innerHTML = `
+        <input type="text" class="weight-set-input" placeholder="Вес">
+        <input type="number" class="sets-input" placeholder="Подходы" min="1" max="20">
+        <input type="number" class="reps-input" placeholder="Раз" min="1" max="100">
         <button type="button" class="btn-remove-weight-set" onclick="window.removeWeightSet('${rowId}', ${newIndex})" title="Удалить подход">
             <i class="fas fa-trash"></i>
         </button>
         <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${rowId}')" title="Добавить ещё подход">
             <i class="fas fa-plus"></i>
         </button>
-    </div>
-`;
+    `;
     
     container.appendChild(setRow);
     
@@ -3568,13 +3564,3 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
