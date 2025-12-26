@@ -547,22 +547,28 @@
 .exercise-note-input:hover {
     border-color: rgba(255, 255, 255, 0.5);
 }
-	/* ========== СТИЛИ ДЛЯ УПРАВЛЕНИЯ ПОДХОДАМИ ========== */
 /* ========== СТИЛИ ДЛЯ УПРАВЛЕНИЯ ПОДХОДАМИ ========== */
 .weight-set-row {
     display: flex;
     gap: 8px;
-    align-items: flex-start; /* ← ВАЖНО: flex-start вместо center */
+    align-items: flex-start;
     margin-bottom: 8px;
     position: relative;
+}
+
+/* Контейнер для кнопок (НОВОЕ) */
+.weight-set-buttons {
+    display: flex;
+    gap: 4px;
+    align-self: flex-start;
 }
 
 /* Все инпуты в ряду подхода */
 .weight-set-input,
 .sets-input,
 .reps-input {
-    align-self: flex-start; /* ← Выравнивание по верхнему краю */
-    height: 36px; /* ← Фиксированная высота для одинакового выравнивания */
+    align-self: flex-start;
+    height: 36px;
     margin-top: 0;
     padding: 8px 12px;
     background: rgba(255, 255, 255, 0.1);
@@ -594,9 +600,9 @@
 /* Кнопки управления подходами */
 .btn-add-weight-set,
 .btn-remove-weight-set {
-    align-self: flex-start; /* ← Тоже выравниваем по верху */
-    width: 36px;
-    height: 36px;
+    align-self: flex-start;
+    width: 34px;
+    height: 34px;
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -604,7 +610,7 @@
     cursor: pointer;
     transition: all 0.2s;
     border: 1px solid transparent;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     flex-shrink: 0;
     margin-top: 0;
 }
@@ -624,7 +630,6 @@
     background: rgba(220, 53, 69, 0.2);
     color: #f8a5a5;
     border-color: rgba(220, 53, 69, 0.4);
-    margin-right: 4px;
 }
 
 .btn-remove-weight-set:hover {
@@ -641,7 +646,7 @@
 @media (max-width: 768px) {
     .weight-set-row {
         flex-wrap: wrap;
-        align-items: flex-start; /* ← И для мобильных */
+        align-items: flex-start;
     }
     
     .weight-set-input,
@@ -649,7 +654,13 @@
     .reps-input {
         min-width: calc(33.333% - 20px);
         flex: 1;
-        height: 40px; /* Чуть больше для мобильных */
+        height: 40px;
+    }
+    
+    .weight-set-buttons {
+        width: 100%;
+        justify-content: flex-start;
+        margin-top: 8px;
     }
     
     .btn-add-weight-set,
@@ -657,7 +668,6 @@
         width: 40px;
         height: 40px;
         font-size: 0.9rem;
-        align-self: flex-start;
     }
 }
 
@@ -3564,3 +3574,4 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
+
