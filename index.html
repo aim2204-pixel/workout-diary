@@ -3582,7 +3582,53 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+<script>
+// Принудительное обновление Service Worker
+if ('serviceWorker' in navigator) {
+  // Регистрация
+  navigator.serviceWorker.register('/workout-diary/service-worker.js')
+    .then(registration => {
+      console.log('Service Worker зарегистрирован:', registration.scope);
+      
+      // Проверяем обновления при каждой загрузке
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        console.log('Найдено обновление Service Worker');
+        
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            console.log('Новая версия доступна. Перезагрузите страницу.');
+            // Можно показать уведомление пользователю
+            if (confirm('Доступна новая версия приложения. Обновить сейчас?')) {
+              window.location.reload();
+            }
+          }
+        });
+      });
+    })
+    .catch(error => {
+      console.log('Ошибка регистрации ServiceWorker:', error);
+    });
+
+  // Проверяем, контролирует ли Service Worker страницу
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    console.log('Controller changed, reloading page');
+    window.location.reload();
+  });
+}
+
+// Принудительная очистка кэша при разработке
+if (window.location.hostname === 'localhost' || window.location.hostname.includes('github.io')) {
+  caches.keys().then(cacheNames => {
+    cacheNames.forEach(cacheName => {
+      caches.delete(cacheName);
+      console.log('Удалён кэш:', cacheName);
+    });
+  });
+}
+</script>
 </body>
 </html>
+
 
 
