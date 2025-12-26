@@ -1,25 +1,21 @@
-// service-worker.js - продвинутая версия
-const CACHE_NAME = 'workout-diary-v2.0';
-const OFFLINE_URL = './offline.html'; // Создайте простую страницу для офлайн-режима
+// service-worker.js - исправленная версия
+const CACHE_NAME = 'workout-diary-v2.1'; // ← ИЗМЕНИТЕ версию!
 
-// Ресурсы для предварительного кэширования
-const PRECACHE_RESOURCES = [
+const urlsToCache = [
   './',
-  './index.html',
   './manifest.json',
-  './icon-144.png',
   './icon-192.png',
-  './icon-512.png',
-  'https://cdn.jsdelivr.net/npm/chart.js', // Кэшируем CDN ресурсы
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+  './icon-512.png'
+  // УБЕРИТЕ index.html из предзагрузки!
 ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(PRECACHE_RESOURCES))
+      .then(cache => cache.addAll(urlsToCache))
       .then(() => self.skipWaiting())
   );
+  console.log('Service Worker установлен и закэшировал ресурсы');
 });
 
 self.addEventListener('activate', event => {
@@ -28,48 +24,40 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
+            console.log('Удаляем старый кэш:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
-    }).then(() => self.clients.claim())
+    })
+    .then(() => self.clients.claim())
   );
+  console.log('Service Worker активирован, старые кэши удалены');
 });
 
 self.addEventListener('fetch', event => {
-  // Пропускаем не-GET запросы
-  if (event.request.method !== 'GET') return;
-  
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Возвращаем из кэша если есть
-        if (response) {
-          return response;
+        // Для HTML-страниц всегда грузим из сети
+        if (event.request.url.includes('index.html') || 
+            event.request.headers.get('accept').includes('text/html')) {
+          return fetch(event.request)
+            .then(response => {
+              // Кэшируем новую версию
+              const responseClone = response.clone();
+              caches.open(CACHE_NAME)
+                .then(cache => cache.put(event.request, responseClone));
+              return response;
+            })
+            .catch(() => {
+              // Если сеть недоступна, возвращаем из кэша
+              return response || caches.match('./');
+            });
         }
         
-        // Иначе загружаем из сети
-        return fetch(event.request)
-          .then(response => {
-            // Кэшируем только успешные ответы
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-            
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-            
-            return response;
-          })
-          .catch(() => {
-            // Офлайн-страница для навигационных запросов
-            if (event.request.mode === 'navigate') {
-              return caches.match(OFFLINE_URL);
-            }
-          });
+        // Для других ресурсов — из кэша или сети
+        return response || fetch(event.request);
       })
   );
 });
