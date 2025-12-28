@@ -45,9 +45,30 @@
         .exercise-name-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .exercise-main-name { font-weight: 700; font-size: 1rem; color: #caf0f8; display: flex; align-items: center; gap: 6px; }
         .exercise-number { color: #9d4edd; font-weight: 800; font-size: 0.9em; min-width: 1.2em; }
-        .exercise-spec { font-size: 0.85rem; color: #90e0ef; font-style: italic; }
+        .exercise-spec {
+    font-size: 0.85rem;
+    color: #90e0ef;
+    font-style: italic;
+    white-space: pre-wrap; /* ← ДОБАВЬ ЭТУ СТРОКУ */
+    word-wrap: break-word;
+    max-width: 100%;
+    display: block;
+    margin-top: 4px;
+}
         .weight-details { background: rgba(157, 78, 221, 0.15); padding: 6px 10px; border-radius: 6px; margin: 4px 0; font-family: monospace; white-space: pre-line; color: #fff; font-weight: 700; font-size: 0.9rem; }
-        .exercise-note { margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(255, 255, 255, 0.15); font-weight: 400; text-decoration: underline; color: #b5e48c; font-size: 0.88rem; }
+        .exercise-note {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.15);
+    font-weight: 400;
+    text-decoration: underline;
+    color: #b5e48c;
+    font-size: 0.88rem;
+    white-space: pre-wrap; /* ← ДОБАВЬ ЭТУ СТРОКУ */
+    word-wrap: break-word;
+    max-width: 100%;
+    display: block;
+}
         .extra-activity { margin-top: 12px; padding: 8px 12px; background: rgba(72, 187, 120, 0.2); border-radius: 8px; border-left: 4px solid #48bb78; color: #c6f6d5; font-size: 0.9rem; }
         .metrics { display: flex; justify-content: space-around; margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(255, 255, 255, 0.1); }
         .metric-value { font-size: 1.35rem; font-weight: 800; color: #ffd166; }
@@ -3919,6 +3940,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
