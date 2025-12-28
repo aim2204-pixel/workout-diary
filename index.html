@@ -1948,15 +1948,6 @@ function addNewExerciseRow() {
         });
     }
     
-    // ВАЖНО: Добавляем обработчик авто-высоты ПОСЛЕ создания элемента
-    const textarea = row.querySelector('.exercise-note-input');
-    if (textarea) {
-        textarea.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
-    }
-    
     return rowId;
 }
 
@@ -3908,6 +3899,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
