@@ -1924,13 +1924,13 @@ function addNewExerciseRow() {
         </td>
         <td class="exercise-row-actions" data-label="Действия">
             <div class="order-buttons">
-                <button type="button" class="btn-move-up" onclick="window.moveExerciseUp('${rowId}')" title="Переместить вверх">
+                <button type="button" class="btn-move-up" onclick="moveExerciseUp('${rowId}')" title="Переместить вверх">
                     <i class="fas fa-arrow-up"></i>
                 </button>
-                <button type="button" class="btn-move-down" onclick="window.moveExerciseDown('${rowId}')" title="Переместить вниз">
+                <button type="button" class="btn-move-down" onclick="moveExerciseDown('${rowId}')" title="Переместить вниз">
                     <i class="fas fa-arrow-down"></i>
                 </button>
-                <button type="button" class="btn-remove-row" onclick="window.removeExerciseRow('${rowId}')" title="Удалить упражнение">
+                <button type="button" class="btn-remove-row" onclick="removeExerciseRow('${rowId}')" title="Удалить упражнение">
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
@@ -2091,7 +2091,8 @@ function updateWeightSetIndexes(rowId) {
         }
 // Функции для перемещения упражнений
 function moveExerciseUp(rowId) {
-    const row = document.getElementById(rowId);
+    console.log('moveExerciseUp вызвана для:', rowId); // ← Добавить
+	const row = document.getElementById(rowId);
     if (!row) return;
     
     const tbody = document.getElementById('exercisesTableBody');
@@ -3903,19 +3904,11 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
     });
   });
 }
-// ==================== ГЛОБАЛЬНЫЙ ЭКСПОРТ ФУНКЦИЙ ====================
-window.moveExerciseUp = moveExerciseUp;
-window.moveExerciseDown = moveExerciseDown;
-window.removeExerciseRow = removeExerciseRow;
-window.addWeightSet = addWeightSet;
-window.removeWeightSet = removeWeightSet;
-window.handleExerciseSelectChange = handleExerciseSelectChange;
-window.updateWeightSetIndexes = updateWeightSetIndexes;
-window.addNewExerciseRow = addNewExerciseRow;
-window.updateExerciseIndexes = updateExerciseIndexes;
+
 </script>
 </body>
 </html>
+
 
 
 
