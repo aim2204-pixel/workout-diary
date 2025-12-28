@@ -114,7 +114,15 @@
 .btn-move-down:disabled {
     opacity: 0.3;
     cursor: not-allowed;
+    background: rgba(157, 78, 221, 0.1) !important;
+    border-color: rgba(157, 78, 221, 0.2) !important;
+    color: rgba(217, 187, 255, 0.5) !important;
+}
+
+.btn-move-up:disabled:hover,
+.btn-move-down:disabled:hover {
     transform: none !important;
+    background: rgba(157, 78, 221, 0.1) !important;
 }
 
 /* Кнопка удаления упражнения */
@@ -2100,7 +2108,7 @@ function moveExerciseUp(rowId) {
     const prevRow = rows[currentIndex - 1];
     tbody.insertBefore(row, prevRow);
     
-    // Обновляем индексы
+    // Обновляем индексы и состояние кнопок
     updateExerciseIndexes();
     showNotification('Упражнение перемещено вверх');
 }
@@ -2127,7 +2135,7 @@ function moveExerciseDown(rowId) {
         tbody.appendChild(row);
     }
     
-    // Обновляем индексы
+    // Обновляем индексы и состояние кнопок
     updateExerciseIndexes();
     showNotification('Упражнение перемещено вниз');
 }
@@ -2140,20 +2148,29 @@ function updateExerciseIndexes() {
         row.dataset.exerciseIndex = index;
         
         // Обновляем номера упражнений в интерфейсе (если они есть)
-        const numberSpan = row.querySelector('.exercise-number');
-        if (numberSpan) {
-            numberSpan.textContent = `${index + 1}.`;
-        }
+        // Ищем номер упражнения в строке - он может быть в разных местах
+        const numberSpans = row.querySelectorAll('.exercise-number');
+        numberSpans.forEach(span => {
+            span.textContent = `${index + 1}.`;
+        });
         
         // Обновляем onclick атрибуты кнопок
         const moveUpBtn = row.querySelector('.btn-move-up');
         const moveDownBtn = row.querySelector('.btn-move-down');
+        const removeBtn = row.querySelector('.btn-remove-row');
         
         if (moveUpBtn) {
             moveUpBtn.setAttribute('onclick', `window.moveExerciseUp('${row.id}')`);
+            // Отключаем кнопку "вверх" для первой строки
+            moveUpBtn.disabled = (index === 0);
         }
         if (moveDownBtn) {
             moveDownBtn.setAttribute('onclick', `window.moveExerciseDown('${row.id}')`);
+            // Отключаем кнопку "вниз" для последней строки
+            moveDownBtn.disabled = (index === rows.length - 1);
+        }
+        if (removeBtn) {
+            removeBtn.setAttribute('onclick', `window.removeExerciseRow('${row.id}')`);
         }
     });
 }
@@ -3889,6 +3906,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
