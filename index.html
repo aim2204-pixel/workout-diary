@@ -887,6 +887,7 @@
     overflow-y: hidden;
     line-height: 1.4;
 }
+
 /* Мобильная адаптация */
 @media (max-width: 768px) {
     .exercises-table input,
@@ -1901,9 +1902,9 @@ function addNewExerciseRow() {
             </select>
             <input type="text" class="exercise-name-other" placeholder="Введите название" style="margin-top: 8px; display: none;">
         </td>
-       <td data-label="Спецификация">
-    <textarea class="exercise-spec-input" placeholder="Например: широкий хват" rows="1"></textarea>
-	</td>
+        <td data-label="Спецификация">
+            <input type="text" class="exercise-spec-input" placeholder="Например: широкий хват">
+        </td>
         <td data-label="Вес/Подходы">
             <div class="weight-sets-container">
                 <div class="weight-set-row" data-set-index="0">
@@ -1946,13 +1947,7 @@ function addNewExerciseRow() {
             this.style.height = (this.scrollHeight) + 'px';
         });
     }
-
-	// Авто-высота для Спецификации (как для Примечаний)
-const specTextarea = row.querySelector('.exercise-spec-input');
-if (specTextarea) {
-    specTextarea.addEventListener('input', autoResizeTextarea);
-    setTimeout(() => autoResizeTextarea.call(specTextarea), 10);
-}
+    
     return rowId;
 }
 
@@ -3904,8 +3899,6 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
-
-
 
 
 
