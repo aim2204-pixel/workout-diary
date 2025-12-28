@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Мой Дневник Тренировок</title>
      <link rel="manifest" href="/workout-diary/manifest.json" crossorigin="use-credentials">
      <meta name="theme-color" content="#9d4edd">
@@ -1280,7 +1280,11 @@ let laps = [];
                
             };
         }
-
+// Общая функция авто-высоты для textarea
+function autoResizeTextarea() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+}
         // Обновление дисплея таймера
 function updateTimerDisplay() {
     // Отображаем время текущего круга, а не общее
@@ -1794,11 +1798,22 @@ function resetTimer() {
                 otherInput.value = exercise.name;
             }
             
-            row.querySelector('.exercise-spec-input').value = exercise.spec || '';
-            const noteInput = row.querySelector('.exercise-note-input');
+   // Для Спецификации
+const specInput = row.querySelector('.exercise-spec-input');
+if (specInput) {
+    specInput.value = exercise.spec || '';
+    if (specInput.tagName === 'TEXTAREA') {
+        setTimeout(() => {
+            specInput.style.height = 'auto';
+            specInput.style.height = (specInput.scrollHeight) + 'px';
+        }, 10);
+    }
+}
+
+// Для Примечания
+const noteInput = row.querySelector('.exercise-note-input');
 if (noteInput) {
     noteInput.value = exercise.note || '';
-    // Триггерим авто-высоту для уже существующего текста
     setTimeout(() => {
         noteInput.style.height = 'auto';
         noteInput.style.height = (noteInput.scrollHeight) + 'px';
@@ -1903,8 +1918,8 @@ function addNewExerciseRow() {
             <input type="text" class="exercise-name-other" placeholder="Введите название" style="margin-top: 8px; display: none;">
         </td>
         <td data-label="Спецификация">
-            <input type="text" class="exercise-spec-input" placeholder="Например: широкий хват">
-        </td>
+    <textarea class="exercise-spec-input" placeholder="Например: широкий хват" rows="1"></textarea>
+</td>
         <td data-label="Вес/Подходы">
             <div class="weight-sets-container">
                 <div class="weight-set-row" data-set-index="0">
@@ -1947,7 +1962,12 @@ function addNewExerciseRow() {
             this.style.height = (this.scrollHeight) + 'px';
         });
     }
-    
+    // Авто-высота для Спецификации (как для Примечаний)
+const specTextarea = row.querySelector('.exercise-spec-input');
+if (specTextarea) {
+    specTextarea.addEventListener('input', autoResizeTextarea);
+    setTimeout(() => autoResizeTextarea.call(specTextarea), 10);
+}
     return rowId;
 }
 
@@ -3899,6 +3919,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
