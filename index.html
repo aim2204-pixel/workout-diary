@@ -887,19 +887,6 @@
     overflow-y: hidden;
     line-height: 1.4;
 }
-// Авто-высота для поля Спецификация
-const specTextarea = row.querySelector('.exercise-spec-input');
-if (specTextarea && specTextarea.tagName === 'TEXTAREA') {
-    specTextarea.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
-    });
-    // Устанавливаем начальную высоту
-    setTimeout(() => {
-        specTextarea.style.height = 'auto';
-        specTextarea.style.height = (specTextarea.scrollHeight) + 'px';
-    }, 10);
-}
 /* Мобильная адаптация */
 @media (max-width: 768px) {
     .exercises-table input,
@@ -1959,7 +1946,13 @@ function addNewExerciseRow() {
             this.style.height = (this.scrollHeight) + 'px';
         });
     }
-    
+
+	// Авто-высота для Спецификации (как для Примечаний)
+const specTextarea = row.querySelector('.exercise-spec-input');
+if (specTextarea) {
+    specTextarea.addEventListener('input', autoResizeTextarea);
+    setTimeout(() => autoResizeTextarea.call(specTextarea), 10);
+}
     return rowId;
 }
 
@@ -3911,6 +3904,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
