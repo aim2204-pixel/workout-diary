@@ -887,7 +887,19 @@
     overflow-y: hidden;
     line-height: 1.4;
 }
-
+// Авто-высота для поля Спецификация
+const specTextarea = row.querySelector('.exercise-spec-input');
+if (specTextarea && specTextarea.tagName === 'TEXTAREA') {
+    specTextarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+    // Устанавливаем начальную высоту
+    setTimeout(() => {
+        specTextarea.style.height = 'auto';
+        specTextarea.style.height = (specTextarea.scrollHeight) + 'px';
+    }, 10);
+}
 /* Мобильная адаптация */
 @media (max-width: 768px) {
     .exercises-table input,
@@ -1902,9 +1914,9 @@ function addNewExerciseRow() {
             </select>
             <input type="text" class="exercise-name-other" placeholder="Введите название" style="margin-top: 8px; display: none;">
         </td>
-        <td data-label="Спецификация">
-            <input type="text" class="exercise-spec-input" placeholder="Например: широкий хват">
-        </td>
+       <td data-label="Спецификация">
+    <textarea class="exercise-spec-input" placeholder="Например: широкий хват" rows="1"></textarea>
+	</td>
         <td data-label="Вес/Подходы">
             <div class="weight-sets-container">
                 <div class="weight-set-row" data-set-index="0">
@@ -3899,6 +3911,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
