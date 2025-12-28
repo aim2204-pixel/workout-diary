@@ -1322,10 +1322,8 @@ function updateTimerDisplay() {
     const currentLapTime = currentLapElapsedTime + (isRunning ? Date.now() - currentLapStartTime : 0);
     const minutes = Math.floor((currentLapTime / 60000) % 60);
     const seconds = Math.floor((currentLapTime / 1000) % 60);
-    const milliseconds = Math.floor(currentLapTime % 1000);
     
     timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    timerMilliseconds.textContent = `:${milliseconds.toString().padStart(3, '0')}`;
 }
         // Запуск/пауза таймера
 function toggleTimer() {
@@ -3950,6 +3948,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
