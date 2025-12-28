@@ -3362,7 +3362,17 @@ function formatWeightSetsForReport(weightSets) {
 // Генерация текстового отчета
 function generateTextReport(workouts, period) {
     let report = '';
-    
+    // МАППИНГ ТИПОВ ТРЕНИРОВОК (Добавьте этот блок)
+    const workoutTypeMapping = {
+        'strength': 'Силовая в зале',
+        'circuit': 'Круговая',
+        'home': 'Домашняя',
+        'cardio': 'Кардио',
+    	'yoga': 'Йога',
+    	'stretching': 'Растяжка',
+    	'crossfit': 'Кроссфит',
+		'other': 'Другое'
+    };
     // Заголовок отчета
     report += '='.repeat(60) + '\n';
     report += 'ОТЧЕТ О ТРЕНИРОВКАХ\n';
@@ -3403,7 +3413,8 @@ function generateTextReport(workouts, period) {
     sortedWorkouts.forEach((workout, index) => {
         report += `ТРЕНИРОВКА ${index + 1}\n`;
         report += `Дата: ${workout.date}\n`;
-        report += `Тип: ${workout.type}\n`;
+        const russianType = workoutTypeMapping[workout.type] || workout.type;
+		report += `Тип: ${russianType}\n`;
         report += '\n';
         
         // Упражнения
@@ -3473,9 +3484,10 @@ function generateTextReport(workouts, period) {
         }
     });
     
-    if (mostFrequentType) {
-        report += `Самый частый тип тренировки: ${mostFrequentType} (${maxCount} раз)\n`;
-    }
+   if (mostFrequentType) {
+    const russianFrequentType = workoutTypeMapping[mostFrequentType] || mostFrequentType;
+    report += `Самый частый тип тренировки: ${russianFrequentType} (${maxCount} раз)\n`;
+}
     
     report += '\n' + '='.repeat(60) + '\n';
     report += 'Конец отчета\n';
@@ -3694,6 +3706,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
