@@ -1329,38 +1329,34 @@ function formatLapTime(ms) {
 // Отображение кругов
 function renderLaps() {
     const container = document.getElementById('lapsContainer');
+    const emptyLaps = document.getElementById('emptyLaps');
     
-    // Очищаем существующие круги
-    const existingLaps = container.querySelectorAll('.lap-item');
-    existingLaps.forEach(lap => lap.remove());
+    // Полностью очищаем контейнер
+    container.innerHTML = '';
     
-    if (laps.length === 0) {
+    if (!laps || laps.length === 0) {
         if (emptyLaps) emptyLaps.style.display = 'block';
         return;
     }
     
     if (emptyLaps) emptyLaps.style.display = 'none';
     
-    // Отображаем круги в обратном порядке, но с оригинальными номерами
-    // Последний круг (самый большой номер) будет сверху
-    
-    let lapsHTML = '';
-    
-    // Идем от последнего круга к первому
+    // Создаем массив для отображения (последний круг будет первым)
     for (let i = laps.length - 1; i >= 0; i--) {
         const lap = laps[i];
-        const lapNumber = i + 1; // Правильный номер круга (1, 2, 3... где 1 - первый круг)
+        const lapNumber = i + 1; // Номер круга по порядку выполнения
         const lapTimeFormatted = formatLapTime(lap.time);
         
-        lapsHTML += `
-            <div class="lap-item">
-                <div class="lap-number">#${lapNumber}</div>
-                <div class="lap-time">${lapTimeFormatted}</div>
-            </div>
+        const lapItem = document.createElement('div');
+        lapItem.className = 'lap-item';
+        lapItem.innerHTML = `
+            <div class="lap-number">#${lapNumber}</div>
+            <div class="lap-time">${lapTimeFormatted}</div>
         `;
+        
+        // Добавляем в начало контейнера, чтобы последний был сверху
+        container.insertBefore(lapItem, container.firstChild);
     }
-    
-    container.innerHTML = lapsHTML;
 }
 
 // Обновление статистики
@@ -3990,6 +3986,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
