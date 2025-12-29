@@ -1288,16 +1288,8 @@ let currentLapStartTime = 0;
 let isRunning = false;
 let laps = [];
 
-// Элементы таймера
-const timerDisplay = document.getElementById('timerDisplay');
-const startPauseBtn = document.getElementById('startPauseBtn');
-const lapBtn = document.getElementById('lapBtn');
-const resetBtn = document.getElementById('resetBtn');
-const lapsContainer = document.getElementById('lapsContainer');
-const emptyLaps = document.getElementById('emptyLaps');
-const totalLapsEl = document.getElementById('totalLaps');
-const fastestLapEl = document.getElementById('fastestLap');
-const slowestLapEl = document.getElementById('slowestLap');
+// Элементы таймера (они будут инициализированы после загрузки DOM)
+let timerDisplay, startPauseBtn, lapBtn, resetBtn, lapsContainer, emptyLaps, totalLapsEl, fastestLapEl, slowestLapEl;
 
 // Форматирование времени для дисплея
 function formatDisplayTime(ms) {
@@ -1307,7 +1299,7 @@ function formatDisplayTime(ms) {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-// Форматирование времени для кругов (только минуты:секунды)
+// Форматирование времени для кругов
 function formatLapTime(ms) {
     const totalSeconds = Math.floor(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
@@ -1317,29 +1309,27 @@ function formatLapTime(ms) {
 
 // Обновление дисплея таймера
 function updateTimerDisplay() {
+    if (!timerDisplay) return;
     const currentLapTime = currentLapElapsedTime + (isRunning ? Date.now() - currentLapStartTime : 0);
     timerDisplay.textContent = formatDisplayTime(currentLapTime);
 }
 
 // Отображение кругов (последний круг сверху)
 function renderLaps() {
+    if (!lapsContainer || !emptyLaps) return;
+    
     // Полностью очищаем контейнер
     lapsContainer.innerHTML = '';
     
     if (laps.length === 0) {
-        if (emptyLaps) {
-            emptyLaps.style.display = 'block';
-            lapsContainer.appendChild(emptyLaps);
-        }
+        emptyLaps.style.display = 'block';
+        lapsContainer.appendChild(emptyLaps);
         return;
     }
     
-    if (emptyLaps) {
-        emptyLaps.style.display = 'none';
-    }
+    emptyLaps.style.display = 'none';
     
     // Показываем круги в обратном порядке (последний сверху)
-    // Используем реальные номера кругов, но показываем от последнего к первому
     for (let i = laps.length - 1; i >= 0; i--) {
         const lap = laps[i];
         const lapItem = document.createElement('div');
@@ -1359,6 +1349,8 @@ function renderLaps() {
 
 // Обновление статистики
 function updateStats() {
+    if (!totalLapsEl || !fastestLapEl || !slowestLapEl) return;
+    
     totalLapsEl.textContent = laps.length;
     
     if (laps.length > 0) {
@@ -1376,6 +1368,8 @@ function updateStats() {
 
 // Старт/пауза таймера
 function toggleTimer() {
+    if (!startPauseBtn || !lapBtn || !resetBtn) return;
+    
     if (isRunning) {
         // Пауза
         clearInterval(timerInterval);
@@ -1423,10 +1417,15 @@ function addLap() {
     updateStats();
     updateTimerDisplay();
     saveTimerState();
+    
+    // Для отладки
+    console.log(`Добавлен круг #${laps.length}: ${formatLapTime(lapTime)}`);
 }
 
 // Сброс таймера
 function resetTimer() {
+    if (!startPauseBtn || !lapBtn || !resetBtn) return;
+    
     clearInterval(timerInterval);
     isRunning = false;
     startTime = 0;
@@ -1515,6 +1514,40 @@ function loadTimerState() {
         console.error('Ошибка загрузки состояния таймера:', e);
         resetTimer();
     }
+}
+
+// Инициализация таймера (вызывается после загрузки DOM)
+function initTimer() {
+    // Инициализируем элементы
+    timerDisplay = document.getElementById('timerDisplay');
+    startPauseBtn = document.getElementById('startPauseBtn');
+    lapBtn = document.getElementById('lapBtn');
+    resetBtn = document.getElementById('resetBtn');
+    lapsContainer = document.getElementById('lapsContainer');
+    emptyLaps = document.getElementById('emptyLaps');
+    totalLapsEl = document.getElementById('totalLaps');
+    fastestLapEl = document.getElementById('fastestLap');
+    slowestLapEl = document.getElementById('slowestLap');
+    
+    // Проверяем, что элементы найдены
+    if (!timerDisplay || !startPauseBtn || !lapBtn || !resetBtn) {
+        console.error('Не все элементы таймера найдены');
+        return;
+    }
+    
+    // Подключаем обработчики событий
+    startPauseBtn.addEventListener('click', toggleTimer);
+    lapBtn.addEventListener('click', addLap);
+    resetBtn.addEventListener('click', resetTimer);
+    
+    // Загружаем состояние
+    loadTimerState();
+    
+    // Инициализируем кнопки
+    lapBtn.disabled = true;
+    resetBtn.disabled = true;
+    
+    console.log('Таймер инициализирован');
 }
 // ==================== КОНЕЦ ТАЙМЕРА ====================
 
@@ -3141,7 +3174,10 @@ function updateExerciseIndexes() {
             });
             
             updateHeader(activeTab);
-            
+
+			 // Инициализация таймера
+    		initTimer();
+			
             // Загрузка данных
             loadProfile();
             renderExercisesList();
@@ -3750,6 +3786,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
