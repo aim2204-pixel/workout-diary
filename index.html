@@ -1321,14 +1321,16 @@ function updateTimerDisplay() {
 
 // Форматирование времени круга
 function formatLapTime(ms) {
-    const minutes = Math.floor((ms / 60000) % 60);
-    const seconds = Math.floor((ms / 1000) % 60);
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
-
 // Отображение кругов
 function renderLaps() {
-    const container = document.getElementById('lapsContainer');
+    console.log('renderLaps вызвана, laps:', laps);
+    console.log('Длина массива laps:', laps.length);
+	const container = document.getElementById('lapsContainer');
     const emptyLaps = document.getElementById('emptyLaps');
     
     // Полностью очищаем контейнер
@@ -1407,14 +1409,14 @@ function addLap() {
     
     const now = Date.now();
     const lapTime = currentLapElapsedTime + (now - currentLapStartTime);
-    totalElapsedTime += lapTime;
     
     laps.push({
         time: lapTime,
         timestamp: now
     });
     
-    // Обнуляем текущий круг
+    console.log(`Добавлен круг #${laps.length}: ${formatLapTime(lapTime)}`); // Для отладки
+    
     currentLapElapsedTime = 0;
     currentLapStartTime = now;
     
@@ -2889,16 +2891,18 @@ function updateTimerDisplay() {
     timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
         // Форматирование времени круга
-        function formatLapTime(ms) {
-            const minutes = Math.floor((ms / 60000) % 60);
-            const seconds = Math.floor((ms / 1000) % 60);
-         
-            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
+function formatLapTime(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
         
         // Рендеринг кругов
         function renderLaps() {
-            const container = document.getElementById('lapsContainer');
+             console.log('renderLaps вызвана, laps:', laps);
+    console.log('Длина массива laps:', laps.length);
+			const container = document.getElementById('lapsContainer');
             
             // Очищаем существующие круги
             const existingLaps = container.querySelectorAll('.lap-item');
@@ -2971,20 +2975,20 @@ function addLap() {
     
     const now = Date.now();
     const lapTime = currentLapElapsedTime + (now - currentLapStartTime);
-    totalElapsedTime += lapTime;
     
     laps.push({
         time: lapTime,
         timestamp: now
     });
     
-    // Обнуляем текущий круг
+    console.log(`Добавлен круг #${laps.length}: ${formatLapTime(lapTime)}`); // Для отладки
+    
     currentLapElapsedTime = 0;
     currentLapStartTime = now;
     
     renderLaps();
     updateStats();
-    updateTimerDisplay(); // Обновляем отображение (покажет 00:00:000)
+    updateTimerDisplay();
     saveTimerState();
 }
         // Сброс таймера
@@ -3986,6 +3990,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
