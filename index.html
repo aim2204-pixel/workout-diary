@@ -1278,7 +1278,11 @@
         // Глобальные переменные
         let exerciseRowCounter = 0;
         let weightChart = null;
-        
+
+		let workoutListContainer, workoutEmptyState, globalAddBtn, newWorkoutFormOverlay;
+		let navItems, pageTitle, pageSubtitle;
+		let closeFormBtn, cancelFormBtn, addExerciseRowBtn, workoutForm;
+		
 // ==================== ТАЙМЕР ====================
 let timerInterval = null;
 let startTime = 0;
@@ -3156,200 +3160,218 @@ function updateExerciseIndexes() {
 
         // ==================== ИНИЦИАЛИЗАЦИЯ ====================
 
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Дневник тренировок загружен');
+       document.addEventListener('DOMContentLoaded', function() {
+    console.log('Дневник тренировок загружен');
+    
+    // 1. Инициализируем все DOM элементы
+    initDOMElements();
+    
+    // 2. Восстановление вкладки
+    const activeTab = loadActiveTab();
+    document.querySelectorAll('main section').forEach(section => {
+        section.style.display = 'none';
+    });
+    document.getElementById(activeTab).style.display = 'block';
+    
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.target === activeTab) {
+            item.classList.add('active');
+        }
+    });
+    
+    updateHeader(activeTab);
+
+    // 3. Загрузка данных
+    loadProfile();
+    renderExercisesList();
+    renderWorkoutList();
+    
+    // 4. Инициализация графика
+    currentChartPeriod = loadChartPeriod();
+    initPeriodFilters();
+    updateWeightChart();
+    
+    // 5. Инициализация таймера (ОДИН РАЗ!)
+    initTimer();
+    
+    // 6. Инициализация экспорта/импорта
+    initExportImport();
+    
+    // 7. Инициализация отчетов
+    initReportFunctionality();
+    
+    // 8. Обработчики навигации
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            console.log('Клик по навигации:', this.dataset.target);
+            e.preventDefault();
+            const targetId = this.dataset.target;
             
-            // Восстановление вкладки
-            const activeTab = loadActiveTab();
+            saveActiveTab(targetId);
+            
             document.querySelectorAll('main section').forEach(section => {
                 section.style.display = 'none';
             });
-            document.getElementById(activeTab).style.display = 'block';
+            document.getElementById(targetId).style.display = 'block';
             
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.dataset.target === activeTab) {
-                    item.classList.add('active');
-                }
+            document.querySelectorAll('.nav-item').forEach(navItem => {
+                navItem.classList.remove('active');
             });
+            this.classList.add('active');
             
-            updateHeader(activeTab);
-
-			 // Инициализация таймера
-    		initTimer();
-			
-            // Загрузка данных
-            loadProfile();
-            renderExercisesList();
-            renderWorkoutList();
+            updateHeader(targetId);
             
-            // Инициализация графика
-            currentChartPeriod = loadChartPeriod();
-            initPeriodFilters();
-            updateWeightChart();
-                              
-            // Инициализация экспорта/импорта
-            initExportImport();
+            if (targetId === 'profileSection') {
+                setTimeout(updateWeightChart, 100);
+            }
             
-	    // Вызов инициализации в основном блоке инициализации
-	    initReportFunctionality();
-
-            // Обработчики навигации
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetId = this.dataset.target;
-                    
-                    saveActiveTab(targetId);
-                    
-                    document.querySelectorAll('main section').forEach(section => {
-                        section.style.display = 'none';
-                    });
-                    document.getElementById(targetId).style.display = 'block';
-                    
-                    document.querySelectorAll('.nav-item').forEach(navItem => {
-                        navItem.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                    
-                    updateHeader(targetId);
-                    
-                    if (targetId === 'profileSection') {
-                        setTimeout(updateWeightChart, 100);
-                    }
-                    
-                    if (targetId === 'workoutSection') {
-                        renderWorkoutList();
-                    }
-                    
-                    // Сохранить состояние таймера при переключении вкладок
-                    if (isRunning) {
-                        saveTimerState();
-                    }
-                });
-            });
+            if (targetId === 'workoutSection') {
+                renderWorkoutList();
+            }
             
-            // Кнопка добавления
-            document.getElementById('globalAddBtn').addEventListener('click', openNewWorkoutForm);
-            
-            // Форма тренировки
-            document.getElementById('closeFormBtn').addEventListener('click', closeForm);
-            document.getElementById('cancelFormBtn').addEventListener('click', closeForm);
-            document.getElementById('addExerciseRowBtn').addEventListener('click', addNewExerciseRow);
-            document.getElementById('newWorkoutForm').addEventListener('submit', handleWorkoutFormSubmit);
-            
-            // Тип тренировки
-            document.getElementById('workoutType').addEventListener('change', function() {
-                document.getElementById('workoutTypeOther').style.display = 
-                    this.value === 'other' ? 'block' : 'none';
-            });
-            
-            // Дополнительная активность
-            document.getElementById('extraActivityType').addEventListener('change', function() {
-                document.getElementById('extraActivityOther').style.display = 
-                    this.value === 'other' ? 'block' : 'none';
-            });
-            
-            // Вес для BMI
-            document.getElementById('workoutWeight').addEventListener('input', updateBmiDisplay);
-            
-            // Профиль
-            document.getElementById('profileForm').addEventListener('submit', saveProfile);
-            
-            // Упражнения
-            document.getElementById('exerciseForm').addEventListener('submit', addNewExercise);
-            
-            // Таймер
-            startPauseBtn.addEventListener('click', toggleTimer);
-            lapBtn.addEventListener('click', addLap);
-            resetBtn.addEventListener('click', resetTimer);
-            
-            // Сохранение состояния таймера при закрытии страницы
-            window.addEventListener('beforeunload', function() {
+            // Сохранить состояние таймера при переключении вкладок
+            if (isRunning) {
                 saveTimerState();
-            });
-            
-            // Сохранение состояния каждые 5 секунд при работе таймера
-            setInterval(function() {
-                if (isRunning) {
-                    saveTimerState();
-                }
-            }, 5000);
-            
-            // Демо-данные при первом запуске
-            const workouts = loadWorkoutLog();
-            if (workouts.length === 0) {
-                const demoAdded = localStorage.getItem('workoutDiary_demoAdded');
-                if (!demoAdded) {
-                    const demoExercises = [
-                        'Подтягивания',
-                        'Жим штанги лёжа',
-                        'Приседания со штангой',
-                        'Тяга штанги в наклоне',
-                        'Жим гантелей сидя',
-                        'Разводка гантелей',
-                        'Французский жим',
-                        'Подъём штанги на бицепс',
-                        'Подъём гантелей на бицепс',
-                        'Гиперэкстензия'
-                    ];
-                    saveExercises(demoExercises);
-                    
-                    const today = new Date();
-                    const yesterday = new Date(today);
-                    yesterday.setDate(yesterday.getDate() - 1);
-                    const twoDaysAgo = new Date(today);
-                    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-                    
-                    function formatDate(date) {
-                        const day = String(date.getDate()).padStart(2, '0');
-                        const month = String(date.getMonth() + 1).padStart(2, '0');
-                        const year = date.getFullYear();
-                        return `${day}.${month}.${year}`;
-                    }
-                    
-                    const demoWorkouts = [
-                        {
-                            id: generateWorkoutId(),
-                            date: formatDate(twoDaysAgo),
-                            type: 'strength',
-                            exercises: [
-                                {
-                                    name: 'Подтягивания',
-                                    spec: 'широкий хват',
-                                    weightSets: [
-                                        { weight: '- (вес тела)', sets: '4', reps: '8' }
-                                    ],
-                                    note: 'Хорошая техника'
-                                },
-                                {
-                                    name: 'Жим штанги лёжа',
-                                    spec: 'средний хват',
-                                    weightSets: [
-                                        { weight: '60 кг', sets: '3', reps: '10' },
-                                        { weight: '50 кг', sets: '2', reps: '12' }
-                                    ],
-                                    note: 'Последний подход тяжело'
-                                }
-                            ],
-                            extraActivity: 'Бассейн (тренировка)',
-                            weight: 71.5,
-                            bmi: 26.1,
-                            created: Date.now() - 172800000
-                        }
-                    ];
-                    
-                    saveWorkoutLog(demoWorkouts);
-                    localStorage.setItem('workoutDiary_demoAdded', 'true');
-                    
-                    renderWorkoutList();
-                    renderExercisesList();
-                    updateWeightChart();
-                    
-                    showNotification('Демо-данные загружены для тестирования');
-                }
             }
         });
+    });
+    
+    // 9. Кнопка добавления
+    if (globalAddBtn) {
+        globalAddBtn.addEventListener('click', openNewWorkoutForm);
+    }
+    
+    // 10. Форма тренировки
+    if (closeFormBtn) {
+        closeFormBtn.addEventListener('click', closeForm);
+    }
+    if (cancelFormBtn) {
+        cancelFormBtn.addEventListener('click', closeForm);
+    }
+    if (addExerciseRowBtn) {
+        addExerciseRowBtn.addEventListener('click', addNewExerciseRow);
+    }
+    if (workoutForm) {
+        workoutForm.addEventListener('submit', handleWorkoutFormSubmit);
+    }
+    
+    // 11. Тип тренировки
+    const workoutTypeSelect = document.getElementById('workoutType');
+    if (workoutTypeSelect) {
+        workoutTypeSelect.addEventListener('change', function() {
+            const otherInput = document.getElementById('workoutTypeOther');
+            if (otherInput) {
+                otherInput.style.display = this.value === 'other' ? 'block' : 'none';
+            }
+        });
+    }
+    
+    // 12. Дополнительная активность
+    const extraActivitySelect = document.getElementById('extraActivityType');
+    if (extraActivitySelect) {
+        extraActivitySelect.addEventListener('change', function() {
+            const otherInput = document.getElementById('extraActivityOther');
+            if (otherInput) {
+                otherInput.style.display = this.value === 'other' ? 'block' : 'none';
+            }
+        });
+    }
+    
+    // 13. Вес для BMI
+    const workoutWeightInput = document.getElementById('workoutWeight');
+    if (workoutWeightInput) {
+        workoutWeightInput.addEventListener('input', updateBmiDisplay);
+    }
+    
+    // 14. Профиль
+    const profileForm = document.getElementById('profileForm');
+    if (profileForm) {
+        profileForm.addEventListener('submit', saveProfile);
+    }
+    
+    // 15. Упражнения
+    const exerciseForm = document.getElementById('exerciseForm');
+    if (exerciseForm) {
+        exerciseForm.addEventListener('submit', addNewExercise);
+    }
+    
+    // 16. Демо-данные при первом запуске
+    const workouts = loadWorkoutLog();
+    if (workouts.length === 0) {
+        const demoAdded = localStorage.getItem('workoutDiary_demoAdded');
+        if (!demoAdded) {
+            const demoExercises = [
+                'Подтягивания',
+                'Жим штанги лёжа',
+                'Приседания со штангой',
+                'Тяга штанги в наклоне',
+                'Жим гантелей сидя',
+                'Разводка гантелей',
+                'Французский жим',
+                'Подъём штанги на бицепс',
+                'Подъём гантелей на бицепс',
+                'Гиперэкстензия'
+            ];
+            saveExercises(demoExercises);
+            
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            const twoDaysAgo = new Date(today);
+            twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+            
+            function formatDate(date) {
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}.${month}.${year}`;
+            }
+            
+            const demoWorkouts = [
+                {
+                    id: generateWorkoutId(),
+                    date: formatDate(twoDaysAgo),
+                    type: 'strength',
+                    exercises: [
+                        {
+                            name: 'Подтягивания',
+                            spec: 'широкий хват',
+                            weightSets: [
+                                { weight: '- (вес тела)', sets: '4', reps: '8' }
+                            ],
+                            note: 'Хорошая техника'
+                        },
+                        {
+                            name: 'Жим штанги лёжа',
+                            spec: 'средний хват',
+                            weightSets: [
+                                { weight: '60 кг', sets: '3', reps: '10' },
+                                { weight: '50 кг', sets: '2', reps: '12' }
+                            ],
+                            note: 'Последний подход тяжело'
+                        }
+                    ],
+                    extraActivity: 'Бассейн (тренировка)',
+                    weight: 71.5,
+                    bmi: 26.1,
+                    created: Date.now() - 172800000
+                }
+            ];
+            
+            saveWorkoutLog(demoWorkouts);
+            localStorage.setItem('workoutDiary_demoAdded', 'true');
+            
+            renderWorkoutList();
+            renderExercisesList();
+            updateWeightChart();
+            
+            showNotification('Демо-данные загружены для тестирования');
+        }
+    }
+    
+    console.log('Приложение полностью инициализировано');
+});
     // Функция для отображения модального окна отчета
 function showReportModal() {
     document.getElementById('reportModal').style.display = 'block';
@@ -3783,6 +3805,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
