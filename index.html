@@ -1282,6 +1282,28 @@
 		let workoutListContainer, workoutEmptyState, globalAddBtn, newWorkoutFormOverlay;
 		let navItems, pageTitle, pageSubtitle;
 		let closeFormBtn, cancelFormBtn, addExerciseRowBtn, workoutForm;
+
+// ==================== ИНИЦИАЛИЗАЦИЯ DOM ЭЛЕМЕНТОВ ====================
+function initDOMElements() {
+    // Основные элементы
+    workoutListContainer = document.getElementById('workoutListContainer');
+    workoutEmptyState = document.getElementById('workoutEmptyState');
+    globalAddBtn = document.getElementById('globalAddBtn');
+    newWorkoutFormOverlay = document.getElementById('newWorkoutFormOverlay');
+    
+    // Элементы навигации
+    navItems = document.querySelectorAll('.nav-item');
+    pageTitle = document.getElementById('pageTitle');
+    pageSubtitle = document.getElementById('pageSubtitle');
+    
+    // Элементы формы
+    closeFormBtn = document.getElementById('closeFormBtn');
+    cancelFormBtn = document.getElementById('cancelFormBtn');
+    addExerciseRowBtn = document.getElementById('addExerciseRowBtn');
+    workoutForm = document.getElementById('newWorkoutForm');
+    
+    console.log('DOM элементы инициализированы');
+}
 		
 // ==================== ТАЙМЕР ====================
 let timerInterval = null;
@@ -3805,6 +3827,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
