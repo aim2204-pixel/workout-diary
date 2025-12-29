@@ -1341,16 +1341,26 @@ function renderLaps() {
     
     if (emptyLaps) emptyLaps.style.display = 'none';
     
-    // Отображаем круги в обратном порядке (последний сверху)
-    [...laps].reverse().forEach((lap, index) => {
-        const lapItem = document.createElement('div');
-        lapItem.className = 'lap-item';
-        lapItem.innerHTML = `
-            <div class="lap-number">#${laps.length - index}</div>
-            <div class="lap-time">${formatLapTime(lap.time)}</div>
+    // Отображаем круги в обратном порядке, но с оригинальными номерами
+    // Последний круг (самый большой номер) будет сверху
+    
+    let lapsHTML = '';
+    
+    // Идем от последнего круга к первому
+    for (let i = laps.length - 1; i >= 0; i--) {
+        const lap = laps[i];
+        const lapNumber = i + 1; // Правильный номер круга (1, 2, 3... где 1 - первый круг)
+        const lapTimeFormatted = formatLapTime(lap.time);
+        
+        lapsHTML += `
+            <div class="lap-item">
+                <div class="lap-number">#${lapNumber}</div>
+                <div class="lap-time">${lapTimeFormatted}</div>
+            </div>
         `;
-        container.prepend(lapItem);
-    });
+    }
+    
+    container.innerHTML = lapsHTML;
 }
 
 // Обновление статистики
@@ -3980,6 +3990,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
