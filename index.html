@@ -1311,20 +1311,7 @@ let laps = [];
                
             };
         }
-// Общая функция авто-высоты для textarea
-function autoResizeTextarea() {
-    this.style.height = 'auto';
-    this.style.height = (this.scrollHeight) + 'px';
-}
-        // Обновление дисплея таймера
-function updateTimerDisplay() {
-    // Отображаем время текущего круга, а не общее
-    const currentLapTime = currentLapElapsedTime + (isRunning ? Date.now() - currentLapStartTime : 0);
-    const minutes = Math.floor((currentLapTime / 60000) % 60);
-    const seconds = Math.floor((currentLapTime / 1000) % 60);
-    
-    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-}
+
         // Запуск/пауза таймера
 function toggleTimer() {
     if (isRunning) {
@@ -1999,7 +1986,11 @@ if (specTextarea) {
 }
     return rowId;
 }
-
+// Общая функция авто-высоты для textarea
+function autoResizeTextarea() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+}
         // Обработка выбора упражнения
         function handleExerciseSelectChange(select, rowId) {
             const row = document.getElementById(rowId);
@@ -3946,6 +3937,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
