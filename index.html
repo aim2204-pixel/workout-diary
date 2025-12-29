@@ -1534,12 +1534,12 @@ function initTimer() {
         console.error('Не все элементы таймера найдены');
         return;
     }
-    
-    // Подключаем обработчики событий
+
+	// Подключаем обработчики событий (ТОЛЬКО ЗДЕСЬ!)
     startPauseBtn.addEventListener('click', toggleTimer);
     lapBtn.addEventListener('click', addLap);
     resetBtn.addEventListener('click', resetTimer);
-    
+	
     // Загружаем состояние
     loadTimerState();
     
@@ -3187,10 +3187,7 @@ function updateExerciseIndexes() {
             currentChartPeriod = loadChartPeriod();
             initPeriodFilters();
             updateWeightChart();
-            
-            // Инициализация таймера
-            loadTimerState();
-            
+                              
             // Инициализация экспорта/импорта
             initExportImport();
             
@@ -3786,6 +3783,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
