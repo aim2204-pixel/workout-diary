@@ -1282,9 +1282,9 @@
 // ==================== ТАЙМЕР ====================
 let timerInterval = null;
 let startTime = 0;
-let totalElapsedTime = 0; // Общее время всех кругов
-let currentLapElapsedTime = 0; // Время текущего круга
-let currentLapStartTime = 0; // Время начала текущего круга
+let totalElapsedTime = 0;
+let currentLapElapsedTime = 0;
+let currentLapStartTime = 0;
 let isRunning = false;
 let laps = [];
 
@@ -1299,65 +1299,61 @@ const totalLapsEl = document.getElementById('totalLaps');
 const fastestLapEl = document.getElementById('fastestLap');
 const slowestLapEl = document.getElementById('slowestLap');
 
-// Форматирование времени
-function formatTime(ms) {
+// Форматирование времени для дисплея
+function formatDisplayTime(ms) {
     const totalSeconds = Math.floor(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
-    return {
-        minutes: minutes.toString().padStart(2, '0'),
-        seconds: seconds.toString().padStart(2, '0')
-    };
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-// Обновление дисплея таймера
-function updateTimerDisplay() {
-    const currentLapTime = currentLapElapsedTime + (isRunning ? Date.now() - currentLapStartTime : 0);
-    const minutes = Math.floor((currentLapTime / 60000) % 60);
-    const seconds = Math.floor((currentLapTime / 1000) % 60);
-    
-    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-}
-
-// Форматирование времени круга
+// Форматирование времени для кругов (только минуты:секунды)
 function formatLapTime(ms) {
     const totalSeconds = Math.floor(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
-// Отображение кругов
+
+// Обновление дисплея таймера
+function updateTimerDisplay() {
+    const currentLapTime = currentLapElapsedTime + (isRunning ? Date.now() - currentLapStartTime : 0);
+    timerDisplay.textContent = formatDisplayTime(currentLapTime);
+}
+
+// Отображение кругов (последний круг сверху)
 function renderLaps() {
-    console.log('renderLaps вызвана, laps:', laps);
-    console.log('Длина массива laps:', laps.length);
-	const container = document.getElementById('lapsContainer');
-    const emptyLaps = document.getElementById('emptyLaps');
-    
     // Полностью очищаем контейнер
-    container.innerHTML = '';
+    lapsContainer.innerHTML = '';
     
-    if (!laps || laps.length === 0) {
-        if (emptyLaps) emptyLaps.style.display = 'block';
+    if (laps.length === 0) {
+        if (emptyLaps) {
+            emptyLaps.style.display = 'block';
+            lapsContainer.appendChild(emptyLaps);
+        }
         return;
     }
     
-    if (emptyLaps) emptyLaps.style.display = 'none';
+    if (emptyLaps) {
+        emptyLaps.style.display = 'none';
+    }
     
-    // Создаем массив для отображения (последний круг будет первым)
+    // Показываем круги в обратном порядке (последний сверху)
+    // Используем реальные номера кругов, но показываем от последнего к первому
     for (let i = laps.length - 1; i >= 0; i--) {
         const lap = laps[i];
-        const lapNumber = i + 1; // Номер круга по порядку выполнения
-        const lapTimeFormatted = formatLapTime(lap.time);
-        
         const lapItem = document.createElement('div');
         lapItem.className = 'lap-item';
+        
+        // Номер круга = порядковый номер в массиве + 1
+        const lapNumber = i + 1;
+        
         lapItem.innerHTML = `
             <div class="lap-number">#${lapNumber}</div>
-            <div class="lap-time">${lapTimeFormatted}</div>
+            <div class="lap-time">${formatLapTime(lap.time)}</div>
         `;
         
-        // Добавляем в начало контейнера, чтобы последний был сверху
-        container.insertBefore(lapItem, container.firstChild);
+        lapsContainer.appendChild(lapItem);
     }
 }
 
@@ -1378,7 +1374,7 @@ function updateStats() {
     }
 }
 
-// Переключение таймера (старт/пауза)
+// Старт/пауза таймера
 function toggleTimer() {
     if (isRunning) {
         // Пауза
@@ -1386,6 +1382,7 @@ function toggleTimer() {
         const now = Date.now();
         currentLapElapsedTime += now - currentLapStartTime;
         totalElapsedTime += now - currentLapStartTime;
+        
         startPauseBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
         lapBtn.disabled = true;
         resetBtn.disabled = false;
@@ -1394,6 +1391,7 @@ function toggleTimer() {
         startTime = Date.now();
         currentLapStartTime = startTime;
         timerInterval = setInterval(updateTimerDisplay, 10);
+        
         startPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза';
         lapBtn.disabled = false;
         resetBtn.disabled = true;
@@ -1410,16 +1408,17 @@ function addLap() {
     const now = Date.now();
     const lapTime = currentLapElapsedTime + (now - currentLapStartTime);
     
+    // Добавляем круг в массив
     laps.push({
         time: lapTime,
         timestamp: now
     });
     
-    console.log(`Добавлен круг #${laps.length}: ${formatLapTime(lapTime)}`); // Для отладки
-    
+    // Сбрасываем текущий круг
     currentLapElapsedTime = 0;
     currentLapStartTime = now;
     
+    // Обновляем интерфейс
     renderLaps();
     updateStats();
     updateTimerDisplay();
@@ -1430,6 +1429,7 @@ function addLap() {
 function resetTimer() {
     clearInterval(timerInterval);
     isRunning = false;
+    startTime = 0;
     totalElapsedTime = 0;
     currentLapElapsedTime = 0;
     currentLapStartTime = 0;
@@ -1477,6 +1477,7 @@ function loadTimerState() {
             const hoursSinceSave = (now - savedAt) / (1000 * 60 * 60);
             
             if (hoursSinceSave < 24) {
+                // Восстанавливаем состояние
                 isRunning = state.isRunning || false;
                 startTime = state.startTime || 0;
                 totalElapsedTime = state.totalElapsedTime || 0;
@@ -1490,6 +1491,7 @@ function loadTimerState() {
                     currentLapElapsedTime += timeSinceStart;
                     currentLapStartTime = now;
                     
+                    // Запускаем таймер
                     timerInterval = setInterval(updateTimerDisplay, 10);
                     startPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза';
                     lapBtn.disabled = false;
@@ -1500,6 +1502,7 @@ function loadTimerState() {
                     resetBtn.disabled = laps.length > 0;
                 }
                 
+                // Обновляем интерфейс
                 updateTimerDisplay();
                 renderLaps();
                 updateStats();
@@ -1510,8 +1513,10 @@ function loadTimerState() {
         }
     } catch (e) {
         console.error('Ошибка загрузки состояния таймера:', e);
+        resetTimer();
     }
 }
+// ==================== КОНЕЦ ТАЙМЕРА ====================
 
         // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
 
@@ -2878,252 +2883,7 @@ function updateExerciseIndexes() {
                 });
             });
         }
-
-        // ==================== ТАЙМЕР ====================
-        
-        // Обновление отображения таймера
-function updateTimerDisplay() {
-    // Отображаем время текущего круга, а не общее
-    const currentLapTime = currentLapElapsedTime + (isRunning ? Date.now() - currentLapStartTime : 0);
-    const minutes = Math.floor((currentLapTime / 60000) % 60);
-    const seconds = Math.floor((currentLapTime / 1000) % 60);
-    
-    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }
-        // Форматирование времени круга
-function formatLapTime(ms) {
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-}
-        
-        // Рендеринг кругов
-        function renderLaps() {
-             console.log('renderLaps вызвана, laps:', laps);
-    console.log('Длина массива laps:', laps.length);
-			const container = document.getElementById('lapsContainer');
-            
-            // Очищаем существующие круги
-            const existingLaps = container.querySelectorAll('.lap-item');
-            existingLaps.forEach(lap => lap.remove());
-            
-            if (laps.length === 0) {
-                if (emptyLaps) emptyLaps.style.display = 'block';
-                return;
-            }
-            
-            if (emptyLaps) emptyLaps.style.display = 'none';
-            
-            // Отображаем круги в обратном порядке (последний сверху)
-            [...laps].reverse().forEach((lap, index) => {
-                const lapItem = document.createElement('div');
-                lapItem.className = 'lap-item';
-                lapItem.innerHTML = `
-                    <div class="lap-number">#${laps.length - index}</div>
-                    <div class="lap-time">${formatLapTime(lap.time)}</div>
-                `;
-                container.prepend(lapItem);
-            });
-        }
-        
-        // Обновление статистики
-        function updateStats() {
-            totalLapsEl.textContent = laps.length;
-            
-            if (laps.length > 0) {
-                const lapTimes = laps.map(lap => lap.time);
-                const fastest = Math.min(...lapTimes);
-                const slowest = Math.max(...lapTimes);
-                
-                fastestLapEl.textContent = formatLapTime(fastest);
-                slowestLapEl.textContent = formatLapTime(slowest);
-            } else {
-                fastestLapEl.textContent = '--:--';
-                slowestLapEl.textContent = '--:--';
-            }
-        }
-        
-        // Переключение таймера (старт/пауза)
- function toggleTimer() {
-    if (isRunning) {
-        // Пауза
-        clearInterval(timerInterval);
-        const now = Date.now();
-        currentLapElapsedTime += now - currentLapStartTime;
-        totalElapsedTime += now - currentLapStartTime;
-        startPauseBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
-        lapBtn.disabled = true;
-        resetBtn.disabled = false;
-    } else {
-        // Старт
-        startTime = Date.now();
-        currentLapStartTime = startTime;
-        timerInterval = setInterval(updateTimerDisplay, 10);
-        startPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза';
-        lapBtn.disabled = false;
-        resetBtn.disabled = true;
-    }
-    
-    isRunning = !isRunning;
-    saveTimerState();
-}
-
-        // Добавление круга
-function addLap() {
-    if (!isRunning) return;
-    
-    const now = Date.now();
-    const lapTime = currentLapElapsedTime + (now - currentLapStartTime);
-    
-    laps.push({
-        time: lapTime,
-        timestamp: now
-    });
-    
-    console.log(`Добавлен круг #${laps.length}: ${formatLapTime(lapTime)}`); // Для отладки
-    
-    currentLapElapsedTime = 0;
-    currentLapStartTime = now;
-    
-    renderLaps();
-    updateStats();
-    updateTimerDisplay();
-    saveTimerState();
-}
-        // Сброс таймера
-function resetTimer() {
-    clearInterval(timerInterval);
-    isRunning = false;
-    totalElapsedTime = 0;
-    currentLapElapsedTime = 0;
-    currentLapStartTime = 0;
-    laps = [];
-    
-    startPauseBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
-    lapBtn.disabled = true;
-    resetBtn.disabled = true;
-    
-    updateTimerDisplay();
-    renderLaps();
-    updateStats();
-    saveTimerState();
-}        
-        // Сохранение состояния таймера
-        function saveTimerState() {
-            const state = {
-                isRunning: isRunning,
-                startTime: startTime,
-                elapsedTime: elapsedTime,
-                lapStartTime: lapStartTime,
-                laps: laps,
-                savedAt: Date.now()
-            };
-            
-            try {
-                localStorage.setItem(STORAGE_KEYS.TIMER_STATE, JSON.stringify(state));
-            } catch (error) {
-                console.error('Ошибка сохранения состояния таймера:', error);
-            }
-        }
-        
-        // Загрузка состояния таймера
-        function loadTimerState() {
-            try {
-                const saved = localStorage.getItem(STORAGE_KEYS.TIMER_STATE);
-                if (saved) {
-                    const state = JSON.parse(saved);
-                    
-                    // Проверяем, не устарели ли данные (больше 24 часов)
-                    const now = Date.now();
-                    const savedAt = state.savedAt || 0;
-                    const hoursSinceSave = (now - savedAt) / (1000 * 60 * 60);
-                    
-                    if (hoursSinceSave < 24) {
-                        isRunning = state.isRunning || false;
-                        startTime = state.startTime || 0;
-                        elapsedTime = state.elapsedTime || 0;
-                        lapStartTime = state.lapStartTime || 0;
-                        laps = state.laps || [];
-                        
-                        if (isRunning) {
-                            // Если таймер был запущен, корректируем elapsedTime
-                            elapsedTime += now - startTime;
-                            startTime = now;
-                            lapStartTime = now;
-                            timerInterval = setInterval(updateTimerDisplay, 10);
-                            startPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза';
-                            lapBtn.disabled = false;
-                            resetBtn.disabled = true;
-                        } else {
-                            startPauseBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
-                            lapBtn.disabled = true;
-                            resetBtn.disabled = laps.length > 0;
-                        }
-                        
-                        updateTimerDisplay();
-                        renderLaps();
-                        updateStats();
-                    } else {
-                        // Данные устарели, сбрасываем
-                        resetTimer();
-                    }
-                }
-            } catch (e) {
-                console.error('Ошибка загрузки состояния таймера:', e);
-            }
-        }
-
-        // ==================== ЭКСПОРТ/ИМПОРТ JSON (СПРИНТ 7) ====================
-
-        // Экспорт всех данных в JSON
-        function exportAllData() {
-            try {
-                // Сбор всех данных
-                const allData = {
-                    version: DATA_FORMAT_VERSION,
-                    exportedAt: new Date().toISOString(),
-                    dataFormat: 'workoutDiary_v1',
-                    workouts: loadWorkoutLog(),
-                    exercises: loadExercises(),
-                    profile: loadProfile(),
-                    timerState: JSON.parse(localStorage.getItem(STORAGE_KEYS.TIMER_STATE) || '{}'),
-                    chartPeriod: currentChartPeriod
-                };
-                
-                // Преобразование в JSON с отступами
-                const jsonData = JSON.stringify(allData, null, 2);
-                
-                // Создание Blob и ссылки для скачивания
-                const blob = new Blob([jsonData], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                
-                // Создание временной ссылки для скачивания
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `workout_diary_backup_${new Date().toISOString().slice(0, 10)}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                
-                // Освобождение ресурсов
-                setTimeout(() => URL.revokeObjectURL(url), 100);
-                
-                showNotification('Все данные экспортированы в JSON-файл');
-                
-                // Логирование успеха
-                console.log('Данные экспортированы:', {
-                    workouts: allData.workouts.length,
-                    exercises: allData.exercises.length,
-                    profile: !!allData.profile
-                });
-                
-            } catch (error) {
-                console.error('Ошибка экспорта:', error);
-                showNotification('Ошибка при экспорте данных', false);
-            }
-        }
-
+  
         // Импорт данных из JSON
         function importDataFromFile(file) {
             return new Promise((resolve, reject) => {
