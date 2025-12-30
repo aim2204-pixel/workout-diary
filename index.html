@@ -2664,32 +2664,34 @@ function updateTimerDisplay() {
             return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
         
-        // Рендеринг кругов
-        function renderLaps() {
-            const container = document.getElementById('lapsContainer');
-            
-            // Очищаем существующие круги
-            const existingLaps = container.querySelectorAll('.lap-item');
-            existingLaps.forEach(lap => lap.remove());
-            
-            if (laps.length === 0) {
-                if (emptyLaps) emptyLaps.style.display = 'block';
-                return;
-            }
-            
-            if (emptyLaps) emptyLaps.style.display = 'none';
-            
-            // Отображаем круги в обратном порядке (последний сверху)
-            [...laps].reverse().forEach((lap, index) => {
-                const lapItem = document.createElement('div');
-                lapItem.className = 'lap-item';
-                lapItem.innerHTML = `
-                    <div class="lap-number">#${laps.length - index}</div>
-                    <div class="lap-time">${formatLapTime(lap.time)}</div>
-                `;
-                container.prepend(lapItem);
-            });
-        }
+    // Рендеринг кругов
+function renderLaps() {
+    const container = document.getElementById('lapsContainer');
+    
+    // Очищаем существующие круги
+    const existingLaps = container.querySelectorAll('.lap-item');
+    existingLaps.forEach(lap => lap.remove());
+    
+    if (laps.length === 0) {
+        if (emptyLaps) emptyLaps.style.display = 'block';
+        return;
+    }
+    
+    if (emptyLaps) emptyLaps.style.display = 'none';
+    
+    // Отображаем круги в обратном порядке (последний сверху)
+    // Берем все круги и выводим их в обратном порядке
+    for (let i = laps.length - 1; i >= 0; i--) {
+        const lap = laps[i];
+        const lapItem = document.createElement('div');
+        lapItem.className = 'lap-item';
+        lapItem.innerHTML = `
+            <div class="lap-number">#${i + 1}</div>
+            <div class="lap-time">${formatLapTime(lap.time)}</div>
+        `;
+        container.appendChild(lapItem);
+    }
+}
         
         // Обновление статистики
         function updateStats() {
@@ -3754,4 +3756,5 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
