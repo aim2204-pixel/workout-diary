@@ -1278,7 +1278,190 @@
         // Глобальные переменные
         let exerciseRowCounter = 0;
         let weightChart = null;
-      
+        
+        // ==================== ТАЙМЕР ====================
+       let timerInterval = null;
+let startTime = 0;
+let totalElapsedTime = 0; // Общее время всех кругов
+let currentLapElapsedTime = 0; // Время текущего круга
+let currentLapStartTime = 0; // Время начала текущего круга
+let isRunning = false;
+let laps = [];
+        
+        // Элементы таймера
+        const timerDisplay = document.getElementById('timerDisplay');
+        const startPauseBtn = document.getElementById('startPauseBtn');
+        const lapBtn = document.getElementById('lapBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const lapsContainer = document.getElementById('lapsContainer');
+        const emptyLaps = document.getElementById('emptyLaps');
+        const totalLapsEl = document.getElementById('totalLaps');
+        const fastestLapEl = document.getElementById('fastestLap');
+        const slowestLapEl = document.getElementById('slowestLap');
+
+        // Форматирование времени
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+                       
+            return {
+                minutes: minutes.toString().padStart(2, '0'),
+                seconds: seconds.toString().padStart(2, '0')
+               
+            };
+        }
+
+        // Запуск/пауза таймера
+function toggleTimer() {
+    if (isRunning) {
+        // Пауза
+        clearInterval(timerInterval);
+        const now = Date.now();
+        currentLapElapsedTime += now - currentLapStartTime;
+        totalElapsedTime += now - currentLapStartTime;
+        startPauseBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
+        lapBtn.disabled = true;
+        resetBtn.disabled = false;
+    } else {
+        // Старт
+        startTime = Date.now();
+        currentLapStartTime = startTime;
+        timerInterval = setInterval(updateTimerDisplay, 10);
+        startPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза';
+        lapBtn.disabled = false;
+        resetBtn.disabled = true;
+    }
+    
+    isRunning = !isRunning;
+    saveTimerState();
+}  
+      // Обновление таймера
+        function updateTimer() {
+            const now = Date.now();
+            elapsedTime = now - startTime;
+            updateTimerDisplay();
+        }
+
+        // Отображение кругов
+        function renderLaps() {
+            if (laps.length === 0) {
+                emptyLaps.style.display = 'block';
+                return;
+            }
+            
+            emptyLaps.style.display = 'none';
+            
+            // Сортируем круги: последний сверху
+            const sortedLaps = [...laps].reverse();
+            
+            let lapsHTML = '';
+            sortedLaps.forEach((lap, index) => {
+                const time = formatTime(lap.time);
+                
+                lapsHTML += `
+                    <div class="lap-item">
+                        <div class="lap-number">#${lap.number}</div>
+                        <div>
+                            <span class="lap-time">${time.minutes}:${time.seconds}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            lapsContainer.innerHTML = lapsHTML;
+        }
+
+        // Обновление статистики
+        function updateStats() {
+            totalLapsEl.textContent = laps.length;
+            
+            if (laps.length > 0) {
+                const lapTimes = laps.map(lap => lap.time);
+                
+                if (lapTimes.length > 0) {
+                    const fastest = Math.min(...lapTimes);
+                    const slowest = Math.max(...lapTimes);
+                    
+                    const fastestTime = formatTime(fastest);
+                    const slowestTime = formatTime(slowest);
+                    
+                    fastestLapEl.textContent = `${fastestTime.minutes}:${fastestTime.seconds}`;
+                    slowestLapEl.textContent = `${slowestTime.minutes}:${slowestTime.seconds}`;
+                }
+            } else {
+                fastestLapEl.textContent = '--:--';
+                slowestLapEl.textContent = '--:--';
+            }
+        }
+
+        // Сброс таймера
+function resetTimer() {
+    clearInterval(timerInterval);
+    isRunning = false;
+    totalElapsedTime = 0;
+    currentLapElapsedTime = 0;
+    currentLapStartTime = 0;
+    laps = [];
+    
+    startPauseBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
+    lapBtn.disabled = true;
+    resetBtn.disabled = true;
+    
+    updateTimerDisplay();
+    renderLaps();
+    updateStats();
+    saveTimerState();
+}
+        // Сохранение состояния таймера
+        function saveTimerState() {
+            const state = {
+                isRunning: isRunning,
+                startTime: startTime,
+                elapsedTime: elapsedTime,
+                lapStartTime: lapStartTime,
+                laps: laps,
+                savedAt: Date.now()
+            };
+            localStorage.setItem(STORAGE_KEYS.TIMER_STATE, JSON.stringify(state));
+        }
+
+        // Загрузка состояния таймера
+        function loadTimerState() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEYS.TIMER_STATE);
+                if (saved) {
+                    const state = JSON.parse(saved);
+                    
+                    // Если таймер был запущен, корректируем время
+                    if (state.isRunning) {
+                        const timeSinceSave = Date.now() - state.savedAt;
+                        elapsedTime = state.elapsedTime + timeSinceSave;
+                        startTime = Date.now() - elapsedTime;
+                        lapStartTime = state.lapStartTime ? state.lapStartTime + timeSinceSave : Date.now();
+                        isRunning = true;
+                        
+                        timerInterval = setInterval(updateTimer, 10);
+                        startPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза';
+                        startPauseBtn.classList.remove('timer-btn-start');
+                        startPauseBtn.classList.add('timer-btn-reset');
+                        lapBtn.disabled = false;
+                        resetBtn.disabled = false;
+                    } else {
+                        elapsedTime = state.elapsedTime;
+                        lapStartTime = state.lapStartTime || 0;
+                        laps = state.laps || [];
+                    }
+                    
+                    updateTimerDisplay();
+                    renderLaps();
+                    updateStats();
+                }
+            } catch (e) {
+                console.error('Ошибка загрузки состояния таймера:', e);
+            }
+        }
+
         // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
 
         // Уведомления
@@ -2664,34 +2847,32 @@ function updateTimerDisplay() {
             return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
         
-    // Рендеринг кругов
-function renderLaps() {
-    const container = document.getElementById('lapsContainer');
-    
-    // Очищаем существующие круги
-    const existingLaps = container.querySelectorAll('.lap-item');
-    existingLaps.forEach(lap => lap.remove());
-    
-    if (laps.length === 0) {
-        if (emptyLaps) emptyLaps.style.display = 'block';
-        return;
-    }
-    
-    if (emptyLaps) emptyLaps.style.display = 'none';
-    
-    // Отображаем круги в обратном порядке (последний сверху)
-    // Берем все круги и выводим их в обратном порядке
-    for (let i = laps.length - 1; i >= 0; i--) {
-        const lap = laps[i];
-        const lapItem = document.createElement('div');
-        lapItem.className = 'lap-item';
-        lapItem.innerHTML = `
-            <div class="lap-number">#${i + 1}</div>
-            <div class="lap-time">${formatLapTime(lap.time)}</div>
-        `;
-        container.appendChild(lapItem);
-    }
-}
+        // Рендеринг кругов
+        function renderLaps() {
+            const container = document.getElementById('lapsContainer');
+            
+            // Очищаем существующие круги
+            const existingLaps = container.querySelectorAll('.lap-item');
+            existingLaps.forEach(lap => lap.remove());
+            
+            if (laps.length === 0) {
+                if (emptyLaps) emptyLaps.style.display = 'block';
+                return;
+            }
+            
+            if (emptyLaps) emptyLaps.style.display = 'none';
+            
+            // Отображаем круги в обратном порядке (последний сверху)
+            [...laps].reverse().forEach((lap, index) => {
+                const lapItem = document.createElement('div');
+                lapItem.className = 'lap-item';
+                lapItem.innerHTML = `
+                    <div class="lap-number">#${laps.length - index}</div>
+                    <div class="lap-time">${formatLapTime(lap.time)}</div>
+                `;
+                container.prepend(lapItem);
+            });
+        }
         
         // Обновление статистики
         function updateStats() {
@@ -3756,5 +3937,3 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
-
-
