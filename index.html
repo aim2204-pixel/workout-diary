@@ -1368,7 +1368,42 @@
 
     <!-- СКРИПТ -->
     <script>
-        // Проверка поддержки PWA и офлайн-работы
+      // В самом начале основного скрипта добавьте:
+if ('serviceWorker' in navigator) {
+  // Регистрация Service Worker с обработкой обновлений
+  navigator.serviceWorker.register('service-worker.js')
+    .then(registration => {
+      console.log('Service Worker зарегистрирован');
+      
+      // Проверка обновлений
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // Новая версия доступна
+            if (confirm('Доступно обновление приложения. Обновить сейчас?')) {
+              newWorker.postMessage({ action: 'skipWaiting' });
+              window.location.reload();
+            }
+          }
+        });
+      });
+    })
+    .catch(error => {
+      console.error('Service Worker ошибка:', error);
+    });
+
+  // Сообщаем Service Worker о готовности
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) {
+      refreshing = true;
+      window.location.reload();
+    }
+  });
+}
+		// Проверка поддержки PWA и офлайн-работы
 if ('serviceWorker' in navigator && 'caches' in window) {
   // Регистрация Service Worker
   navigator.serviceWorker.register('service-worker.js')
@@ -4068,6 +4103,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
