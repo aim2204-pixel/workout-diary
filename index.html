@@ -1033,36 +1033,67 @@
     filter: none;
     opacity: 1;
 }
-		/* ========== СТИЛИ ДЛЯ ВЕРСИИ ПРИЛОЖЕНИЯ ========== */
+/* ========== ВЕРСИЯ ПРИЛОЖЕНИЯ (справа от кнопки) ========== */
 .app-version {
     position: absolute;
-    right: 55px; /* Справа от кнопки "+" */
+    right: 10px; /* Отступ от правого края шапки */
     top: 50%;
-    transform: translateY(-50%) rotate(-90deg); /* Текст боком */
+    transform: translateY(-50%);
     font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.4); /* Полупрозрачный белый */
+    color: rgba(255, 255, 255, 0.5); /* Полупрозрачный белый */
     font-weight: 600;
     letter-spacing: 1px;
-    user-select: none; /* Нельзя выделить текст */
-    pointer-events: none; /* Не мешает кликам */
-    text-transform: uppercase;
-    font-family: monospace; /* Моноширинный шрифт для версий */
+    user-select: none;
+    pointer-events: none;
+    font-family: 'Segoe UI', system-ui, sans-serif;
     white-space: nowrap;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* На мобильных делаем меньше и смещаем */
+/* Сдвигаем кнопку "+" левее, чтобы освободить место */
+.app-header {
+    position: relative;
+    padding-right: 70px; /* Место для версии справа */
+}
+
+.header-add-btn {
+    position: absolute;
+    right: 60px; /* Сдвигаем от правого края */
+    /* остальные стили остаются */
+}
+
+/* На мобильных корректируем */
 @media (max-width: 768px) {
     .app-version {
-        right: 50px;
-        font-size: 0.65rem;
-        letter-spacing: 0.5px;
+        font-size: 0.7rem;
+        right: 8px;
+        padding: 1px 4px;
+    }
+    
+    .app-header {
+        padding-right: 65px;
+    }
+    
+    .header-add-btn {
+        right: 55px;
     }
 }
 
-/* На очень маленьких экранах скрываем */
+/* На очень маленьких скрываем версию */
 @media (max-width: 400px) {
     .app-version {
         display: none;
+    }
+    
+    .app-header {
+        padding-right: 60px; /* Возвращаем нормальный отступ */
+    }
+    
+    .header-add-btn {
+        right: 15px; /* Возвращаем на место */
     }
 }
 	</style>
@@ -4136,6 +4167,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
