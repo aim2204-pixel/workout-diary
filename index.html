@@ -1033,6 +1033,38 @@
     filter: none;
     opacity: 1;
 }
+		/* ========== СТИЛИ ДЛЯ ВЕРСИИ ПРИЛОЖЕНИЯ ========== */
+.app-version {
+    position: absolute;
+    right: 55px; /* Справа от кнопки "+" */
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg); /* Текст боком */
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4); /* Полупрозрачный белый */
+    font-weight: 600;
+    letter-spacing: 1px;
+    user-select: none; /* Нельзя выделить текст */
+    pointer-events: none; /* Не мешает кликам */
+    text-transform: uppercase;
+    font-family: monospace; /* Моноширинный шрифт для версий */
+    white-space: nowrap;
+}
+
+/* На мобильных делаем меньше и смещаем */
+@media (max-width: 768px) {
+    .app-version {
+        right: 50px;
+        font-size: 0.65rem;
+        letter-spacing: 0.5px;
+    }
+}
+
+/* На очень маленьких экранах скрываем */
+@media (max-width: 400px) {
+    .app-version {
+        display: none;
+    }
+}
 	</style>
 </head>
 <body>
@@ -1043,6 +1075,7 @@
             <div class="subtitle" id="pageSubtitle">Сила в дисциплине. Прогресс в деталях.</div>
         </div>
         <button class="header-add-btn" id="globalAddBtn" title="Добавить новую тренировку">+</button>
+		<div class="app-version" id="appVersion">v2.2</div>
     </header>
 <div class="offline-warning" id="offlineWarning">
     <i class="fas fa-wifi-slash"></i> Вы в офлайн-режиме. Данные сохраняются локально.
@@ -4103,6 +4136,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
