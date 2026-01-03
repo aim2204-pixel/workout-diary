@@ -930,6 +930,57 @@
         background-position: right 10px center;
     }
 }
+	/* Стили для офлайн-режима */
+.offline-warning {
+    display: none;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color: white;
+    padding: 10px 15px;
+    text-align: center;
+    font-weight: bold;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.offline .offline-warning {
+    display: block;
+}
+
+/* Отключаем кнопки, требующие интернет */
+.offline #exportAllBtn,
+.offline #importBtn,
+.offline #exportReportBtn {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Индикатор статуса сети в шапке */
+.app-header::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    right: 60px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #48bb78; /* Зеленый - онлайн */
+    transition: all 0.3s;
+}
+
+.offline .app-header::after {
+    background-color: #ff6b6b; /* Красный - офлайн */
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
 	</style>
 </head>
 <body>
@@ -941,7 +992,9 @@
         </div>
         <button class="header-add-btn" id="globalAddBtn" title="Добавить новую тренировку">+</button>
     </header>
-
+<div class="offline-warning" id="offlineWarning">
+    <i class="fas fa-wifi-slash"></i> Вы в офлайн-режиме. Данные сохраняются локально.
+</div>	
     <!-- ОСНОВНОЙ КОНТЕНТ -->
     <main class="content-area">
         <!-- ВКЛАДКА ДНЕВНИКА -->
@@ -1263,7 +1316,39 @@
 
     <!-- СКРИПТ -->
     <script>
-        // Константы
+        // Проверка поддержки PWA и офлайн-работы
+if ('serviceWorker' in navigator && 'caches' in window) {
+  // Регистрация Service Worker
+  navigator.serviceWorker.register('service-worker.js')
+    .then(registration => {
+      console.log('Service Worker зарегистрирован:', registration.scope);
+      
+      // Проверка статуса офлайн
+      window.addEventListener('online', () => {
+        console.log('Приложение онлайн');
+        document.documentElement.classList.remove('offline');
+      });
+      
+      window.addEventListener('offline', () => {
+        console.log('Приложение офлайн');
+        document.documentElement.classList.add('offline');
+        showNotification('Приложение работает в офлайн-режиме', true);
+      });
+      
+      // Проверяем сразу
+      if (!navigator.onLine) {
+        document.documentElement.classList.add('offline');
+        showNotification('Приложение работает в офлайн-режиме', true);
+      }
+      
+    })
+    .catch(error => {
+      console.log('Ошибка регистрации Service Worker:', error);
+    });
+} else {
+  console.warn('PWA не поддерживается браузером');
+}
+		// Константы
         const STORAGE_KEYS = {
             PROFILE: 'workoutDiary_userProfile',
             WORKOUTS: 'workoutDiary_workoutLog',
@@ -3817,4 +3902,5 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
