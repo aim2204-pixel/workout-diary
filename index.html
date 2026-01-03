@@ -1038,7 +1038,7 @@
     position: absolute;
     right: 10px; /* Отступ от правого края шапки */
     top: 50%;
-    transform: translateY(-50%);
+    transform: translateY(-50%) rotate(-90deg);;
     font-size: 0.75rem;
     color: rgba(255, 255, 255, 0.5); /* Полупрозрачный белый */
     font-weight: 600;
@@ -1056,12 +1056,12 @@
 /* Сдвигаем кнопку "+" левее, чтобы освободить место */
 .app-header {
     position: relative;
-    padding-right: 70px; /* Место для версии справа */
+    padding-right: 45px; /* Место для версии справа */
 }
 
 .header-add-btn {
     position: absolute;
-    right: 60px; /* Сдвигаем от правого края */
+    right: 40px; /* Сдвигаем от правого края */
     /* остальные стили остаются */
 }
 
@@ -4167,6 +4167,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
