@@ -1036,10 +1036,10 @@
 /* ========== ВЕРСИЯ ПРИЛОЖЕНИЯ (справа от кнопки) ========== */
 .app-version {
     position: absolute;
-    right: 10px; /* Отступ от правого края шапки */
+    right: 5px; /* Отступ от правого края шапки */
     top: 50%;
     transform: translateY(-50%) rotate(-90deg);;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: rgba(255, 255, 255, 0.5); /* Полупрозрачный белый */
     font-weight: 600;
     letter-spacing: 1px;
@@ -1061,7 +1061,7 @@
 
 .header-add-btn {
     position: absolute;
-    right: 40px; /* Сдвигаем от правого края */
+    right: 50px; /* Сдвигаем от правого края */
     /* остальные стили остаются */
 }
 
@@ -1074,11 +1074,11 @@
     }
     
     .app-header {
-        padding-right: 65px;
+        padding-right: 60px;
     }
     
     .header-add-btn {
-        right: 55px;
+        right: 60px;
     }
 }
 
@@ -1106,7 +1106,7 @@
             <div class="subtitle" id="pageSubtitle">Сила в дисциплине. Прогресс в деталях.</div>
         </div>
         <button class="header-add-btn" id="globalAddBtn" title="Добавить новую тренировку">+</button>
-		<div class="app-version" id="appVersion">v2.2</div>
+		<div class="app-version" id="appVersion">v2.2.2</div>
     </header>
 <div class="offline-warning" id="offlineWarning">
     <i class="fas fa-wifi-slash"></i> Вы в офлайн-режиме. Данные сохраняются локально.
@@ -4167,6 +4167,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
