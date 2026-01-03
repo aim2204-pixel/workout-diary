@@ -1,99 +1,97 @@
-// service-worker.js - исправленная версия для офлайн-работы
-const CACHE_NAME = 'workout-diary-v2.2'; // Увеличили версию
+// service-worker.js - исправленная версия
+const CACHE_NAME = 'workout-diary-v2.3'; // Увеличиваем версию
 
 // Список файлов для предварительного кэширования
 const urlsToCache = [
-  './',                    // Главная страница
-  './index.html',          // HTML-файл
-  './manifest.json',       // Манифест
-  'https://cdn.jsdelivr.net/npm/chart.js',               // Внешняя библиотека
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css' // Шрифты
+  './',
+  './index.html',
+  './manifest.json'
 ];
 
-// Установка Service Worker
+// Установка
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Кэшируем файлы для офлайн-работы');
-        return cache.addAll(urlsToCache);
-      })
-      .then(() => {
-        console.log('Все файлы закэшированы');
-        return self.skipWaiting(); // Активируем сразу
-      })
-  );
+  self.skipWaiting(); // Активируем немедленно
+  console.log('Service Worker: Установлен');
 });
 
-// Активация Service Worker
+// Активация
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          // Удаляем старые версии кэша
-          if (cacheName !== CACHE_NAME) {
-            console.log('Удаляем старый кэш:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-    .then(() => {
-      console.log('Service Worker активирован');
-      return self.clients.claim(); // Немедленно контролировать клиенты
-    })
+    Promise.all([
+      // Очищаем старые кэши
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            if (cacheName !== CACHE_NAME) {
+              console.log('Удаляем старый кэш:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      }),
+      // Немедленно контролируем клиенты
+      self.clients.claim()
+    ])
   );
+  console.log('Service Worker: Активирован');
 });
 
-// Обработка запросов (стратегия "Cache First")
+// Стратегия: Network First, затем Cache
 self.addEventListener('fetch', event => {
-  // Пропускаем запросы POST и к API
-  if (event.request.method !== 'GET') {
+  // Пропускаем не-GET запросы
+  if (event.request.method !== 'GET') return;
+
+  // Особенно важное правило для index.html
+  if (event.request.url.includes('index.html') || 
+      event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Клонируем для кэша
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME)
+            .then(cache => cache.put(event.request, responseClone));
+          return response;
+        })
+        .catch(() => {
+          // При ошибке сети - из кэша
+          return caches.match('./index.html');
+        })
+    );
     return;
   }
 
+  // Для остальных файлов: сначала кэш, потом сеть
   event.respondWith(
     caches.match(event.request)
       .then(cachedResponse => {
-        // Если есть в кэше - возвращаем из кэша
         if (cachedResponse) {
           return cachedResponse;
         }
-
-        // Если нет в кэше - загружаем из сети
+        
         return fetch(event.request)
-          .then(networkResponse => {
-            // Не кэшируем запросы к другим доменам (кроме необходимых)
-            if (!event.request.url.startsWith(self.location.origin) &&
-                !event.request.url.includes('cdn.jsdelivr.net') &&
-                !event.request.url.includes('cdnjs.cloudflare.com')) {
-              return networkResponse;
+          .then(response => {
+            // Кэшируем только успешные ответы
+            if (response.status === 200) {
+              const responseToCache = response.clone();
+              caches.open(CACHE_NAME)
+                .then(cache => cache.put(event.request, responseToCache));
             }
-
-            // Клонируем ответ для кэширования
-            const responseToCache = networkResponse.clone();
-            
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return networkResponse;
+            return response;
           })
-          .catch(error => {
-            console.log('Ошибка сети, возвращаем fallback:', error);
-            
-            // Для HTML-страниц возвращаем главную страницу из кэша
-            if (event.request.headers.get('accept').includes('text/html')) {
-              return caches.match('./index.html');
+          .catch(() => {
+            // Для CSS/JS возвращаем заглушку
+            if (event.request.url.includes('.css')) {
+              return new Response('/* Офлайн */', {
+                headers: { 'Content-Type': 'text/css' }
+              });
             }
-            
-            // Для других типов файлов можно вернуть заглушку
-            return new Response('Нет соединения. Приложение работает в офлайн-режиме.', {
-              status: 503,
-              headers: { 'Content-Type': 'text/plain' }
-            });
+            if (event.request.url.includes('.js')) {
+              return new Response('// Офлайн', {
+                headers: { 'Content-Type': 'application/javascript' }
+              });
+            }
+            return new Response('Офлайн');
           });
       })
   );
