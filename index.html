@@ -1279,212 +1279,261 @@
         let exerciseRowCounter = 0;
         let weightChart = null;
         
-        // ==================== ТАЙМЕР ====================
-        let timerInterval = null;
-        let isRunning = false;
-        let laps = [];
-        let currentLapStartTime = 0;
-        let currentLapElapsedTime = 0;
-        
-        // Элементы таймера
-        const timerDisplay = document.getElementById('timerDisplay');
-        const startPauseBtn = document.getElementById('startPauseBtn');
-        const lapBtn = document.getElementById('lapBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const lapsContainer = document.getElementById('lapsContainer');
-        const emptyLaps = document.getElementById('emptyLaps');
-        const totalLapsEl = document.getElementById('totalLaps');
-        const fastestLapEl = document.getElementById('fastestLap');
-        const slowestLapEl = document.getElementById('slowestLap');
+// ==================== ТАЙМЕР ====================
+let timerInterval = null;
+let isRunning = false;
+let laps = [];
+let currentLapStartTime = 0;
+let currentLapElapsedTime = 0;
+let wakeLock = null; // ← ДОБАВЬТЕ ЭТУ СТРОКУ
 
-        // Обновление отображения таймера
-        function updateTimerDisplay() {
-            const currentLapTime = currentLapElapsedTime + (isRunning ? Date.now() - currentLapStartTime : 0);
-            const minutes = Math.floor((currentLapTime / 60000) % 60);
-            const seconds = Math.floor((currentLapTime / 1000) % 60);
-            
-            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
+// Элементы таймера
+const timerDisplay = document.getElementById('timerDisplay');
+const startPauseBtn = document.getElementById('startPauseBtn');
+const lapBtn = document.getElementById('lapBtn');
+const resetBtn = document.getElementById('resetBtn');
+const lapsContainer = document.getElementById('lapsContainer');
+const emptyLaps = document.getElementById('emptyLaps');
+const totalLapsEl = document.getElementById('totalLaps');
+const fastestLapEl = document.getElementById('fastestLap');
+const slowestLapEl = document.getElementById('slowestLap');
 
-        // Форматирование времени круга
-        function formatLapTime(ms) {
-            const minutes = Math.floor((ms / 60000) % 60);
-            const seconds = Math.floor((ms / 1000) % 60);
+// Функция для запроса Wake Lock (предотвращение сна экрана)
+async function requestWakeLock() {
+    try {
+        // Проверяем поддержку Wake Lock API
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock активирован - экран не будет гаснуть');
             
-            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-        
-        // Рендеринг кругов
-        function renderLaps() {
-            const container = document.getElementById('lapsContainer');
-            
-            // Очищаем существующие круги
-            const existingLaps = container.querySelectorAll('.lap-item');
-            existingLaps.forEach(lap => lap.remove());
-            
-            if (laps.length === 0) {
-                if (emptyLaps) emptyLaps.style.display = 'block';
-                return;
-            }
-            
-            if (emptyLaps) emptyLaps.style.display = 'none';
-            
-            // Отображаем круги в обратном порядке (последний сверху)
-            for (let i = laps.length - 1; i >= 0; i--) {
-                const lap = laps[i];
-                const lapItem = document.createElement('div');
-                lapItem.className = 'lap-item';
-                lapItem.innerHTML = `
-                    <div class="lap-number">#${i + 1}</div>
-                    <div class="lap-time">${formatLapTime(lap.time)}</div>
-                `;
-                container.appendChild(lapItem);
-            }
-        }
-        
-        // Обновление статистики
-        function updateStats() {
-            totalLapsEl.textContent = laps.length;
-            
-            if (laps.length > 0) {
-                const lapTimes = laps.map(lap => lap.time);
-                const fastest = Math.min(...lapTimes);
-                const slowest = Math.max(...lapTimes);
-                
-                fastestLapEl.textContent = formatLapTime(fastest);
-                slowestLapEl.textContent = formatLapTime(slowest);
-            } else {
-                fastestLapEl.textContent = '--:--';
-                slowestLapEl.textContent = '--:--';
-            }
-        }
-        
-        // Переключение таймера (старт/пауза)
-        function toggleTimer() {
-            if (isRunning) {
-                // Пауза
-                clearInterval(timerInterval);
-                const now = Date.now();
-                currentLapElapsedTime += now - currentLapStartTime;
-                startPauseBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
-                lapBtn.disabled = true;
-                resetBtn.disabled = false;
-            } else {
-                // Старт
-                currentLapStartTime = Date.now();
-                timerInterval = setInterval(updateTimerDisplay, 10);
-                startPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза';
-                lapBtn.disabled = false;
-                resetBtn.disabled = true;
-            }
-            
-            isRunning = !isRunning;
-            saveTimerState();
-        }
-
-        // Добавление круга
-        function addLap() {
-            if (!isRunning) return;
-            
-            const now = Date.now();
-            const lapTime = currentLapElapsedTime + (now - currentLapStartTime);
-            
-            laps.push({
-                time: lapTime,
-                timestamp: now
+            // Обработка освобождения Wake Lock
+            wakeLock.addEventListener('release', () => {
+                console.log('Wake Lock освобождён');
             });
-            
-            // Обнуляем текущий круг
-            currentLapElapsedTime = 0;
-            currentLapStartTime = now;
-            
-            renderLaps();
-            updateStats();
-            updateTimerDisplay();
-            saveTimerState();
         }
+    } catch (err) {
+        console.error('Ошибка при запросе Wake Lock:', err);
+        // Если Wake Lock не поддерживается, ничего не делаем
+    }
+}
 
-        // Сброс таймера
-        function resetTimer() {
-            clearInterval(timerInterval);
-            isRunning = false;
-            currentLapElapsedTime = 0;
-            currentLapStartTime = 0;
-            laps = [];
-            
-            startPauseBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
-            lapBtn.disabled = true;
-            resetBtn.disabled = true;
-            
-            updateTimerDisplay();
-            renderLaps();
-            updateStats();
-            saveTimerState();
-        }
+// Функция для освобождения Wake Lock
+function releaseWakeLock() {
+    if (wakeLock !== null) {
+        wakeLock.release();
+        wakeLock = null;
+        console.log('Wake Lock освобождён вручную');
+    }
+}
+
+// Восстановление Wake Lock при повторной активации страницы
+document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState === 'visible' && isRunning && wakeLock === null) {
+        // Если страница снова стала видимой, таймер работает, но Wake Lock был освобождён
+        await requestWakeLock();
+    }
+});
+
+// Обновление отображения таймера
+function updateTimerDisplay() {
+    const currentLapTime = currentLapElapsedTime + (isRunning ? Date.now() - currentLapStartTime : 0);
+    const minutes = Math.floor((currentLapTime / 60000) % 60);
+    const seconds = Math.floor((currentLapTime / 1000) % 60);
+    
+    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// Форматирование времени круга
+function formatLapTime(ms) {
+    const minutes = Math.floor((ms / 60000) % 60);
+    const seconds = Math.floor((ms / 1000) % 60);
+    
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// Рендеринг кругов
+function renderLaps() {
+    const container = document.getElementById('lapsContainer');
+    
+    // Очищаем существующие круги
+    const existingLaps = container.querySelectorAll('.lap-item');
+    existingLaps.forEach(lap => lap.remove());
+    
+    if (laps.length === 0) {
+        if (emptyLaps) emptyLaps.style.display = 'block';
+        return;
+    }
+    
+    if (emptyLaps) emptyLaps.style.display = 'none';
+    
+    // Отображаем круги в обратном порядке (последний сверху)
+    for (let i = laps.length - 1; i >= 0; i--) {
+        const lap = laps[i];
+        const lapItem = document.createElement('div');
+        lapItem.className = 'lap-item';
+        lapItem.innerHTML = `
+            <div class="lap-number">#${i + 1}</div>
+            <div class="lap-time">${formatLapTime(lap.time)}</div>
+        `;
+        container.appendChild(lapItem);
+    }
+}
+
+// Обновление статистики
+function updateStats() {
+    totalLapsEl.textContent = laps.length;
+    
+    if (laps.length > 0) {
+        const lapTimes = laps.map(lap => lap.time);
+        const fastest = Math.min(...lapTimes);
+        const slowest = Math.max(...lapTimes);
         
-        // Сохранение состояния таймера
-        function saveTimerState() {
-            const state = {
-                isRunning: isRunning,
-                currentLapStartTime: currentLapStartTime,
-                currentLapElapsedTime: currentLapElapsedTime,
-                laps: laps,
-                savedAt: Date.now()
-            };
-            
-            try {
-                localStorage.setItem(STORAGE_KEYS.TIMER_STATE, JSON.stringify(state));
-            } catch (error) {
-                console.error('Ошибка сохранения состояния таймера:', error);
-            }
-        }
+        fastestLapEl.textContent = formatLapTime(fastest);
+        slowestLapEl.textContent = formatLapTime(slowest);
+    } else {
+        fastestLapEl.textContent = '--:--';
+        slowestLapEl.textContent = '--:--';
+    }
+}
+
+// Переключение таймера (старт/пауза)
+async function toggleTimer() {
+    if (isRunning) {
+        // Пауза
+        clearInterval(timerInterval);
+        const now = Date.now();
+        currentLapElapsedTime += now - currentLapStartTime;
+        startPauseBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
+        lapBtn.disabled = true;
+        resetBtn.disabled = false;
         
-        // Загрузка состояния таймера
-        function loadTimerState() {
-            try {
-                const saved = localStorage.getItem(STORAGE_KEYS.TIMER_STATE);
-                if (saved) {
-                    const state = JSON.parse(saved);
+        // Освобождаем Wake Lock при паузе
+        releaseWakeLock();
+    } else {
+        // Старт
+        currentLapStartTime = Date.now();
+        timerInterval = setInterval(updateTimerDisplay, 10);
+        startPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза';
+        lapBtn.disabled = false;
+        resetBtn.disabled = true;
+        
+        // Запрашиваем Wake Lock при старте
+        await requestWakeLock();
+    }
+    
+    isRunning = !isRunning;
+    saveTimerState();
+}
+
+// Добавление круга
+function addLap() {
+    if (!isRunning) return;
+    
+    const now = Date.now();
+    const lapTime = currentLapElapsedTime + (now - currentLapStartTime);
+    
+    laps.push({
+        time: lapTime,
+        timestamp: now
+    });
+    
+    // Обнуляем текущий круг
+    currentLapElapsedTime = 0;
+    currentLapStartTime = now;
+    
+    renderLaps();
+    updateStats();
+    updateTimerDisplay();
+    saveTimerState();
+}
+
+// Сброс таймера
+function resetTimer() {
+    clearInterval(timerInterval);
+    isRunning = false;
+    currentLapElapsedTime = 0;
+    currentLapStartTime = 0;
+    laps = [];
+    
+    startPauseBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
+    lapBtn.disabled = true;
+    resetBtn.disabled = true;
+    
+    // Освобождаем Wake Lock при сбросе
+    releaseWakeLock();
+    
+    updateTimerDisplay();
+    renderLaps();
+    updateStats();
+    saveTimerState();
+}
+
+// Сохранение состояния таймера
+function saveTimerState() {
+    const state = {
+        isRunning: isRunning,
+        currentLapStartTime: currentLapStartTime,
+        currentLapElapsedTime: currentLapElapsedTime,
+        laps: laps,
+        savedAt: Date.now()
+    };
+    
+    try {
+        localStorage.setItem(STORAGE_KEYS.TIMER_STATE, JSON.stringify(state));
+    } catch (error) {
+        console.error('Ошибка сохранения состояния таймера:', error);
+    }
+}
+
+// Загрузка состояния таймера
+function loadTimerState() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEYS.TIMER_STATE);
+        if (saved) {
+            const state = JSON.parse(saved);
+            
+            // Проверяем, не устарели ли данные (больше 24 часов)
+            const now = Date.now();
+            const savedAt = state.savedAt || 0;
+            const hoursSinceSave = (now - savedAt) / (1000 * 60 * 60);
+            
+            if (hoursSinceSave < 24) {
+                isRunning = state.isRunning || false;
+                currentLapStartTime = state.currentLapStartTime || 0;
+                currentLapElapsedTime = state.currentLapElapsedTime || 0;
+                laps = state.laps || [];
+                
+                if (isRunning) {
+                    // Если таймер был запущен, корректируем время
+                    const timeSincePause = now - currentLapStartTime;
+                    currentLapElapsedTime += timeSincePause;
+                    currentLapStartTime = now;
                     
-                    // Проверяем, не устарели ли данные (больше 24 часов)
-                    const now = Date.now();
-                    const savedAt = state.savedAt || 0;
-                    const hoursSinceSave = (now - savedAt) / (1000 * 60 * 60);
+                    timerInterval = setInterval(updateTimerDisplay, 10);
+                    startPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза';
+                    lapBtn.disabled = false;
+                    resetBtn.disabled = true;
                     
-                    if (hoursSinceSave < 24) {
-                        isRunning = state.isRunning || false;
-                        currentLapStartTime = state.currentLapStartTime || 0;
-                        currentLapElapsedTime = state.currentLapElapsedTime || 0;
-                        laps = state.laps || [];
-                        
-                        if (isRunning) {
-                            // Если таймер был запущен, корректируем время
-                            const timeSincePause = now - currentLapStartTime;
-                            currentLapElapsedTime += timeSincePause;
-                            currentLapStartTime = now;
-                            
-                            timerInterval = setInterval(updateTimerDisplay, 10);
-                            startPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза';
-                            lapBtn.disabled = false;
-                            resetBtn.disabled = true;
-                        } else {
-                            startPauseBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
-                            lapBtn.disabled = true;
-                            resetBtn.disabled = laps.length > 0;
-                        }
-                        
-                        updateTimerDisplay();
-                        renderLaps();
-                        updateStats();
-                    } else {
-                        // Данные устарели, сбрасываем
-                        resetTimer();
-                    }
+                    // Восстанавливаем Wake Lock
+                    requestWakeLock();
+                } else {
+                    startPauseBtn.innerHTML = '<i class="fas fa-play"></i> Старт';
+                    lapBtn.disabled = true;
+                    resetBtn.disabled = laps.length > 0;
                 }
-            } catch (e) {
-                console.error('Ошибка загрузки состояния таймера:', e);
+                
+                updateTimerDisplay();
+                renderLaps();
+                updateStats();
+            } else {
+                // Данные устарели, сбрасываем
+                resetTimer();
             }
         }
+    } catch (e) {
+        console.error('Ошибка загрузки состояния таймера:', e);
+    }
+}
 
         // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
 
@@ -3768,3 +3817,4 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
