@@ -1415,7 +1415,39 @@ if ('serviceWorker' in navigator && 'caches' in window) {
         // Глобальные переменные
         let exerciseRowCounter = 0;
         let weightChart = null;
-        
+      
+		// === НОВЫЙ КОД: ПРОВЕРКА ОНЛАЙН-СТАТУСА ПРИ ЗАГРУЗКЕ ===
+function checkOnlineStatusAndUpdateButtons() {
+    const isOffline = !navigator.onLine;
+    
+    if (isOffline) {
+        // Обновляем текст кнопок, если они уже есть на странице
+        setTimeout(() => {
+            const exportBtn = document.getElementById('exportAllBtn');
+            const importBtn = document.getElementById('importBtn');
+            const reportBtn = document.getElementById('exportReportBtn');
+            
+            if (exportBtn) {
+                exportBtn.innerHTML = '<i class="fas fa-download"></i> Экспорт (требует интернет)';
+                exportBtn.style.background = 'linear-gradient(135deg, #cccccc, #aaaaaa)';
+            }
+            if (importBtn) {
+                importBtn.innerHTML = '<i class="fas fa-upload"></i> Импорт (требует интернет)';
+                importBtn.style.background = 'linear-gradient(135deg, #cccccc, #aaaaaa)';
+            }
+            if (reportBtn) {
+                reportBtn.innerHTML = '<i class="fas fa-file-alt"></i> Отчёт (работает офлайн)';
+            }
+        }, 100);
+    }
+}
+
+// Вызываем при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    checkOnlineStatusAndUpdateButtons();
+});
+// === КОНЕЦ НОВОГО КОДА ===
+		
 // ==================== ТАЙМЕР ====================
 let timerInterval = null;
 let isRunning = false;
@@ -3041,9 +3073,10 @@ function updateExerciseIndexes() {
         // ==================== ЭКСПОРТ/ИМПОРТ JSON (СПРИНТ 7) ====================
 
         // Экспорт всех данных в JSON
-  function exportAllData() {
+// ==================== ЭКСПОРТ ВСЕХ ДАННЫХ (исправленная) ====================
+async function exportAllData() {
     try {
-        // Сбор всех данных
+        // 1. Сбор данных
         const allData = {
             version: DATA_FORMAT_VERSION,
             exportedAt: new Date().toISOString(),
@@ -3055,58 +3088,64 @@ function updateExerciseIndexes() {
             chartPeriod: currentChartPeriod
         };
         
-        // Преобразование в JSON с отступами
         const jsonData = JSON.stringify(allData, null, 2);
+        const fileName = `workout_diary_${new Date().toISOString().slice(0, 10)}.json`;
         
-        // Создание Blob и ссылки для скачивания
-        const blob = new Blob([jsonData], { type: 'application/json' });
-        
-        // Два способа скачивания:
-        if (navigator.onLine) {
-            // Способ 1: Через URL (требует интернет для Blob URL)
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `workout_diary_backup_${new Date().toISOString().slice(0, 10)}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(() => URL.revokeObjectURL(url), 100);
-        } else {
-            // Способ 2: Офлайн-скачивание через FileSaver API (если поддерживается)
-            if (window.showSaveFilePicker) {
-                // Современный API
-                window.showSaveFilePicker({
-                    suggestedName: `workout_diary_backup_${new Date().toISOString().slice(0, 10)}.json`,
+        // 2. Способ для десктопа (если доступен)
+        if (window.showSaveFilePicker) {
+            try {
+                const handle = await window.showSaveFilePicker({
+                    suggestedName: fileName,
                     types: [{
                         description: 'JSON файлы',
                         accept: { 'application/json': ['.json'] },
                     }],
-                }).then(handle => {
-                    const writable = handle.createWritable();
-                    writable.write(blob);
-                    writable.close();
                 });
-            } else {
-                // Фолбэк: Показать данные вручную
-                const dataUrl = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonData);
-                const a = document.createElement('a');
-                a.href = dataUrl;
-                a.download = `workout_diary_backup_${new Date().toISOString().slice(0, 10)}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+                
+                const writable = await handle.createWritable();
+                await writable.write(jsonData);
+                await writable.close();
+                
+                showNotification('✅ Данные сохранены в файл');
+                return;
+            } catch (err) {
+                // Пользователь отменил - ничего не делаем
+                if (err.name !== 'AbortError') {
+                    console.log('Десктопный способ не сработал:', err);
+                }
             }
         }
         
-        showNotification('Данные экспортированы' + (navigator.onLine ? '' : ' (офлайн)'));
+        // 3. Универсальный способ (работает на телефонах)
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [blob] })) {
+            // Способ для современных телефонов (Share API)
+            const file = new File([blob], fileName, { type: 'application/json' });
+            await navigator.share({
+                files: [file],
+                title: 'Экспорт тренировок',
+                text: 'Мой дневник тренировок'
+            });
+        } else {
+            // Стандартный способ
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+        }
+        
+        showNotification('✅ Данные экспортированы');
         
     } catch (error) {
         console.error('Ошибка экспорта:', error);
-        showNotification('Ошибка при экспорте данных', false);
+        showNotification('❌ Ошибка при экспорте', false);
     }
 }
-
         // Импорт данных из JSON
         function importDataFromFile(file) {
             return new Promise((resolve, reject) => {
@@ -4029,6 +4068,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
