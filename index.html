@@ -1088,9 +1088,9 @@
                         <i class="fas fa-download"></i> Экспорт всех данных
                     </button>
                     
-                    <button class="btn-import" id="importBtn">
-                        <i class="fas fa-upload"></i> Импорт данных
-                    </button>
+                  <button class="btn-import" id="importBtn">
+   					 <i class="fas fa-upload"></i> Импорт данных (работает офлайн)
+				</button>
                  
 		    <button class="btn-export" id="exportReportBtn" style="background: linear-gradient(135deg, #00b4d8, #0077b6);">
        			<i class="fas fa-file-alt"></i> Создать текстовый отчет
@@ -3009,52 +3009,71 @@ function updateExerciseIndexes() {
         // ==================== ЭКСПОРТ/ИМПОРТ JSON (СПРИНТ 7) ====================
 
         // Экспорт всех данных в JSON
-        function exportAllData() {
-            try {
-                // Сбор всех данных
-                const allData = {
-                    version: DATA_FORMAT_VERSION,
-                    exportedAt: new Date().toISOString(),
-                    dataFormat: 'workoutDiary_v1',
-                    workouts: loadWorkoutLog(),
-                    exercises: loadExercises(),
-                    profile: loadProfile(),
-                    timerState: JSON.parse(localStorage.getItem(STORAGE_KEYS.TIMER_STATE) || '{}'),
-                    chartPeriod: currentChartPeriod
-                };
-                
-                // Преобразование в JSON с отступами
-                const jsonData = JSON.stringify(allData, null, 2);
-                
-                // Создание Blob и ссылки для скачивания
-                const blob = new Blob([jsonData], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                
-                // Создание временной ссылки для скачивания
+  function exportAllData() {
+    try {
+        // Сбор всех данных
+        const allData = {
+            version: DATA_FORMAT_VERSION,
+            exportedAt: new Date().toISOString(),
+            dataFormat: 'workoutDiary_v1',
+            workouts: loadWorkoutLog(),
+            exercises: loadExercises(),
+            profile: loadProfile(),
+            timerState: JSON.parse(localStorage.getItem(STORAGE_KEYS.TIMER_STATE) || '{}'),
+            chartPeriod: currentChartPeriod
+        };
+        
+        // Преобразование в JSON с отступами
+        const jsonData = JSON.stringify(allData, null, 2);
+        
+        // Создание Blob и ссылки для скачивания
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        
+        // Два способа скачивания:
+        if (navigator.onLine) {
+            // Способ 1: Через URL (требует интернет для Blob URL)
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `workout_diary_backup_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+        } else {
+            // Способ 2: Офлайн-скачивание через FileSaver API (если поддерживается)
+            if (window.showSaveFilePicker) {
+                // Современный API
+                window.showSaveFilePicker({
+                    suggestedName: `workout_diary_backup_${new Date().toISOString().slice(0, 10)}.json`,
+                    types: [{
+                        description: 'JSON файлы',
+                        accept: { 'application/json': ['.json'] },
+                    }],
+                }).then(handle => {
+                    const writable = handle.createWritable();
+                    writable.write(blob);
+                    writable.close();
+                });
+            } else {
+                // Фолбэк: Показать данные вручную
+                const dataUrl = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonData);
                 const a = document.createElement('a');
-                a.href = url;
+                a.href = dataUrl;
                 a.download = `workout_diary_backup_${new Date().toISOString().slice(0, 10)}.json`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-                
-                // Освобождение ресурсов
-                setTimeout(() => URL.revokeObjectURL(url), 100);
-                
-                showNotification('Все данные экспортированы в JSON-файл');
-                
-                // Логирование успеха
-                console.log('Данные экспортированы:', {
-                    workouts: allData.workouts.length,
-                    exercises: allData.exercises.length,
-                    profile: !!allData.profile
-                });
-                
-            } catch (error) {
-                console.error('Ошибка экспорта:', error);
-                showNotification('Ошибка при экспорте данных', false);
             }
         }
+        
+        showNotification('Данные экспортированы' + (navigator.onLine ? '' : ' (офлайн)'));
+        
+    } catch (error) {
+        console.error('Ошибка экспорта:', error);
+        showNotification('Ошибка при экспорте данных', false);
+    }
+}
 
         // Импорт данных из JSON
         function importDataFromFile(file) {
@@ -3922,6 +3941,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
