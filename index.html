@@ -985,21 +985,53 @@
     100% { opacity: 0.7; }
 }
 
-/* Отключаем кнопки, требующие интернет - но с видимым состоянием */
+/* ========== ОФЛАЙН-РЕЖИМ: КНОПКИ ДЛЯ СЕНСОРНЫХ УСТРОЙСТВ ========== */
+
+/* 1. Визуально отличаем кнопки в офлайн-режиме */
 .offline #exportAllBtn,
 .offline #importBtn,
 .offline #exportReportBtn {
-    opacity: 0.5;
-    pointer-events: none;
+    opacity: 0.7;
+    filter: grayscale(40%);
     position: relative;
+    cursor: not-allowed;
 }
 
+/* 2. Убираем hover-эффекты в офлайн-режиме */
+.offline #exportAllBtn:hover,
+.offline #importBtn:hover,
+.offline #exportReportBtn:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* 3. Добавляем иконку "нет интернета" ПРЯМО В КНОПКУ */
+.offline #exportAllBtn i,
+.offline #importBtn i,
+.offline #exportReportBtn i {
+    position: relative;
+    margin-right: 5px;
+}
+
+/* 4. Иконка-индикатор справа от кнопки (видна всегда) */
 .offline #exportAllBtn::after,
 .offline #importBtn::after,
 .offline #exportReportBtn::after {
-    content: ' (требуется интернет)';
-    font-size: 0.8em;
-    opacity: 0.7;
+    content: "📶";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.9em;
+    opacity: 0.8;
+    filter: grayscale(100%) brightness(70%);
+}
+
+/* 5. Для отчёта отдельная иконка (он работает офлайн) */
+.offline #exportReportBtn::after {
+    content: "✅";
+    filter: none;
+    opacity: 1;
 }
 	</style>
 </head>
@@ -1089,7 +1121,7 @@
                     </button>
                     
                   <button class="btn-import" id="importBtn">
-   					 <i class="fas fa-upload"></i> Импорт данных (работает офлайн)
+   					 <i class="fas fa-upload"></i> Импорт данных 
 				</button>
                  
 		    <button class="btn-export" id="exportReportBtn" style="background: linear-gradient(135deg, #00b4d8, #0077b6);">
@@ -3237,7 +3269,63 @@ function updateExerciseIndexes() {
 
         // Инициализация функционала экспорта/импорта
         function initExportImport() {
-            // Кнопка экспорта
+ // Функция проверки и блокировки кнопки экспорта
+    function setupExportButton() {
+        const exportBtn = document.getElementById('exportAllBtn');
+        if (!navigator.onLine) {
+            exportBtn.innerHTML = '<i class="fas fa-download"></i> Экспорт (требует интернет)';
+            exportBtn.style.background = 'linear-gradient(135deg, #cccccc, #aaaaaa)';
+        }
+        
+        exportBtn.addEventListener('click', function(e) {
+            if (!navigator.onLine) {
+                e.preventDefault();
+                e.stopPropagation();
+                showNotification('Экспорт требует интернет-соединения', false);
+                return false;
+            }
+            exportAllData();
+        });
+    }
+    
+    // Функция проверки и блокировки кнопки импорта
+    function setupImportButton() {
+        const importBtn = document.getElementById('importBtn');
+        if (!navigator.onLine) {
+            importBtn.innerHTML = '<i class="fas fa-upload"></i> Импорт (требует интернет)';
+            importBtn.style.background = 'linear-gradient(135deg, #cccccc, #aaaaaa)';
+        }
+        
+        importBtn.addEventListener('click', function(e) {
+            if (!navigator.onLine) {
+                e.preventDefault();
+                e.stopPropagation();
+                showNotification('Импорт требует интернет-соединения для загрузки файлов', false);
+                return false;
+            }
+            document.getElementById('importFileInput').click();
+        });
+    }
+    
+    // Функция для кнопки отчёта (работает офлайн)
+    function setupReportButton() {
+        const reportBtn = document.getElementById('exportReportBtn');
+        if (!navigator.onLine) {
+            reportBtn.innerHTML = '<i class="fas fa-file-alt"></i> Отчёт (работает офлайн)';
+        }
+        
+        reportBtn.addEventListener('click', function(e) {
+            // Отчёт работает в офлайне - никаких проверок
+            showReportModal();
+        });
+    }
+    
+    // Вызываем все три функции
+    setupExportButton();
+    setupImportButton();
+    setupReportButton();
+			
+			// Кнопка экспорта
             document.getElementById('exportAllBtn').addEventListener('click', exportAllData);
             
             // Кнопка импорта
@@ -3941,6 +4029,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
 </script>
 </body>
 </html>
+
 
 
 
