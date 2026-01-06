@@ -1,5 +1,5 @@
 // service-worker.js - исправленная версия
-const CACHE_NAME = 'workout-diary-v2.3'; // Увеличиваем версию
+const CACHE_NAME = 'workout-diary-v2.3.0'; // Увеличиваем версию
 
 // Список файлов для предварительного кэширования
 const urlsToCache = [
