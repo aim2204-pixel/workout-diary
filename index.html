@@ -1991,11 +1991,6 @@
                         <input type="text" id="profileUserName" placeholder="Например, Иван" required>
                     </div>
                     <div class="form-group">
-                        <label for="profileUserBirthDate">Дата рождения *</label>
-                        <input type="text" id="profileUserBirthDate" placeholder="ДД.ММ.ГГГГ" required>
-                        <div class="hint">Формат: день.месяц.год</div>
-                    </div>
-                    <div class="form-group">
                         <label for="profileUserHeight">Рост (см) *</label>
                         <input type="number" id="profileUserHeight" placeholder="166" min="100" max="250" step="0.1" required>
                         <div class="hint">Для расчёта BMI</div>
@@ -3567,55 +3562,51 @@
         // ==================== ПРОФИЛЯ ====================
         
         // Загрузка профиля
-        function loadProfile() {
-            try {
-                const saved = localStorage.getItem(STORAGE_KEYS.PROFILE);
-                if (!saved) return null;
-                
-                const profile = JSON.parse(saved);
-                
-                const nameInput = document.getElementById('profileUserName');
-                const birthDateInput = document.getElementById('profileUserBirthDate');
-                const heightInput = document.getElementById('profileUserHeight');
-                
-                if (nameInput && profile.name) nameInput.value = profile.name;
-                if (birthDateInput && profile.birthDate) birthDateInput.value = profile.birthDate;
-                if (heightInput && profile.height) heightInput.value = profile.height;
-                
-                return profile;
-            } catch (error) {
-                console.error('Ошибка загрузки профиля:', error);
-                return null;
-            }
-        }
+       function loadProfile() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEYS.PROFILE);
+        if (!saved) return null;
+        
+        const profile = JSON.parse(saved);
+        
+        const nameInput = document.getElementById('profileUserName');
+        const heightInput = document.getElementById('profileUserHeight');
+        
+        if (nameInput && profile.name) nameInput.value = profile.name;
+        if (heightInput && profile.height) heightInput.value = profile.height;
+        
+        return profile;
+    } catch (error) {
+        console.error('Ошибка загрузки профиля:', error);
+        return null;
+    }
+}
         
         // Сохранение профиля
         function saveProfile(event) {
-            event.preventDefault();
-            
-            const name = document.getElementById('profileUserName').value.trim();
-            const birthDate = document.getElementById('profileUserBirthDate').value.trim();
-            const height = document.getElementById('profileUserHeight').value;
-            
-            if (!name || !birthDate || !height) {
-                showNotification('Заполните все обязательные поля', false);
-                return;
-            }
-            
-            const profile = {
-                name: name,
-                birthDate: birthDate,
-                height: parseFloat(height)
-            };
-            
-            try {
-                localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(profile));
-                showNotification('Профиль сохранён');
-            } catch (error) {
-                console.error('Ошибка сохранения профиля:', error);
-                showNotification('Ошибка сохранения профиля', false);
-            }
-        }
+    event.preventDefault();
+    
+    const name = document.getElementById('profileUserName').value.trim();
+    const height = document.getElementById('profileUserHeight').value;
+    
+    if (!name || !height) {
+        showNotification('Заполните все обязательные поля', false);
+        return;
+    }
+    
+    const profile = {
+        name: name,
+        height: parseFloat(height)
+    };
+    
+    try {
+        localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(profile));
+        showNotification('Профиль сохранён');
+    } catch (error) {
+        console.error('Ошибка сохранения профиля:', error);
+        showNotification('Ошибка сохранения профиля', false);
+    }
+}
         
         // ==================== ГРАФИК ВЕСА ====================
         
