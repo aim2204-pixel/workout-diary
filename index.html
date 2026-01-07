@@ -651,15 +651,16 @@
             text-align: center;
         }
         
-        .order-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            align-items: center;
+	.order-buttons {
+ 	   display: flex;
+  	  flex-direction: row; /* Изменено с column на row */
+   	 gap: 6px; /* Увеличено с 4px для горизонтального расположения */
+ 	   align-items: center;
+ 	   justify-content: center;
         }
         
         .btn-move-up, .btn-move-down {
-            width: 32px;
+            width: 31px;
             height: 32px;
             border-radius: 6px;
             display: flex;
@@ -1226,6 +1227,10 @@
         height: 36px;
         font-size: 0.95rem;
     }
+.order-buttons {
+        width: 100%;
+        justify-content: space-around;
+    }
 }
         
         /* ==================== ГРАФИК ВЕСА ==================== */
@@ -1733,8 +1738,15 @@
             .exercise-row-actions {
                 text-align: left;
                 margin-top: 10px;
+display: flex;
+        justify-content: flex-start;
             }
-            
+ 	    
+  	    .order-buttons {
+        flex-wrap: wrap;
+        gap: 4px;
+    }            
+
             .input-with-button {
                 flex-direction: column;
             }
@@ -1919,7 +1931,7 @@
             <div class="subtitle" id="pageSubtitle">Сила в дисциплине. Прресс в деталях.</div>
         </div>
         <button class="header-add-btn" id="globalAddBtn" title="Добавить новую тренировку">+</button>
-        <div class="app-version" id="appVersion">V2.3.0</div>
+        <div class="app-version" id="appVersion">V2.3.1</div>
     </header>
     
     <div class="offline-warning" id="offlineWarning">
@@ -3086,16 +3098,16 @@
                 </td>
                 <td class="exercise-row-actions" data-label="Действия">
                     <div class="order-buttons">
-                        <button type="button" class="btn-move-up" onclick="moveExerciseUp('${rowId}')" title="Переместить вверх">
-                            <i class="fas fa-arrow-up"></i>
-                        </button>
-                        <button type="button" class="btn-move-down" onclick="moveExerciseDown('${rowId}')" title="Переместить вниз">
-                            <i class="fas fa-arrow-down"></i>
-                        </button>
-                        <button type="button" class="btn-remove-row" onclick="removeExerciseRow('${rowId}')" title="Удалить упражнение">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
+    <button type="button" class="btn-move-up" onclick="moveExerciseUp('${rowId}')" title="Переместить вверх">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    <button type="button" class="btn-remove-row" onclick="removeExerciseRow('${rowId}')" title="Удалить упражнение">
+        <i class="fas fa-trash-alt"></i>
+    </button>
+    <button type="button" class="btn-move-down" onclick="moveExerciseDown('${rowId}')" title="Переместить вниз">
+        <i class="fas fa-arrow-down"></i>
+    </button>
+</div>
                 </td>
             `;
             
@@ -3446,7 +3458,10 @@
         // Сохранение упражнений
         function saveExercises(exercises) {
             try {
-                localStorage.setItem(STORAGE_KEYS.EXERCISES, JSON.stringify(exercises));
+const sortedExercises = exercises.sort((a, b) => {
+            return a.localeCompare(b, 'ru', { sensitivity: 'base' });
+        });                
+localStorage.setItem(STORAGE_KEYS.EXERCISES, JSON.stringify(exercises));
             } catch (error) {
                 console.error('Ошибка сохранения упражнений:', error);
                 showNotification('Ошибка сохранения упражнений', false);
@@ -4047,7 +4062,10 @@ function performImport(importedData, importOption) {
                 
             case 'exercises':
                 if (importedData.exercises) {
-                    saveExercises(importedData.exercises);
+const sortedExercises = importedData.exercises.sort((a, b) => {
+            return a.localeCompare(b, 'ru', { sensitivity: 'base' });
+        });                    
+saveExercises(importedData.exercises);
                 }
                 break;
         }
