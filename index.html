@@ -103,7 +103,14 @@
        
  }
 
-
+.theme-light .btn-remove-weight-set {
+    background: rgba(201, 122, 122, 0.2);
+    color: #c97a7a;
+    border-color: rgba(201, 122, 122, 0.4);
+}
+.theme-light .btn-remove-weight-set:hover {
+    background: rgba(201, 122, 122, 0.4);
+}
         
         /* ==================== ТЕМА: PREMIUM (ПРЕМИУМ) ==================== */
         .theme-premium {
@@ -140,6 +147,15 @@
             --extra-activity-bg: rgba(42, 157, 143, 0.2);
             --extra-activity-border: #2a9d8f;
         }
+.theme-premium .btn-remove-weight-set {
+    background: rgba(231, 111, 81, 0.2);
+    color: #e76f51;
+    border-color: rgba(231, 111, 81, 0.4);
+}
+
+.theme-premium .btn-remove-weight-set:hover {
+    background: rgba(231, 111, 81, 0.4);
+}
         
         /* ==================== ОСНОВНЫЕ СТИЛИ (ОБНОВЛЕННЫЕ С CSS-ПЕРЕМЕННЫМИ) ==================== */
         body {
@@ -714,7 +730,34 @@
             border-color: rgba(var(--color-danger-rgb, 220, 53, 69), 0.4);
             margin-top: 4px;
         }
+.btn-remove-weight-set {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    font-size: 0.75rem;
+    background: rgba(var(--color-danger-rgb, 220, 53, 69), 0.2);
+    color: var(--color-danger);
+    border-color: rgba(var(--color-danger-rgb, 220, 53, 69), 0.4);
+    flex-shrink: 0;
+}
+
+.btn-remove-weight-set:hover {
+    background: rgba(var(--color-danger-rgb, 220, 53, 69), 0.4);
+    transform: translateY(-1px);
+}
         
+.weight-set-buttons {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    flex-shrink: 0;
+}
         .btn-remove-row:hover {
             background: rgba(var(--color-danger-rgb, 220, 53, 69), 0.4);
             transform: translateY(-1px);
@@ -1764,11 +1807,24 @@ display: flex;
             .weight-set-row {
                 flex-direction: column;
                 align-items: stretch;
+		gap: 8px;
             }
             
             .weight-set-input, .sets-input, .reps-input {
                 min-width: 100%;
             }
+
+ .weight-set-buttons {
+        width: 100%;
+        justify-content: center;
+        margin-top: 5px;
+    }
+
+.btn-remove-weight-set, .btn-add-weight-set {
+        width: 32px;
+        height: 32px;
+        font-size: 0.85rem;
+    }
             
             .workout-date {
                 padding-right: 90px;
@@ -3168,7 +3224,7 @@ display: flex;
             
             const removeButtonHtml = newIndex === 0 ? '' : 
                 `<button type="button" class="btn-remove-weight-set" onclick="window.removeWeightSet('${rowId}', ${newIndex})" title="Удалить подход">
-                    <i class="fas fa-trash"></i>
+                    <i class="fas fa-trash-alt"></i>
                 </button>`;
             
             setRow.innerHTML = `
