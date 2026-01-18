@@ -1978,6 +1978,11 @@ display: flex;
             }
         }
     </style>
+<meta name="application-name" content="Мой Дневник Тренировок">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Тренировки">
+<link rel="apple-touch-icon" href="./maskable_icon_x192.png">
 </head>
 <body class="theme-dark">
     <!-- ШАПКА -->
@@ -4832,17 +4837,17 @@ function initExportImport() {
         window.moveExerciseDown = moveExerciseDown;
         
         // Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/workout-diary/service-worker.js')
-                    .then(registration => {
-                        console.log('ServiceWorker зарегистрирован:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('Ошибка регистрации ServiceWorker:', error);
-                    });
-            });
-        }
+       if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(registration => {
+        console.log('ServiceWorker зарегистрирован:', registration.scope);
+      })
+      .catch(error => {
+        console.log('Ошибка регистрации ServiceWorker:', error);
+      });
+  });
+}
         
         // Принудительное обновление Service Worker
         if ('serviceWorker' in navigator) {
@@ -4883,7 +4888,41 @@ function initExportImport() {
                 });
             });
         }
-    </script>
+// Добавьте в ваш основной скрипт
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  window.deferredPrompt = event;
+  
+  // Покажите свою кнопку установки
+  const installButton = document.createElement('button');
+  installButton.textContent = 'Установить приложение';
+  installButton.style.cssText = `
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    z-index: 9999;
+  `;
+  
+  installButton.addEventListener('click', () => {
+    if (window.deferredPrompt) {
+      window.deferredPrompt.prompt();
+      window.deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('Пользователь установил приложение');
+        }
+        window.deferredPrompt = null;
+      });
+    }
+  });
+  
+  document.body.appendChild(installButton);
+});   
+ </script>
 </body>
 </html>
 
