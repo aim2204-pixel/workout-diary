@@ -1992,7 +1992,7 @@ display: flex;
             <div class="subtitle" id="pageSubtitle">Сила в дисциплине. Прресс в деталях.</div>
         </div>
         <button class="header-add-btn" id="globalAddBtn" title="Добавить новую тренировку">+</button>
-        <div class="app-version" id="appVersion">V2.3.4</div>
+        <div class="app-version" id="appVersion">V2.3.5</div>
     </header>
     
     <div class="offline-warning" id="offlineWarning">
@@ -2245,6 +2245,21 @@ display: flex;
                         </div>
                     </div>
                 </div>
+<!-- ОБЩИЕ ПРИМЕЧАНИЯ К ТРЕНИРОВКЕ -->
+<div class="form-section">
+    <h3><i class="fas fa-sticky-note"></i> Общие примечания к тренировке</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="workoutNotes">Заметки о тренировке</label>
+            <textarea 
+                id="workoutNotes" 
+                rows="3" 
+                placeholder="Замечания по тренировке в целом..."
+            ></textarea>
+            <div class="hint">Эти заметки будут относиться ко всей тренировке</div>
+        </div>
+    </div>
+</div>
                 <div class="form-section">
                     <h3><i class="fas fa-weight-scale"></i> Вес и Индекс BMI</h3>
                     <div class="weight-bmi-row">
@@ -2883,7 +2898,13 @@ document.addEventListener('visibilitychange', async () => {
                             </div>
                         `).join('')}
                     </div>
-                    ${workout.extraActivity ? `
+${workout.workoutNotes ? `
+                <div class="extra-activity" style="background: rgba(var(--color-primary-rgb, 157, 78, 221), 0.2); border-left: 4px solid var(--color-primary);">
+                    <strong><i class="fas fa-sticky-note"></i> Общие примечания:</strong> ${workout.workoutNotes}
+                </div>
+            ` : ''}                    
+
+${workout.extraActivity ? `
                         <div class="extra-activity">
                             <strong><i class="fas fa-swimming-pool"></i> Доп. активность:</strong> ${workout.extraActivity}
                         </div>
@@ -3019,7 +3040,10 @@ document.addEventListener('visibilitychange', async () => {
                 document.getElementById('extraActivityOther').value = workout.extraActivity;
                 document.getElementById('extraActivityOther').style.display = 'block';
             }
-            
+           
+ // Заполнить поле общих примечаний
+    document.getElementById('workoutNotes').value = workout.workoutNotes || '';
+ 
             if (workout.weight) {
                 document.getElementById('workoutWeight').value = workout.weight;
                 updateBmiDisplay();
@@ -3121,6 +3145,7 @@ document.addEventListener('visibilitychange', async () => {
             document.getElementById('workoutTypeOther').style.display = 'none';
             document.getElementById('extraActivityOther').style.display = 'none';
             document.getElementById('bmiValue').textContent = '-';
+ document.getElementById('workoutNotes').value = '';
         }
         
         // Показать форму
@@ -3492,6 +3517,8 @@ document.addEventListener('visibilitychange', async () => {
                 extraActivity = null;
             }
             
+  const workoutNotes = document.getElementById('workoutNotes').value.trim() || null;
+
             const weight = document.getElementById('workoutWeight').value ? 
                 parseFloat(document.getElementById('workoutWeight').value) : null;
             const bmi = weight ? parseFloat(document.getElementById('bmiValue').textContent) : null;
@@ -3502,7 +3529,8 @@ document.addEventListener('visibilitychange', async () => {
                 type: workoutType,
                 exercises: exercises,
                 extraActivity: extraActivity,
-                weight: weight,
+ workoutNotes: workoutNotes,                
+weight: weight,
                 bmi: bmi,
                 created: isEditMode ? workouts.find(w => w.id === workoutId)?.created || Date.now() : Date.now()
             };
