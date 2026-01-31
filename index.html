@@ -3120,9 +3120,9 @@ ${workout.extraActivity ? `
                     setRow.className = 'weight-set-row';
                     setRow.dataset.setIndex = 0;
                     setRow.innerHTML = `
-                        <input type="text" class="weight-set-input" placeholder="Вес">
-                        <input type="number" class="sets-input" placeholder="Подходы" min="1" max="20">
-                        <input type="number" class="reps-input" placeholder="Раз" min="1" max="100">
+                        <input type="text" class="weight-set-input" placeholder="Вес/Расстояние">
+                        <input type="number" class="sets-input" placeholder="Подходы/Скорость" min="1" max="80">
+                        <input type="number" class="reps-input" placeholder="Раз/Время" min="1" max="100">
                         <div class="weight-set-buttons">
                             <button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${row.id}')" title="Добавить ещё подход">
                                 <i class="fas fa-plus"></i>
@@ -4952,6 +4952,7 @@ window.addEventListener('beforeinstallprompt', (event) => {
  </script>
 </body>
 </html>
+
 
 
 
