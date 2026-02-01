@@ -4614,7 +4614,7 @@ function downloadTextReport(content, period) {
         (async () => {
             try {
                 const handle = await window.showSaveFilePicker({
-                    suggestedName: отчет_тренировок_${periodNames[period]}_${new Date().toISOString().slice(0, 10)}.html,
+                    suggestedName: fileName,
                     types: [{
                         description: 'Текстовый файл',
                         accept: {
@@ -5115,6 +5115,7 @@ window.addEventListener('beforeinstallprompt', (event) => {
  </script>
 </body>
 </html>
+
 
 
 
