@@ -4466,7 +4466,8 @@ function initExportImport() {
             let totalExercises = 0;
             let workoutsWithWeight = 0;
             let totalWeight = 0;
-            
+			let workoutsWithNotes = 0;
+			
             sortedWorkouts.forEach((workout, index) => {
                 report += `ТРЕНИРОВКА ${index + 1}\n`;
                 report += `Дата: ${workout.date}\n`;
@@ -4493,7 +4494,13 @@ function initExportImport() {
                     }
                     report += '\n';
                 });
-                
+				
+				if (workout.workoutNotes) {
+           			 workoutsWithNotes++;
+          			 report += `ОБЩИЕ ПРИМЕЧАНИЯ К ТРЕНИРОВКЕ:\n`;
+          			 report += `  ${workout.workoutNotes}\n\n`;
+       			}
+				
                 if (workout.extraActivity) {
                     report += `Доп. активность: ${workout.extraActivity}\n`;
                 }
@@ -4952,6 +4959,7 @@ window.addEventListener('beforeinstallprompt', (event) => {
  </script>
 </body>
 </html>
+
 
 
 
