@@ -4624,7 +4624,9 @@ function downloadTextReport(content, period) {
                 });
                 
                 const writable = await handle.createWritable();
-                await writable.write(content);
+                const BOM = '\uFEFF';
+        		const contentWithBOM = BOM + content;
+				await writable.write(content);
                 await writable.close();
                 
                 showNotification('✅ Отчёт сохранён в выбранную папку');
@@ -4648,7 +4650,9 @@ function downloadTextReport(content, period) {
 
 // Вспомогательная функция для старого метода скачивания отчёта
 function fallbackDownloadReport(content, fileName) {
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const BOM = '\uFEFF';
+    const contentWithBOM = BOM + content;
+	const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     
     const a = document.createElement('a');
@@ -5082,6 +5086,7 @@ window.addEventListener('beforeinstallprompt', (event) => {
  </script>
 </body>
 </html>
+
 
 
 
