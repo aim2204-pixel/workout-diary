@@ -4597,29 +4597,71 @@ function initExportImport() {
             return report;
         }
         
-        // Создание и скачивание TXT файла
-        function downloadTextReport(content, period) {
-            const periodNames = {
-                'all': 'все_тренировки',
-                'week': 'неделя',
-                'month': 'месяц',
-                'custom': 'период'
-            };
-            
-            const fileName = `отчет_тренировок_${periodNames[period]}_${new Date().toISOString().slice(0, 10)}.txt`;
-            
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            
-            setTimeout(() => URL.revokeObjectURL(url), 100);
-        }
+   // Создание и скачивание TXT файла
+function downloadTextReport(content, period) {
+    const periodNames = {
+        'all': 'все_тренировки',
+        'week': 'неделя',
+        'month': 'месяц',
+        'custom': 'период'
+    };
+    
+    const fileName = `отчет_тренировок_${periodNames[period]}_${new Date().toISOString().slice(0, 10)}.txt`;
+    
+    // НОВЫЙ КОД: пробуем современный API если доступен
+    if ('showSaveFilePicker' in window) {
+        // Используем IIFE для асинхронного вызова
+        (async () => {
+            try {
+                const handle = await window.showSaveFilePicker({
+                    suggestedName: fileName,
+                    types: [{
+                        description: 'Текстовый файл',
+                        accept: {
+                            'text/plain': ['.txt'],
+                        },
+                    }],
+                });
+                
+                const writable = await handle.createWritable();
+                await writable.write(content);
+                await writable.close();
+                
+                showNotification('✅ Отчёт сохранён в выбранную папку');
+                return;
+                
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    showNotification('Создание отчёта отменено');
+                    return;
+                }
+                console.log('showSaveFilePicker не сработал, используем старый метод:', error);
+                // Продолжаем со старым методом
+                fallbackDownloadReport(content, fileName);
+            }
+        })();
+    } else {
+        // Старый метод для браузеров без showSaveFilePicker
+        fallbackDownloadReport(content, fileName);
+    }
+}
+
+// Вспомогательная функция для старого метода скачивания отчёта
+function fallbackDownloadReport(content, fileName) {
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+    
+    showNotification('✅ Отчёт создан');
+}
         
         // Основная функция для создания отчета
         function createWorkoutReport() {
@@ -5040,4 +5082,5 @@ window.addEventListener('beforeinstallprompt', (event) => {
  </script>
 </body>
 </html>
+
 
