@@ -1992,7 +1992,7 @@ display: flex;
             <div class="subtitle" id="pageSubtitle">Сила в дисциплине. Прресс в деталях.</div>
         </div>
         <button class="header-add-btn" id="globalAddBtn" title="Добавить новую тренировку">+</button>
-        <div class="app-version" id="appVersion">V2.3.7</div>
+        <div class="app-version" id="appVersion">V2.3.8</div>
     </header>
     
     <div class="offline-warning" id="offlineWarning">
@@ -4051,7 +4051,7 @@ localStorage.setItem(STORAGE_KEYS.EXERCISES, JSON.stringify(exercises));
        // ==================== ЭКСПОРТ/ИМПОРТ ====================
 
 // Экспорт всех данных в JSON
-async function exportAllData() {
+function exportAllData() {
     try {
         const allData = {
             version: DATA_FORMAT_VERSION,
@@ -4068,24 +4068,64 @@ async function exportAllData() {
         const jsonData = JSON.stringify(allData, null, 2);
         const fileName = `workout_diary_${new Date().toISOString().slice(0, 10)}.json`;
         
-        const blob = new Blob([jsonData], { type: 'application/json;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        
-        setTimeout(() => URL.revokeObjectURL(url), 100);
-        
-        showNotification('✅ Данные экспортированы');
+        // НОВЫЙ КОД: пробуем современный API если доступен
+        if ('showSaveFilePicker' in window) {
+            // Используем IIFE для асинхронного вызова
+            (async () => {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: fileName,
+                        types: [{
+                            description: 'JSON файл',
+                            accept: {
+                                'application/json': ['.json'],
+                            },
+                        }],
+                    });
+                    
+                    const writable = await handle.createWritable();
+                    await writable.write(jsonData);
+                    await writable.close();
+                    
+                    showNotification('✅ Данные сохранены в выбранную папку');
+                    return;
+                    
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        showNotification('Экспорт отменён');
+                        return;
+                    }
+                    console.log('showSaveFilePicker не сработал, используем старый метод:', error);
+                    // Продолжаем со старым методом
+                    fallbackExport(jsonData, fileName);
+                }
+            })();
+        } else {
+            // Старый метод для браузеров без showSaveFilePicker
+            fallbackExport(jsonData, fileName);
+        }
         
     } catch (error) {
         console.error('Ошибка экспорта:', error);
         showNotification('❌ Ошибка при экспорте', false);
     }
+}
+
+// Вспомогательная функция для старого метода экспорта
+function fallbackExport(jsonData, fileName) {
+    const blob = new Blob([jsonData], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+    
+    showNotification('✅ Данные экспортированы');
 }
 
 // Импорт данных из JSON
@@ -5000,3 +5040,4 @@ window.addEventListener('beforeinstallprompt', (event) => {
  </script>
 </body>
 </html>
+
