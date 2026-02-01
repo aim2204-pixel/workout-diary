@@ -2897,18 +2897,18 @@ document.addEventListener('visibilitychange', async () => {
                             </div>
                         `).join('')}
                     </div>
-${workout.workoutNotes ? `
-                <div class="extra-activity" style="background: rgba(var(--color-primary-rgb, 157, 78, 221), 0.2); border-left: 4px solid var(--color-primary);">
-                    <strong><i class="fas fa-sticky-note"></i> Общие примечания:</strong> ${workout.workoutNotes}
-                </div>
-            ` : ''}                    
-
-${workout.extraActivity ? `
+                 
+						${workout.extraActivity ? `
                         <div class="extra-activity">
                             <strong><i class="fas fa-swimming-pool"></i> Доп. активность:</strong> ${workout.extraActivity}
                         </div>
                     ` : ''}
-                    ${workout.weight ? `
+                  	  ${workout.workoutNotes ? `
+                <div class="extra-activity" style="background: rgba(var(--color-primary-rgb, 157, 78, 221), 0.2); border-left: 4px solid var(--color-primary);">
+                    <strong><i class="fas fa-sticky-note"></i> Общие примечания:</strong> ${workout.workoutNotes}
+                </div>
+            ` : ''}
+					${workout.weight ? `
                         <div class="metrics">
                             <div class="metric"><div class="metric-value">${workout.weight}</div><div class="metric-label">Вес (кг)</div></div>
                             <div class="metric"><div class="metric-value">${workout.bmi || '-'}</div><div class="metric-label">Индекс BMI</div></div>
@@ -4959,6 +4959,7 @@ window.addEventListener('beforeinstallprompt', (event) => {
  </script>
 </body>
 </html>
+
 
 
 
