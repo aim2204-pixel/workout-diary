@@ -1992,7 +1992,7 @@ display: flex;
             <div class="subtitle" id="pageSubtitle">Сила в дисциплине. Прресс в деталях.</div>
         </div>
         <button class="header-add-btn" id="globalAddBtn" title="Добавить новую тренировку">+</button>
-        <div class="app-version" id="appVersion">V2.3.8</div>
+        <div class="app-version" id="appVersion">V2.3.9</div>
     </header>
     
     <div class="offline-warning" id="offlineWarning">
@@ -4606,7 +4606,7 @@ function downloadTextReport(content, period) {
         'custom': 'период'
     };
     
-    const fileName = `отчет_тренировок_${periodNames[period]}_${new Date().toISOString().slice(0, 10)}.txt`;
+    const fileName = `отчет_тренировок_${periodNames[period]}_${new Date().toISOString().slice(0, 10)}.html`;
     
     // НОВЫЙ КОД: пробуем современный API если доступен
     if ('showSaveFilePicker' in window) {
@@ -4614,11 +4614,11 @@ function downloadTextReport(content, period) {
         (async () => {
             try {
                 const handle = await window.showSaveFilePicker({
-                    suggestedName: fileName,
+                    suggestedName: fileName.html,
                     types: [{
                         description: 'Текстовый файл',
                         accept: {
-                            'text/plain': ['.txt'],
+                            'text/html': ['.html'],
                         },
                     }],
                 });
@@ -4650,21 +4650,50 @@ function downloadTextReport(content, period) {
 
 // Вспомогательная функция для старого метода скачивания отчёта
 function fallbackDownloadReport(content, fileName) {
-    const BOM = '\uFEFF';
-    const contentWithBOM = BOM + content;
-	const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    // 1. Создаём полноценный HTML-документ с явным указанием кодировки
+    const htmlContent = `<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${fileName.replace('.txt', '')}</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            max-width: 800px; 
+            margin: 20px auto; 
+            padding: 20px; 
+            white-space: pre-wrap;
+        }
+        h1 { color: #9d4edd; }
+    </style>
+</head>
+<body>
+    <h1>Отчёт о тренировках</h1>
+    <pre>${content}</pre>
+</body>
+</html>`;
+
+    // 2. Создаём Blob с правильным MIME-типом для HTML
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     
     const a = document.createElement('a');
     a.href = url;
-    a.download = fileName;
+    
+    // 3. Меняем расширение файла с .txt на .html
+    a.download = fileName.replace('.txt', '.html'); 
+    
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     
     setTimeout(() => URL.revokeObjectURL(url), 100);
     
-    showNotification('✅ Отчёт создан');
+    // 4. Обновляем текст уведомления
+    showNotification('✅ Отчёт создан (HTML, кодировка UTF-8)');
 }
         
         // Основная функция для создания отчета
@@ -5086,6 +5115,7 @@ window.addEventListener('beforeinstallprompt', (event) => {
  </script>
 </body>
 </html>
+
 
 
 
