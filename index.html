@@ -4536,18 +4536,18 @@ function initExportImport() {
                     }
                     report += '\n';
                 });
-				
+											
+                if (workout.extraActivity) {
+                    report += `Доп. активность: ${workout.extraActivity}\n`;
+                }
+               
 				if (workout.workoutNotes) {
            			 workoutsWithNotes++;
           			 report += `ОБЩИЕ ПРИМЕЧАНИЯ К ТРЕНИРОВКЕ:\n`;
           			 report += `  ${workout.workoutNotes}\n\n`;
        			}
-				
-                if (workout.extraActivity) {
-                    report += `Доп. активность: ${workout.extraActivity}\n`;
-                }
-                
-                if (workout.weight) {
+               
+				if (workout.weight) {
                     workoutsWithWeight++;
                     totalWeight += workout.weight;
                     report += `Вес после тренировки: ${workout.weight} кг\n`;
@@ -5082,5 +5082,6 @@ window.addEventListener('beforeinstallprompt', (event) => {
  </script>
 </body>
 </html>
+
 
 
