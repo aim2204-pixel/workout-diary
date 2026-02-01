@@ -4614,7 +4614,7 @@ function downloadTextReport(content, period) {
         (async () => {
             try {
                 const handle = await window.showSaveFilePicker({
-                    suggestedName: fileName.html,
+                    suggestedName: отчет_тренировок_${periodNames[period]}_${new Date().toISOString().slice(0, 10)}.html,
                     types: [{
                         description: 'Текстовый файл',
                         accept: {
@@ -4656,7 +4656,7 @@ function fallbackDownloadReport(content, fileName) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${fileName.replace('.txt', '')}</title>
+    <title>${fileName.replace('.txt', '.html')}</title>
     <style>
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; 
@@ -5115,6 +5115,7 @@ window.addEventListener('beforeinstallprompt', (event) => {
  </script>
 </body>
 </html>
+
 
 
 
