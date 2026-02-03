@@ -973,6 +973,7 @@
             justify-content: space-between;
             align-items: center;
             transition: background 0.3s;
+            flex-wrap: nowrap;
         }
         
         .exercise-list-item:hover {
@@ -981,8 +982,15 @@
         
         .exercise-list-name {
             font-weight: 600;
-            color: var(--text-primary);
-            font-size: 1.05rem;
+    color: var(--text-primary);
+    font-size: 1.05rem;
+    flex: 1; 
+    min-width: 0; 
+    overflow: hidden; 
+    text-overflow: clip; 
+    white-space: normal; 
+    margin-right: 10px; 
+    word-break: break-word;
         }
         
         .exercise-list-name.editing {
@@ -1008,6 +1016,7 @@
         .exercise-list-actions {
             display: flex;
             gap: 8px;
+	    flex-shrink: 0;
         }
         
         .btn-edit, .btn-save-edit, .btn-cancel-edit, .btn-delete {
@@ -1801,7 +1810,8 @@ display: flex;
             }
             
             .exercise-list-actions {
-                flex-wrap: wrap;
+                flex-wrap: nowrap;
+
             }
             
             .weight-set-row {
@@ -5115,10 +5125,3 @@ window.addEventListener('beforeinstallprompt', (event) => {
  </script>
 </body>
 </html>
-
-
-
-
-
-
-
