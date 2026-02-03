@@ -2879,7 +2879,7 @@ document.addEventListener('visibilitychange', async () => {
             };
 
             let typeKey = workout.type;
-            if (!['strength', 'group', 'home'].includes(workout.type)) {
+            if (!['strength', 'group', 'cardio', 'home'].includes(workout.type)) {
                 typeKey = 'other';
             }
 
@@ -3028,7 +3028,7 @@ document.addEventListener('visibilitychange', async () => {
             
             let workoutType = workout.type;
             let workoutTypeOther = '';
-            if (!['strength', 'group', 'home'].includes(workoutType)) {
+            if (!['strength', 'group', 'cardio', 'home'].includes(workoutType)) {
                 workoutType = 'other';
                 workoutTypeOther = workout.type;
             }
@@ -5142,3 +5142,4 @@ window.addEventListener('beforeinstallprompt', (event) => {
  </script>
 </body>
 </html>
+
