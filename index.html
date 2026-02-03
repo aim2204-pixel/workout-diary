@@ -255,7 +255,11 @@
             border-left-color: var(--color-warning);
         }
         
-        .workout-card[data-type="other"] {
+        .workout-card[data-type="cardio"] {
+	    border-left-color: var(--color-danger); 
+	}
+	
+	.workout-card[data-type="other"] {
             border-left-color: var(--color-secondary);
         }
         
@@ -299,7 +303,11 @@
             background-color: var(--color-warning);
         }
         
-        .type-other {
+        .type-cardio {
+   	    background-color: var(--color-danger);
+	}
+
+	.type-other {
             background-color: var(--color-secondary);
         }
         
@@ -2002,7 +2010,7 @@ display: flex;
             <div class="subtitle" id="pageSubtitle">Сила в дисциплине. Прресс в деталях.</div>
         </div>
         <button class="header-add-btn" id="globalAddBtn" title="Добавить новую тренировку">+</button>
-        <div class="app-version" id="appVersion">V2.4.0</div>
+        <div class="app-version" id="appVersion">V2.4.1</div>
     </header>
     
     <div class="offline-warning" id="offlineWarning">
@@ -2215,6 +2223,7 @@ display: flex;
                                 <option value="strength">Силовая в зале</option>
                                 <option value="group">Групповая</option>
                                 <option value="home">Домашняя</option>
+				<option value="cardio">Кардио</option
                                 <option value="other">Другое (указать)</option>
                             </select>
                             <input type="text" id="workoutTypeOther" placeholder="Введите свой вариант" style="margin-top: 10px; display: none;">
@@ -2865,7 +2874,8 @@ document.addEventListener('visibilitychange', async () => {
                 strength: { name: 'Силовая в зале', class: 'type-strength' },
                 group: { name: 'Групповая', class: 'type-group' },
                 home: { name: 'Домашняя', class: 'type-home' },
-                other: { name: workout.type, class: 'type-other' }
+		cardio: { name: 'Кардио', class: 'type-cardio' },                
+		other: { name: workout.type, class: 'type-other' }
             };
 
             let typeKey = workout.type;
@@ -4963,6 +4973,13 @@ function fallbackDownloadReport(content, fileName) {
     'Прыжки на скакалке',
     'Бёрпи',
     
+    // Кардио упражнения
+    'Бег на дорожке',
+    'Велотренажёр',
+    'Эллипсоид',
+    'Степпер',
+    'Гребной тренажёр',   
+ 
     // С ОБОРУДОВАНИЕМ
     'Жим в тренажёре Смита',
     'Сведение рук в баттерфляе',
@@ -5125,10 +5142,3 @@ window.addEventListener('beforeinstallprompt', (event) => {
  </script>
 </body>
 </html>
-
-
-
-
-
-
-
