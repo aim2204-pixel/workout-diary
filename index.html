@@ -247,7 +247,7 @@
             position: relative;
         }
         
-        .workout-card[data-type="circuit"] {
+        .workout-card[data-type="group"] {
             border-left-color: var(--color-success);
         }
         
@@ -291,7 +291,7 @@
             background-color: var(--color-primary);
         }
         
-        .type-circuit {
+        .type-group {
             background-color: var(--color-success);
         }
         
@@ -2002,7 +2002,7 @@ display: flex;
             <div class="subtitle" id="pageSubtitle">Сила в дисциплине. Прресс в деталях.</div>
         </div>
         <button class="header-add-btn" id="globalAddBtn" title="Добавить новую тренировку">+</button>
-        <div class="app-version" id="appVersion">V2.3.9</div>
+        <div class="app-version" id="appVersion">V2.4.0</div>
     </header>
     
     <div class="offline-warning" id="offlineWarning">
@@ -2213,7 +2213,7 @@ display: flex;
                             <select id="workoutType" required>
                                 <option value="" disabled selected>Выберите тип...</option>
                                 <option value="strength">Силовая в зале</option>
-                                <option value="circuit">Круговая</option>
+                                <option value="group">Групповая</option>
                                 <option value="home">Домашняя</option>
                                 <option value="other">Другое (указать)</option>
                             </select>
@@ -2863,13 +2863,13 @@ document.addEventListener('visibilitychange', async () => {
             
             const typeConfig = {
                 strength: { name: 'Силовая в зале', class: 'type-strength' },
-                circuit: { name: 'Круговая', class: 'type-circuit' },
+                group: { name: 'Групповая', class: 'type-group' },
                 home: { name: 'Домашняя', class: 'type-home' },
                 other: { name: workout.type, class: 'type-other' }
             };
 
             let typeKey = workout.type;
-            if (!['strength', 'circuit', 'home'].includes(workout.type)) {
+            if (!['strength', 'group', 'home'].includes(workout.type)) {
                 typeKey = 'other';
             }
 
@@ -3018,7 +3018,7 @@ document.addEventListener('visibilitychange', async () => {
             
             let workoutType = workout.type;
             let workoutTypeOther = '';
-            if (!['strength', 'circuit', 'home'].includes(workoutType)) {
+            if (!['strength', 'group', 'home'].includes(workoutType)) {
                 workoutType = 'other';
                 workoutTypeOther = workout.type;
             }
@@ -4478,7 +4478,7 @@ function initExportImport() {
             
             const workoutTypeMapping = {
                 'strength': 'Силовая в зале',
-                'circuit': 'Круговая',
+                'group': 'Групповая',
                 'home': 'Домашняя',
                 'cardio': 'Кардио',
                 'yoga': 'Йога',
@@ -5125,3 +5125,10 @@ window.addEventListener('beforeinstallprompt', (event) => {
  </script>
 </body>
 </html>
+
+
+
+
+
+
+
