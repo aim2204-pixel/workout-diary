@@ -1995,7 +1995,19 @@ display: flex;
                 padding: 2px 4px;
             }
         }
-    </style>
+    /* Стили для подвала, чтобы он был виден поверх нижней навигации */
+footer {
+    position: fixed;   /* Фиксируем подвал на экране */
+    bottom: 70px;      /* Поднимаем его ВЫШЕ навигации (nav имеет bottom: 0) */
+    z-index: 1001;     /* Значение БОЛЬШЕ, чем у навигации (у нее z-index: 1000) */
+    width: 100%;       /* Растягиваем на всю ширину */
+    text-align: center; /* Центрируем текст внутри */
+    padding: 15px 0;   /* Добавляем отступы сверху и снизу для воздуха */
+    /* Стили для фона и текста (можно настроить под ваш дизайн) */
+    background-color: #ffffff; /* Белый фон, чтобы перекрыть контент */
+    border-top: 1px solid #eaeaea; /* Легкая разделительная линия сверху */
+}
+	</style>
 <meta name="application-name" content="Мой Дневник Тренировок">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5146,6 +5158,7 @@ window.addEventListener('beforeinstallprompt', (event) => {
 <p><a href="/workout-diary/privacy.html">Политика конфиденциальности</a></p>
 </footer>
 </html>
+
 
 
 
