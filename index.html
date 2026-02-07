@@ -1995,18 +1995,39 @@ display: flex;
                 padding: 2px 4px;
             }
         }
-    /* Стили для подвала, чтобы он был виден поверх нижней навигации */
+    /* Стили для подвала и ссылки в нём, чтобы совпадало с навигацией */
 footer {
-    position: fixed;   /* Фиксируем подвал на экране */
-    bottom: 0px;      /* Поднимаем его ВЫШЕ навигации (nav имеет bottom: 0) */
-    z-index: 1001;     /* Значение БОЛЬШЕ, чем у навигации (у нее z-index: 1000) */
-    width: 100%;       /* Растягиваем на всю ширину */
-    text-align: center; /* Центрируем текст внутри */
-    padding: 0px 0;   /* Добавляем отступы сверху и снизу для воздуха */
-    /* Стили для фона и текста (можно настроить под ваш дизайн) */
-    background-color: transparent;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9); /* Лёгкая белая подложка для букв */
+    position: fixed;          /* Оставляем фиксированное положение */
+    bottom: 0px;             /* Закрепляем внизу, прямо над навигацией */
+    z-index: 1001;           /* Должен быть выше навигации (z-index: 1000) */
+    width: 100%;
+    text-align: right;
+    padding: 0px 0;         /* Вертикальные отступы для воздуха */
+    background-color: transparent; /* Прозрачный фон, как вы хотели */
 }
+
+/* Стили для самой ссылки на политику конфиденциальности */
+footer a {
+    /* Шрифт и цвет точно как у кнопок нижнего меню (.nav-item) */
+    font-size: 0.55rem;        /* Размер как у <span> в .nav-item */
+    font-weight: 600;          /* Жирность как у кнопок навигации */
+    color: var(--text-secondary); /* Цвет текста из CSS-переменной темы */
+    text-decoration: none;     /* Убираем стандартное подчёркивание */
+    
+    /* Для визуального единства добавляем отступы и скругления как у .nav-item */
+    padding: 8px 12px;
+    border-radius: 10px;
+    
+    /* Плавный переход для эффекта при наведении */
+    transition: all 0.3s ease;
+}
+
+/* Эффект при наведении на ссылку (аналогично .nav-item:hover) */
+footer a:hover {
+    color: var(--text-inverse);        /* Цвет при наведении */
+    background: rgba(var(--color-primary-rgb, 157, 78, 221), 0.15); /* Лёгкий фон */
+}
+	</style>
 	</style>
 <meta name="application-name" content="Мой Дневник Тренировок">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -5158,8 +5179,3 @@ window.addEventListener('beforeinstallprompt', (event) => {
 <p><a href="/workout-diary/privacy.html">Политика конфиденциальности</a></p>
 </footer>
 </html>
-
-
-
-
-
