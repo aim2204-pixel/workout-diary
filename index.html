@@ -4377,28 +4377,19 @@ function initExportImport() {
     
     // Назначаем обработчики на новые элементы
     newExportBtn.addEventListener('click', async function(e) {
-        if (!navigator.onLine) {
-            e.preventDefault();
-            e.stopPropagation();
-            showNotification('Экспорт требует интернет-соединения', false);
-            return false;
-        }
-        await exportAllData();
+        await exportAllData(); // УБРАТЬ проверку интернета
     });
     
     newImportBtn.addEventListener('click', function(e) {
-        if (!navigator.onLine) {
-            e.preventDefault();
-            e.stopPropagation();
-            showNotification('Импорт требует интернет-соединения для загрузки файлов', false);
-            return false;
-        }
-        document.getElementById('importFileInput').click();
+        document.getElementById('importFileInput').click(); // УБРАТЬ проверку интернета
     });
     
     newReportBtn.addEventListener('click', function(e) {
         showReportModal();
     });
+    
+    // ... остальной код функции без изменений ...
+}
     
     // Обработка выбора файла для импорта
     document.getElementById('importFileInput').addEventListener('change', function(event) {
@@ -5195,4 +5186,5 @@ window.addEventListener('beforeinstallprompt', (event) => {
 <p><a href="/workout-diary/privacy.html">Политика конфиденциальности</a></p>
 </footer>
 </html>
+
 
