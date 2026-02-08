@@ -1,8 +1,8 @@
-// service-worker.js - версия 2.4.4 с исправлением для обновления в офлайне
-const CACHE_NAME = 'workout-diary-v2.4.4';
+// service-worker.js - Финальная версия 2.4.5 (без кнопки обновлений)
+const CACHE_NAME = 'workout-diary-v2.4.5';
 
-// Список файлов для предварительного кэширования
-const urlsToCache = [
+// Критически важные файлы, кэшируемые при УСТАНОВКЕ
+const INITIAL_CACHE = [
   './',
   './index.html',
   './manifest.json',
@@ -10,139 +10,112 @@ const urlsToCache = [
   './service-worker.js',
   './maskable_icon_x192.png',
   './maskable_icon_x512.png'
-  // ПРИМЕЧАНИЕ: Добавьте сюда ваши CSS/JS файлы, если они появятся в проекте.
+  // Сюда при необходимости добавьте свои CSS/JS файлы
 ];
 
-// Установка
+// 1. УСТАНОВКА: Кэшируем начальный набор файлов
 self.addEventListener('install', event => {
+  console.log('[SW] Установка версии:', CACHE_NAME);
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[SW] Открыт кэш:', CACHE_NAME);
-        return cache.addAll(urlsToCache);
-      })
-      .then(() => {
-        console.log('[SW] Все важные файлы закэшированы');
-        return self.skipWaiting();
-      })
+      .then(cache => cache.addAll(INITIAL_CACHE))
+      .then(() => self.skipWaiting()) // Немедленная активация
   );
-  console.log('Service Worker: Установлен');
 });
 
-// Активация
+// 2. АКТИВАЦИЯ: Очищаем старые кэши
 self.addEventListener('activate', event => {
+  console.log('[SW] Активация новой версии');
   event.waitUntil(
-    Promise.all([
-      // Очищаем старые кэши
-      caches.keys().then(cacheNames => {
-        return Promise.all(
-          cacheNames.map(cacheName => {
-            if (cacheName !== CACHE_NAME) {
-              console.log('Удаляем старый кэш:', cacheName);
-              return caches.delete(cacheName);
-            }
-          })
-        );
-      }),
-      // Немедленно контролируем клиенты
-      self.clients.claim()
-    ])
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(name => {
+          if (name !== CACHE_NAME) {
+            console.log('[SW] Удаляем старый кэш:', name);
+            return caches.delete(name);
+          }
+        })
+      );
+    }).then(() => self.clients.claim()) // Немедленный контроль над вкладками
   );
-  console.log('Service Worker: Активирован');
 });
 
-// Стратегия: Network First, затем Cache
+// 3. СТРАТЕГИЯ FETCH: Умная, с приоритетом офлайн-работы
 self.addEventListener('fetch', event => {
   // Пропускаем не-GET запросы
   if (event.request.method !== 'GET') return;
 
-  // Особенно важное правило для index.html и навигационных запросов
-  if (event.request.url.includes('index.html') || 
-      event.request.mode === 'navigate') {
+  // А. ГЛАВНАЯ СТРАНИЦА (самое важное!)
+  if (event.request.mode === 'navigate') {
     event.respondWith(
+      // Стратегия: СЕТЬ с возвратом к КЭШУ (Stale-While-Revalidate)
       fetch(event.request)
-        .then(response => {
-          // Клонируем для кэша
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME)
-            .then(cache => cache.put(event.request, responseClone));
-          return response;
+        .then(networkResponse => {
+          // УСПЕХ из сети: тихо обновляем кэш для будущих загрузок
+          if (networkResponse.ok) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME)
+              .then(cache => cache.put(event.request, responseClone));
+          }
+          // Отдаём СВЕЖИЙ ответ из сети пользователю
+          return networkResponse;
         })
         .catch(() => {
-          // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Ищем в кэше по нескольким ключам
-          console.log('[SW] Офлайн. Ищу в кэше для:', event.request.url);
+          // ПРОВАЛ сети: ищем в кэше по всем возможным ключам
+          console.log('[SW] Офлайн. Поиск главной страницы...');
           
-          // 1. Сначала пробуем найти по полному URL запроса
-          return caches.match(event.request.url)
-            .then(response => {
-              if (response) {
-                console.log('[SW] Найдено по полному URL');
-                return response;
-              }
-              
-              // 2. Если не нашли, пробуем по ключу './' (корень)
-              return caches.match('./');
-            })
-            .then(response => {
-              if (response) {
-                console.log('[SW] Найдено по ключу "./"');
-                return response;
-              }
-              
-              // 3. Если всё ещё не нашли, пробуем по явному имени файла
-              return caches.match('./index.html');
-            })
-            .then(response => {
-              if (response) {
-                console.log('[SW] Найдено по "./index.html"');
-                return response;
-              }
-              
-              // 4. Если ничего не помогло, возвращаем запасную страницу
-              console.log('[SW] Страница не найдена в кэше');
+          // Варианты ключей для поиска (от наиболее к наименее вероятному)
+          const possibleKeys = [
+            event.request.url,                     // Полный URL запроса
+            self.location.origin + '/workout-diary/', // Абсолютный путь
+            './',                                  // Относительный корень
+            './index.html'                         // Явное имя файла
+          ];
+          
+          // Последовательно проверяем каждый ключ
+          const findInCache = (index) => {
+            if (index >= possibleKeys.length) {
+              // Ничего не нашли - показываем минимальную офлайн-страницу
               return new Response(
-                '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Режим офлайн</title></head><body><h1>Режим офлайн</h1><p>Приложение загружено в офлайн-режиме. Для доступа к полному функционалу требуется подключение к интернету.</p></body></html>',
-                {
-                  headers: { 'Content-Type': 'text/html; charset=utf-8' }
-                }
+                '<h3>Дневник тренировок</h3><p>Работает в офлайн-режиме. Для обновления данных требуется интернет.</p>',
+                { headers: {'Content-Type': 'text/html; charset=utf-8'} }
               );
-            });
+            }
+            
+            return caches.match(possibleKeys[index])
+              .then(response => response || findInCache(index + 1));
+          };
+          
+          return findInCache(0);
         })
     );
-    return;
+    return; // Завершаем обработку навигационных запросов
   }
 
-  // Для остальных файлов: сначала кэш, потом сеть
+  // Б. ВСЕ ОСТАЛЬНЫЕ ФАЙЛЫ (иконки, стили, скрипты)
   event.respondWith(
     caches.match(event.request)
       .then(cachedResponse => {
+        // Если есть в кэше - отдаём сразу (быстро, работает офлайн)
         if (cachedResponse) {
           return cachedResponse;
         }
         
+        // Если нет в кэше - пробуем сеть
         return fetch(event.request)
-          .then(response => {
-            // Кэшируем только успешные ответы
-            if (response.status === 200) {
-              const responseToCache = response.clone();
+          .then(networkResponse => {
+            // Успешный ответ из сети - кэшируем на будущее
+            if (networkResponse && networkResponse.status === 200) {
+              const responseClone = networkResponse.clone();
               caches.open(CACHE_NAME)
-                .then(cache => cache.put(event.request, responseToCache));
+                .then(cache => cache.put(event.request, responseClone));
             }
-            return response;
+            return networkResponse;
           })
           .catch(() => {
-            // Для CSS/JS возвращаем заглушку
-            if (event.request.url.includes('.css')) {
-              return new Response('/* Офлайн */', {
-                headers: { 'Content-Type': 'text/css' }
-              });
-            }
-            if (event.request.url.includes('.js')) {
-              return new Response('// Офлайн', {
-                headers: { 'Content-Type': 'application/javascript' }
-              });
-            }
-            return new Response('Режим офлайн');
+            // Не удалось загрузить (офлайн для не-главных файлов)
+            // Можно вернуть заглушку или просто ошибку
+            return new Response('', { status: 408 });
           });
       })
   );
