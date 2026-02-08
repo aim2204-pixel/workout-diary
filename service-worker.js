@@ -1,15 +1,15 @@
-// service-worker.js - Финальная версия 2.4.5 (без кнопки обновлений)
-const CACHE_NAME = 'workout-diary-v2.4.5';
+// service-worker.js - Финальная версия 2.4.6 (без кнопки обновлений)
+const CACHE_NAME = 'workout-diary-v2.4.6';
 
 // Критически важные файлы, кэшируемые при УСТАНОВКЕ
 const INITIAL_CACHE = [
-  './',
-  './index.html',
-  './manifest.json',
-  './privacy.html',
-  './service-worker.js',
-  './maskable_icon_x192.png',
-  './maskable_icon_x512.png'
+  '/workout-diary/',                      // Главная страница
+  '/workout-diary/index.html',            // Явный путь к HTML
+  '/workout-diary/manifest.json',         // Манифест
+  '/workout-diary/privacy.html',          // Политика
+  '/workout-diary/service-worker.js',     // Сам воркер
+  '/workout-diary/maskable_icon_x192.png', // Иконка 192x192
+  '/workout-diary/maskable_icon_x512.png'  // Иконка 512x512
   // Сюда при необходимости добавьте свои CSS/JS файлы
 ];
 
