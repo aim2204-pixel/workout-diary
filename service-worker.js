@@ -1,16 +1,34 @@
 // service-worker.js - исправленная версия
-const CACHE_NAME = 'workout-diary-v2.4.2'; // Увеличиваем версию
+const CACHE_NAME = 'workout-diary-v2.4.3'; // ОБНОВЛЕНО: Увеличиваем версию после правок
 
 // Список файлов для предварительного кэширования
+// ОБНОВЛЕНО: Исправлен и дополнен список в соответствии со структурой проекта
 const urlsToCache = [
   './',
   './index.html',
-  './manifest.json'
+  './manifest.json',
+  './privacy.html',
+  './service-worker.js',
+  './maskable_icon_x192.png',
+  './maskable_icon_x512.png'
+  // ПРИМЕЧАНИЕ: Добавьте сюда ваши CSS/JS файлы, если они появятся в проекте.
+  // Например: './app.js', './styles.css'
 ];
 
 // Установка
 self.addEventListener('install', event => {
-  self.skipWaiting(); // Активируем немедленно
+  // ИСПРАВЛЕНО: Добавлен event.waitUntil() для гарантии кэширования.
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('[SW] Открыт кэш:', CACHE_NAME);
+        return cache.addAll(urlsToCache);
+      })
+      .then(() => {
+        console.log('[SW] Все важные файлы закэшированы');
+        return self.skipWaiting(); // Активируем немедленно, но только после кэширования
+      })
+  );
   console.log('Service Worker: Установлен');
 });
 
@@ -55,7 +73,8 @@ self.addEventListener('fetch', event => {
         })
         .catch(() => {
           // При ошибке сети - из кэша
-          return caches.match('./index.html');
+          // ИСПРАВЛЕНО: Используем './' как резерв для навигационных запросов
+          return caches.match('./');
         })
     );
     return;
