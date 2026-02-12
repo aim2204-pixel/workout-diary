@@ -2032,9 +2032,23 @@ footer a:hover {
 .profile-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
     flex-wrap: wrap;
     margin-top: 10px;
+    width: 100%;
+}
+
+.btn-save-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.icons-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto; /* страховка */
 }
 
 .btn-icon {
@@ -2075,10 +2089,23 @@ footer a:hover {
 /* Адаптация для мобильных */
 @media (max-width: 768px) {
     .profile-actions {
+        flex-direction: row;        /* НЕ колонка, а строка */
+        flex-wrap: wrap;           /* перенос разрешён */
         justify-content: space-between;
+        align-items: center;
+        gap: 10px;
     }
+    
     .btn-save {
-        flex: 1;
+        width: auto;              /* ОТМЕНА width: 100% */
+        flex: 0 1 auto;          /* не растягивается */
+        min-width: 160px;        /* минимальная ширина, чтобы не сжималась */
+    }
+    
+    .icons-right {
+        width: auto;             /* ОТМЕНА width: 100% */
+        justify-content: flex-end;
+        margin-left: auto;       /* прижимает иконки к правому краю */
     }
 }
 
@@ -2088,6 +2115,10 @@ footer a:hover {
         width: 38px;
         height: 38px;
         font-size: 1rem;
+    }
+ .icons-right {
+        justify-content: center;  /* или space-around, или flex-end — как хотите */
+        gap: 16px;
     }
 }
 </style>
@@ -2198,22 +2229,22 @@ footer a:hover {
             <div class="hint">Для расчёта BMI</div>
         </div>
         
-        <!-- КОНТЕЙНЕР С КНОПКАМИ: СОХРАНИТЬ + 2 ИКОНКИ -->
+         <!-- КОНТЕЙНЕР С КНОПКАМИ: СЛЕВА — СОХРАНИТЬ, СПРАВА — ИКОНКИ -->
         <div class="profile-actions">
-            <!-- Оригинальная кнопка сохранения (полностью рабочая) -->
+            <!-- ЛЕВАЯ ЧАСТЬ: только кнопка "Сохранить" -->
             <button type="submit" class="btn-save">
                 <i class="fas fa-save"></i> Сохранить профиль
             </button>
             
-            <!-- НОВОЕ: Кнопка "Поделиться приложением" (только иконка) -->
-            <button class="btn-icon btn-share" title="Поделиться приложением">
-                <i class="fas fa-share-alt"></i>
-            </button>
-            
-            <!-- НОВОЕ: Кнопка "Обратная связь" (только иконка) -->
-            <button class="btn-icon btn-feedback" title="Написать разработчику">
-                <i class="fas fa-envelope"></i>
-            </button>
+            <!-- ПРАВАЯ ЧАСТЬ: две иконки прижаты к правому краю -->
+            <div class="icons-right">
+                <button class="btn-icon btn-share" title="Поделиться приложением">
+                    <i class="fas fa-share-alt"></i>
+                </button>
+                <button class="btn-icon btn-feedback" title="Написать разработчику">
+                    <i class="fas fa-envelope"></i>
+                </button>
+            </div>
         </div>
     </form>
 </div>
