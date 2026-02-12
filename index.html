@@ -5290,9 +5290,119 @@ window.addEventListener('beforeinstallprompt', (event) => {
   
   document.body.appendChild(installButton);
 });   
- </script>
+// ========== ЭТАП 2: ФУНКЦИОНАЛ КНОПОК ==========
+
+// URL приложения (всегда актуальный)
+const APP_URL = window.location.origin + window.location.pathname;
+const APP_NAME = 'Мой Дневник Тренировок';
+const APP_DESC = 'Бесплатный трекер для фитнеса. Веди дневник, следи за прогрессом!';
+
+// 1. ФУНКЦИЯ "ПОДЕЛИТЬСЯ ПРИЛОЖЕНИЕМ"
+async function shareApp() {
+    // Пробуем Web Share API
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: APP_NAME,
+                text: APP_DESC,
+                url: APP_URL,
+            });
+            showNotification('✅ Спасибо, что делитесь приложением!');
+            return;
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                console.log('Web Share ошибка:', err);
+                // Если не сработало — пробуем копирование
+            }
+        }
+    }
+    
+    // Резервный вариант: копирование в буфер
+    try {
+        await navigator.clipboard.writeText(APP_URL);
+        showNotification('🔗 Ссылка на приложение скопирована!');
+    } catch (err) {
+        console.error('Ошибка копирования:', err);
+        showNotification('❌ Не удалось скопировать ссылку', false);
+    }
+}
+
+// 2. ФУНКЦИЯ "ОБРАТНАЯ СВЯЗЬ"
+function sendFeedback() {
+    // Собираем техническую информацию
+    const version = document.getElementById('appVersion')?.textContent || 'V2.4.2';
+    const theme = document.body.classList.value.match(/theme-(\w+)/)?.[1] || 'dark';
+    
+    // Статистика
+    const workouts = loadWorkoutLog?.() || [];
+    const exercises = loadExercises?.() || [];
+    const profile = loadProfile?.() || {};
+    
+    // Формируем тело письма
+    const body = `
+--- ТЕХНИЧЕСКАЯ ИНФОРМАЦИЯ ---
+Версия: ${version}
+Тема: ${theme}
+Тренировок: ${workouts.length}
+Упражнений в базе: ${exercises.length}
+Пользователь: ${profile.name || 'не указан'}
+Устройство: ${navigator.userAgent}
+Дата: ${new Date().toLocaleString('ru-RU')}
+
+--- СООБЩЕНИЕ ---
+[Напишите ваше сообщение здесь]
+
+    `.trim();
+    
+    // Создаём mailto-ссылку
+    const subject = encodeURIComponent(`Обратная связь. Дневник тренировок ${version}`);
+    const mailtoLink = `mailto:workout-diary22@mail.ru?subject=${subject}&body=${encodeURIComponent(body)}`;
+    
+    // Открываем почтовый клиент
+    window.location.href = mailtoLink;
+    
+    // Показываем уведомление
+    setTimeout(() => {
+        showNotification('✉️ Открывается почтовый клиент...');
+    }, 100);
+}
+
+// 3. ПРИВЯЗКА К КНОПКАМ (с защитой от дублей)
+function initNewButtons() {
+    // Кнопка "Поделиться"
+    const shareBtn = document.querySelector('.btn-share');
+    if (shareBtn && !shareBtn.hasAttribute('data-handler-attached')) {
+        shareBtn.addEventListener('click', shareApp);
+        shareBtn.setAttribute('data-handler-attached', 'true');
+    }
+    
+    // Кнопка "Обратная связь"
+    const feedbackBtn = document.querySelector('.btn-feedback');
+    if (feedbackBtn && !feedbackBtn.hasAttribute('data-handler-attached')) {
+        feedbackBtn.addEventListener('click', sendFeedback);
+        feedbackBtn.setAttribute('data-handler-attached', 'true');
+    }
+}
+
+// Запускаем после загрузки DOM
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNewButtons);
+} else {
+    initNewButtons();
+}
+
+// Также запускаем при переключении вкладок (на случай, если кнопки пересоздаются)
+const originalNavHandler = document.querySelectorAll('.nav-item')?.forEach?.(item => {
+    item.addEventListener('click', function() {
+        setTimeout(initNewButtons, 50);
+    });
+}); 
+</script>
 </body>
 <footer>
 <p><a href="/workout-diary/privacy.html">Политика конфиденциальности</a></p>
 </footer>
 </html>
+
+
+
