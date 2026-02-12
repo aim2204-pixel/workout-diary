@@ -2027,7 +2027,70 @@ footer a:hover {
     color: var(--text-inverse);        /* Цвет при наведении */
     background: rgba(var(--color-primary-rgb, 157, 78, 221), 0.15); /* Лёгкий фон */
 }
-	</style>
+	
+/* ===== ЭТАП 1: КНОПКИ-ИКОНКИ (ПОДДЕРЖКА 3 ТЕМ) ===== */
+.profile-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.btn-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.btn-icon:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+.btn-share:hover {
+    background: var(--color-info);
+    border-color: var(--color-info);
+    color: #000;
+}
+
+.btn-feedback:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #000;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    .profile-actions {
+        justify-content: space-between;
+    }
+    .btn-save {
+        flex: 1;
+    }
+}
+
+/* Компактные экраны */
+@media (max-width: 480px) {
+    .btn-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
+    }
+}
+</style>
 	</style>
 <meta name="application-name" content="Мой Дневник Тренировок">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2058,7 +2121,7 @@ footer a:hover {
             <div class="subtitle" id="pageSubtitle">Сила в дисциплине. Прресс в деталях.</div>
         </div>
         <button class="header-add-btn" id="globalAddBtn" title="Добавить новую тренировку">+</button>
-        <div class="app-version" id="appVersion">V2.4.2</div>
+        <div class="app-version" id="appVersion">V2.4.3</div>
     </header>
     
     <div class="offline-warning" id="offlineWarning">
@@ -2122,22 +2185,41 @@ footer a:hover {
 </div>
 
             <!-- БЛОК ЛИЧНЫХ ДАННЫХ -->
-            <div class="profile-card">
-                <h2><i class="fas fa-user-circle"></i> Личные данные</h2>
-                <form class="profile-form" id="profileForm">
-                    <div class="form-group">
-                        <label for="profileUserName">Ваше имя *</label>
-                        <input type="text" id="profileUserName" placeholder="Введите Ваше имя" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="profileUserHeight">Рост (см) *</label>
-                        <input type="number" id="profileUserHeight" placeholder="Укажите Ваш рост в см." min="100" max="250" step="0.1" required>
-                        <div class="hint">Для расчёта BMI</div>
-                    </div>
-                    <button type="submit" class="btn-save"><i class="fas fa-save"></i> Сохранить профиль</button>
-                </form>
-            </div>
+<div class="profile-card">
+    <h2><i class="fas fa-user-circle"></i> Личные данные</h2>
+    <form class="profile-form" id="profileForm">
+        <div class="form-group">
+            <label for="profileUserName">Ваше имя *</label>
+            <input type="text" id="profileUserName" placeholder="Введите Ваше имя" required>
+        </div>
+        <div class="form-group">
+            <label for="profileUserHeight">Рост (см) *</label>
+            <input type="number" id="profileUserHeight" placeholder="Укажите Ваш рост в см." min="100" max="250" step="0.1" required>
+            <div class="hint">Для расчёта BMI</div>
+        </div>
+        
+        <!-- КОНТЕЙНЕР С КНОПКАМИ: СОХРАНИТЬ + 2 ИКОНКИ -->
+        <div class="profile-actions">
+            <!-- Оригинальная кнопка сохранения (полностью рабочая) -->
+            <button type="submit" class="btn-save">
+                <i class="fas fa-save"></i> Сохранить профиль
+            </button>
             
+            <!-- НОВОЕ: Кнопка "Поделиться приложением" (только иконка) -->
+            <button class="btn-icon btn-share" title="Поделиться приложением">
+                <i class="fas fa-share-alt"></i>
+            </button>
+            
+            <!-- НОВОЕ: Кнопка "Обратная связь" (только иконка) -->
+            <button class="btn-icon btn-feedback" title="Написать разработчику">
+                <i class="fas fa-envelope"></i>
+            </button>
+        </div>
+    </form>
+</div>
+            
+
+
             <!-- БЛОК ЭКСПОРТА/ИМПОРТА ДАННЫХ -->
             <div class="profile-card" style="margin-top: 15px;">
                 <h2><i class="fas fa-file-export"></i> Управление данными</h2>
@@ -5183,6 +5265,3 @@ window.addEventListener('beforeinstallprompt', (event) => {
 <p><a href="/workout-diary/privacy.html">Политика конфиденциальности</a></p>
 </footer>
 </html>
-
-
-
