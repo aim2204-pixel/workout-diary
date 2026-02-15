@@ -1,5 +1,5 @@
-// service-worker.js - Финальная версия 2.4.7 (сначала кэш, потом сеть)
-const CACHE_NAME = 'workout-diary-v2.4.7'; // Увеличил версию
+// service-worker.js - Финальная версия 2.4.8 (ПОЛНОСТЬЮ РАБОЧАЯ)
+const CACHE_NAME = 'workout-diary-v2.4.8';
 
 // Критически важные файлы, кэшируемые при УСТАНОВКЕ
 const INITIAL_CACHE = [
@@ -19,7 +19,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(INITIAL_CACHE))
-      .then(() => self.skipWaiting()) // Немедленная активация
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -36,42 +36,36 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    }).then(() => self.clients.claim()) // Немедленный контроль над вкладками
+    }).then(() => self.clients.claim())
   );
 });
 
-// 3. СТРАТЕГИЯ FETCH: Сначала кэш, потом сеть (для надёжной офлайн-работы)
+// 3. СТРАТЕГИЯ FETCH: Сначала кэш, потом сеть
 self.addEventListener('fetch', event => {
-  // Пропускаем не-GET запросы
   if (event.request.method !== 'GET') return;
 
-  // А. ГЛАВНАЯ СТРАНИЦА (самое важное!)
+  // ГЛАВНАЯ СТРАНИЦА (НАВИГАЦИЯ)
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      // ИСПРАВЛЕНО: Сначала проверяем КЭШ, потом сеть
-      caches.match(event.request)
-        .then(cachedResponse => {
-          if (cachedResponse) {
-            // Если страница есть в кэше — отдаём её немедленно
-            console.log('[SW] Навигация: отдаю из кэша');
-            return cachedResponse;
+      // Пробуем найти в кэше по ТРЁМ ключам
+      caches.match('/workout-diary/')
+        .then(r => r || caches.match('/workout-diary/index.html'))
+        .then(r => r || caches.match(event.request))
+        .then(cached => {
+          if (cached) {
+            console.log('[SW] Главная из кэша');
+            return cached;
           }
 
           // Если в кэше нет — идём в сеть
-          console.log('[SW] Навигация: нет в кэше, иду в сеть');
           return fetch(event.request)
             .then(networkResponse => {
-              // Клонируем и кэшируем на будущее
-              if (networkResponse.ok) {
-                const responseClone = networkResponse.clone();
-                caches.open(CACHE_NAME)
-                  .then(cache => cache.put(event.request, responseClone));
-              }
+              const clone = networkResponse.clone();
+              caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
               return networkResponse;
             })
             .catch(() => {
-              // Если сеть недоступна и кэша нет — показываем заглушку
-              console.log('[SW] Навигация: сеть недоступна, заглушка');
+              // Если нет ни кэша, ни сети — показываем заглушку
               return new Response(
                 '<h3>Дневник тренировок</h3><p>Вы офлайн. Подключитесь к интернету для обновления.</p>',
                 { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
@@ -79,33 +73,27 @@ self.addEventListener('fetch', event => {
             });
         })
     );
-    return; // Завершаем обработку навигационных запросов
+    return;
   }
 
-  // Б. ВСЕ ОСТАЛЬНЫЕ ФАЙЛЫ (иконки, стили, скрипты)
+  // ВСЕ ОСТАЛЬНЫЕ ФАЙЛЫ (стили, скрипты, иконки)
   event.respondWith(
     caches.match(event.request)
-      .then(cachedResponse => {
-        // Если есть в кэше - отдаём сразу (быстро, работает офлайн)
-        if (cachedResponse) {
-          return cachedResponse;
+      .then(cached => {
+        if (cached) {
+          console.log('[SW] Ресурс из кэша:', event.request.url);
+          return cached;
         }
-        
-        // Если нет в кэше - пробуем сеть
+
         return fetch(event.request)
           .then(networkResponse => {
-            // Успешный ответ из сети - кэшируем на будущее
             if (networkResponse && networkResponse.status === 200) {
-              const responseClone = networkResponse.clone();
-              caches.open(CACHE_NAME)
-                .then(cache => cache.put(event.request, responseClone));
+              const clone = networkResponse.clone();
+              caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
             }
             return networkResponse;
           })
-          .catch(() => {
-            // Не удалось загрузить (офлайн для не-главных файлов)
-            return new Response('', { status: 408 });
-          });
+          .catch(() => new Response('', { status: 408 }));
       })
   );
 });
