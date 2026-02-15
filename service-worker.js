@@ -1,5 +1,5 @@
-// service-worker.js - Финальная версия 2.4.6 (без кнопки обновлений)
-const CACHE_NAME = 'workout-diary-v2.4.6';
+// service-worker.js - Финальная версия 2.4.7 (сначала кэш, потом сеть)
+const CACHE_NAME = 'workout-diary-v2.4.7'; // Увеличил версию
 
 // Критически важные файлы, кэшируемые при УСТАНОВКЕ
 const INITIAL_CACHE = [
@@ -40,7 +40,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// 3. СТРАТЕГИЯ FETCH: Умная, с приоритетом офлайн-работы
+// 3. СТРАТЕГИЯ FETCH: Сначала кэш, потом сеть (для надёжной офлайн-работы)
 self.addEventListener('fetch', event => {
   // Пропускаем не-GET запросы
   if (event.request.method !== 'GET') return;
@@ -48,45 +48,35 @@ self.addEventListener('fetch', event => {
   // А. ГЛАВНАЯ СТРАНИЦА (самое важное!)
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      // Стратегия: СЕТЬ с возвратом к КЭШУ (Stale-While-Revalidate)
-      fetch(event.request)
-        .then(networkResponse => {
-          // УСПЕХ из сети: тихо обновляем кэш для будущих загрузок
-          if (networkResponse.ok) {
-            const responseClone = networkResponse.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => cache.put(event.request, responseClone));
+      // ИСПРАВЛЕНО: Сначала проверяем КЭШ, потом сеть
+      caches.match(event.request)
+        .then(cachedResponse => {
+          if (cachedResponse) {
+            // Если страница есть в кэше — отдаём её немедленно
+            console.log('[SW] Навигация: отдаю из кэша');
+            return cachedResponse;
           }
-          // Отдаём СВЕЖИЙ ответ из сети пользователю
-          return networkResponse;
-        })
-        .catch(() => {
-          // ПРОВАЛ сети: ищем в кэше по всем возможным ключам
-          console.log('[SW] Офлайн. Поиск главной страницы...');
-          
-          // Варианты ключей для поиска (от наиболее к наименее вероятному)
-          const possibleKeys = [
-            event.request.url,                     // Полный URL запроса
-            self.location.origin + '/workout-diary/', // Абсолютный путь
-            './',                                  // Относительный корень
-            './index.html'                         // Явное имя файла
-          ];
-          
-          // Последовательно проверяем каждый ключ
-          const findInCache = (index) => {
-            if (index >= possibleKeys.length) {
-              // Ничего не нашли - показываем минимальную офлайн-страницу
+
+          // Если в кэше нет — идём в сеть
+          console.log('[SW] Навигация: нет в кэше, иду в сеть');
+          return fetch(event.request)
+            .then(networkResponse => {
+              // Клонируем и кэшируем на будущее
+              if (networkResponse.ok) {
+                const responseClone = networkResponse.clone();
+                caches.open(CACHE_NAME)
+                  .then(cache => cache.put(event.request, responseClone));
+              }
+              return networkResponse;
+            })
+            .catch(() => {
+              // Если сеть недоступна и кэша нет — показываем заглушку
+              console.log('[SW] Навигация: сеть недоступна, заглушка');
               return new Response(
-                '<h3>Дневник тренировок</h3><p>Работает в офлайн-режиме. Для обновления данных требуется интернет.</p>',
-                { headers: {'Content-Type': 'text/html; charset=utf-8'} }
+                '<h3>Дневник тренировок</h3><p>Вы офлайн. Подключитесь к интернету для обновления.</p>',
+                { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
               );
-            }
-            
-            return caches.match(possibleKeys[index])
-              .then(response => response || findInCache(index + 1));
-          };
-          
-          return findInCache(0);
+            });
         })
     );
     return; // Завершаем обработку навигационных запросов
@@ -114,7 +104,6 @@ self.addEventListener('fetch', event => {
           })
           .catch(() => {
             // Не удалось загрузить (офлайн для не-главных файлов)
-            // Можно вернуть заглушку или просто ошибку
             return new Response('', { status: 408 });
           });
       })
