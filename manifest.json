@@ -63,9 +63,9 @@
 ],
   "screenshots": [
     {
-      "src": "./screenshot-mobile.png",
-      "sizes": "375x812",
-      "type": "image/png",
+      "src": "./screenshot-mobile-1.jpg",
+      "sizes": "1440x3010",
+      "type": "image/jpg",
       "form_factor": "narrow",
       "label": "Главный экран на телефоне"
     },
