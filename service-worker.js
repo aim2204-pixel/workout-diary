@@ -1,15 +1,15 @@
-// service-worker.js - Финальная версия 2.4.9 (ГАРАНТИРОВАННО РАБОЧАЯ)
-const CACHE_NAME = 'workout-diary-v2.4.9';
+// service-worker.js - Версия 2.5.0 (ИСПРАВЛЕНА ПРОБЛЕМА ОФЛАЙН)
+const CACHE_NAME = 'workout-diary-v2.5.0';
 
 // Критически важные файлы, кэшируемые при УСТАНОВКЕ
 const INITIAL_CACHE = [
-  '/workout-diary/',                      // Главная страница
-  '/workout-diary/index.html',            // Явный путь к HTML
-  '/workout-diary/manifest.json',         // Манифест
-  '/workout-diary/privacy.html',          // Политика
-  '/workout-diary/service-worker.js',     // Сам воркер
-  '/workout-diary/maskable_icon_x192.png', // Иконка 192x192
-  '/workout-diary/maskable_icon_x512.png'  // Иконка 512x512
+  '/workout-diary/',
+  '/workout-diary/index.html',
+  '/workout-diary/manifest.json',
+  '/workout-diary/privacy.html',
+  '/workout-diary/service-worker.js',
+  '/workout-diary/maskable_icon_x192.png',
+  '/workout-diary/maskable_icon_x512.png'
 ];
 
 // 1. УСТАНОВКА: Кэшируем начальный набор файлов
@@ -39,42 +39,74 @@ self.addEventListener('activate', event => {
   );
 });
 
-// 3. СТРАТЕГИЯ FETCH: Только нужное, без лишней сложности
+// 3. СТРАТЕГИЯ FETCH: Исправленная логика
 self.addEventListener('fetch', event => {
   // Пропускаем не-GET запросы
   if (event.request.method !== 'GET') return;
 
-  // ГЛАВНАЯ СТРАНИЦА — самое важное
+  // ГЛАВНАЯ СТРАНИЦА — навигационные запросы
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      // Пробуем взять из кэша по точному ключу
-      caches.match('/workout-diary/')
-        .then(cachedResponse => {
-          if (cachedResponse) {
-            console.log('[SW] Главная страница загружена из кэша');
-            return cachedResponse;
-          }
+      (async () => {        // 🔧 ИСПРАВЛЕНИЕ #1: Сначала пробуем найти ЛЮБОЙ вариант страницы в кэше
+        const cachedResponse = await caches.match(event.request);
+        if (cachedResponse) {
+          console.log('[SW] Страница загружена из кэша (по URL запроса)');
+          return cachedResponse;
+        }
 
-          // Если в кэше нет — пробуем сеть
-          return fetch(event.request)
-            .then(networkResponse => {
-              // Сохраняем в кэш на будущее
-              const responseClone = networkResponse.clone();
-              caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
-              return networkResponse;
-            })
-            .catch(() => {
-              // Если нет ни кэша, ни сети — показываем информативную заглушку
-              console.log('[SW] Офлайн: страница не найдена в кэше');
-              return new Response(
-                '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Офлайн</title></head><body>' +
-                '<h3>Дневник тренировок</h3>' +
-                '<p>Работает в офлайн-режиме. Для обновления данных требуется интернет.</p>' +
-                '</body></html>',
-                { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
-              );
-            });
-        })
+        // 🔧 ИСПРАВЛЕНИЕ #2: Пробуем альтернативные пути (для GitHub Pages)
+        const fallbackPaths = [
+          '/workout-diary/',
+          '/workout-diary/index.html',
+          '/index.html',
+          '/'
+        ];
+
+        for (const path of fallbackPaths) {
+          const fallback = await caches.match(path);
+          if (fallback) {
+            console.log('[SW] Страница загружена из кэша (fallback):', path);
+            return fallback;
+          }
+        }
+
+        // 🔧 ИСПРАВЛЕНИЕ #3: Если кэша нет — пробуем сеть
+        try {
+          const networkResponse = await fetch(event.request);
+          // Сохраняем в кэш на будущее
+          const responseClone = networkResponse.clone();
+          const cache = await caches.open(CACHE_NAME);
+          cache.put(event.request, responseClone);
+          return networkResponse;
+        } catch (error) {
+          // 🔧 ИСПРАВЛЕНИЕ #4: Показываем заглушку ТОЛЬКО если страницы нет в кэше ВООБЩЕ
+          // Это значит пользователь зашёл впервые без интернета
+          console.log('[SW] Офлайн: страница не найдена в кэше ВООБЩЕ');
+          return new Response(
+            `<!DOCTYPE html>
+            <html lang="ru">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Офлайн</title>
+              <style>
+                body { font-family: system-ui, sans-serif; text-align: center; padding: 40px; background: #f5f5f5; }
+                h1 { color: #333; }
+                p { color: #666; }
+                .btn { display: inline-block; padding: 12px 24px; background: #4CAF50; color: white; 
+                       text-decoration: none; border-radius: 8px; margin-top: 20px; }
+              </style>
+            </head>            <body>
+              <h1>📴 Нет соединения</h1>
+              <p>Приложение не было загружено ранее.</p>
+              <p>Подключитесь к интернету для первого запуска.</p>
+              <a href="/" class="btn" onclick="location.reload()">Попробовать снова</a>
+            </body>
+            </html>`,
+            { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+          );
+        }
+      })()
     );
     return;
   }
