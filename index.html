@@ -5204,48 +5204,39 @@ function fallbackDownloadReport(content, fileName) {
         window.moveExerciseUp = moveExerciseUp;
         window.moveExerciseDown = moveExerciseDown;
         
-        // Service Worker
-       if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js')
-      .then(registration => {
-        console.log('ServiceWorker зарегистрирован:', registration.scope);
-      })
-      .catch(error => {
-        console.log('Ошибка регистрации ServiceWorker:', error);
-      });
-  });
-}
-        
-        // Принудительное обновление Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/workout-diary/service-worker.js')
-                .then(registration => {
-                    console.log('Service Worker зарегистрирован:', registration.scope);
-                    
-                    registration.addEventListener('updatefound', () => {
-                        const newWorker = registration.installing;
-                        console.log('Найдено обновление Service Worker');
-                        
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                console.log('Новая версия доступна. Перезагрузите страницу.');
-                                if (confirm('Доступна новая версия приложения. Обновить сейчас?')) {
-                                    window.location.reload();
-                                }
-                            }
-                        });
-                    });
-                })
-                .catch(error => {
-                    console.log('Ошибка регистрации ServiceWorker:', error);
-                });
+// === ВАШ НОВЫЙ КОД ДЛЯ SERVICE WORKER ===
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', async () => {
+        try {
+            const registration = await navigator.serviceWorker.getRegistration();
             
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                console.log('Controller changed, reloading page');
-                window.location.reload();
+            if (registration && registration.active) {
+                console.log('Service Worker активен:', registration.active);
+                navigator.serviceWorker.controller?.postMessage({
+                    type: 'CHECK_STATUS'
+                });
+            } else {
+                const newReg = await navigator.serviceWorker.register('/workout-diary/service-worker.js');
+                console.log('Service Worker зарегистрирован:', newReg);
+            }
+            
+            navigator.serviceWorker.addEventListener('message', event => {
+                if (event.data.type === 'CACHE_STATUS') {
+                    console.log('Статус кэша:', event.data);
+                }
             });
+            
+        } catch (error) {
+            console.error('Ошибка при работе с Service Worker:', error);
         }
+    });
+    
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('Новый Service Worker активирован');
+        window.location.reload();
+    });
+}
+// === КОНЕЦ НОВОГО КОДА ===
         
         // Принудительная очистка кэша при разработке
         if (window.location.hostname === 'localhost' || window.location.hostname.includes('github.io')) {
@@ -5402,7 +5393,4 @@ const originalNavHandler = document.querySelectorAll('.nav-item')?.forEach?.(ite
 <footer>
 <p><a href="/workout-diary/privacy.html">Политика конфиденциальности</a></p>
 </footer>
-</html>
-
-
-
+</htm
