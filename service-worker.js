@@ -1,132 +1,163 @@
-// service-worker.js - Версия 2.5.0 (ИСПРАВЛЕНА ПРОБЛЕМА ОФЛАЙН)
+// service-worker.js - v2.5.0 (ИСПРАВЛЕННАЯ)
 const CACHE_NAME = 'workout-diary-v2.5.0';
+const CACHE_PREFIX = 'workout-diary';
 
-// Критически важные файлы, кэшируемые при УСТАНОВКЕ
+// Базовые файлы для кэширования
 const INITIAL_CACHE = [
-  '/workout-diary/',
-  '/workout-diary/index.html',
-  '/workout-diary/manifest.json',
-  '/workout-diary/privacy.html',
-  '/workout-diary/service-worker.js',
-  '/workout-diary/maskable_icon_x192.png',
-  '/workout-diary/maskable_icon_x512.png'
+  './',                                // Текущий каталог
+  './index.html',                      // Явный HTML
+  './manifest.json',
+  './privacy.html',
+  './service-worker.js',
+  './maskable_icon_x192.png',
+  './maskable_icon_x512.png'
 ];
 
-// 1. УСТАНОВКА: Кэшируем начальный набор файлов
+// 1. УСТАНОВКА
 self.addEventListener('install', event => {
-  console.log('[SW] Установка версии:', CACHE_NAME);
+  console.log('[SW] Установка:', CACHE_NAME);
+  
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(INITIAL_CACHE))
-      .then(() => self.skipWaiting())
+      .then(cache => {
+        console.log('[SW] Кэширование начальных файлов');
+        return cache.addAll(INITIAL_CACHE);
+      })
+      .then(() => {
+        console.log('[SW] Принудительная активация');
+        return self.skipWaiting();
+      })
+      .catch(error => {
+        console.error('[SW] Ошибка при кэшировании:', error);
+      })
   );
 });
 
-// 2. АКТИВАЦИЯ: Очищаем старые кэши
+// 2. АКТИВАЦИЯ
 self.addEventListener('activate', event => {
   console.log('[SW] Активация новой версии');
+  
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(name => {
-          if (name !== CACHE_NAME) {
-            console.log('[SW] Удаляем старый кэш:', name);
-            return caches.delete(name);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+    Promise.all([
+      // Очистка старых кэшей
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(name => {
+            if (name !== CACHE_NAME && name.startsWith(CACHE_PREFIX)) {
+              console.log('[SW] Удаление старого кэша:', name);
+              return caches.delete(name);
+            }
+          })
+        );
+      }),
+      // Немедленный захват контроля над всеми клиентами
+      self.clients.claim()
+    ]).then(() => {
+      console.log('[SW] Готов к работе');
+    })
   );
 });
 
-// 3. СТРАТЕГИЯ FETCH: Исправленная логика
+// 3. ОБРАБОТКА ЗАПРОСОВ
 self.addEventListener('fetch', event => {
-  // Пропускаем не-GET запросы
-  if (event.request.method !== 'GET') return;
+  const { request } = event;
+  
+  // Пропускаем всё, кроме GET
+  if (request.method !== 'GET') return;
 
-  // ГЛАВНАЯ СТРАНИЦА — навигационные запросы
-  if (event.request.mode === 'navigate') {
+  // Обработка навигационных запросов (главная страница)
+  if (request.mode === 'navigate') {
     event.respondWith(
-      (async () => {        // 🔧 ИСПРАВЛЕНИЕ #1: Сначала пробуем найти ЛЮБОЙ вариант страницы в кэше
-        const cachedResponse = await caches.match(event.request);
+      (async () => {
+        try {
+          // Сначала пробуем сеть
+          const networkResponse = await fetch(request);
+          
+          // Если успешно, кэшируем и возвращаем
+          if (networkResponse && networkResponse.status === 200) {
+            const cache = await caches.open(CACHE_NAME);
+            await cache.put(request, networkResponse.clone());
+            console.log('[SW] Навигация: загружено из сети и закэшировано');
+            return networkResponse;
+          }
+        } catch (error) {
+          console.log('[SW] Сеть недоступна, ищем в кэше');
+        }
+
+        // Если сеть не работает, ищем в кэше
+        const cachedResponse = await caches.match(request);
+        
         if (cachedResponse) {
-          console.log('[SW] Страница загружена из кэша (по URL запроса)');
+          console.log('[SW] Навигация: загружено из кэша');
           return cachedResponse;
         }
 
-        // 🔧 ИСПРАВЛЕНИЕ #2: Пробуем альтернативные пути (для GitHub Pages)
-        const fallbackPaths = [
-          '/workout-diary/',
-          '/workout-diary/index.html',
-          '/index.html',
-          '/'
-        ];
-
-        for (const path of fallbackPaths) {
-          const fallback = await caches.match(path);
-          if (fallback) {
-            console.log('[SW] Страница загружена из кэша (fallback):', path);
-            return fallback;
-          }
+        // Если ничего нет, пробуем найти корневой index.html
+        const rootCached = await caches.match('./index.html') || 
+                          await caches.match('/workout-diary/index.html') ||
+                          await caches.match('/index.html');
+        
+        if (rootCached) {
+          console.log('[SW] Навигация: загружено корневое index.html из кэша');
+          return rootCached;
         }
 
-        // 🔧 ИСПРАВЛЕНИЕ #3: Если кэша нет — пробуем сеть
-        try {
-          const networkResponse = await fetch(event.request);
-          // Сохраняем в кэш на будущее
-          const responseClone = networkResponse.clone();
-          const cache = await caches.open(CACHE_NAME);
-          cache.put(event.request, responseClone);
-          return networkResponse;
-        } catch (error) {
-          // 🔧 ИСПРАВЛЕНИЕ #4: Показываем заглушку ТОЛЬКО если страницы нет в кэше ВООБЩЕ
-          // Это значит пользователь зашёл впервые без интернета
-          console.log('[SW] Офлайн: страница не найдена в кэше ВООБЩЕ');
-          return new Response(
-            `<!DOCTYPE html>
-            <html lang="ru">
+        // Совсем ничего нет - показываем заглушку
+        console.log('[SW] Офлайн: страница не найдена');
+        return new Response(
+          `<!DOCTYPE html>
+          <html>
             <head>
               <meta charset="utf-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Офлайн</title>
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <title>Дневник тренировок</title>
               <style>
-                body { font-family: system-ui, sans-serif; text-align: center; padding: 40px; background: #f5f5f5; }
-                h1 { color: #333; }
-                p { color: #666; }
-                .btn { display: inline-block; padding: 12px 24px; background: #4CAF50; color: white; 
-                       text-decoration: none; border-radius: 8px; margin-top: 20px; }
+                body { font-family: system-ui; text-align: center; padding: 2rem; }
+                .offline { color: #666; }
               </style>
-            </head>            <body>
-              <h1>📴 Нет соединения</h1>
-              <p>Приложение не было загружено ранее.</p>
-              <p>Подключитесь к интернету для первого запуска.</p>
-              <a href="/" class="btn" onclick="location.reload()">Попробовать снова</a>
+            </head>
+            <body>
+              <h3>📱 Дневник тренировок</h3>
+              <p class="offline">Вы в офлайн-режиме</p>
+              <p>Для обновления данных подключитесь к интернету</p>
             </body>
-            </html>`,
-            { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
-          );
-        }
+          </html>`,
+          { 
+            headers: { 
+              'Content-Type': 'text/html; charset=utf-8',
+              'Cache-Control': 'no-cache'
+            } 
+          }
+        );
       })()
     );
     return;
   }
 
-  // ВСЕ ОСТАЛЬНЫЕ ФАЙЛЫ (иконки, стили, скрипты)
+  // Обработка статических ресурсов
   event.respondWith(
-    caches.match(event.request)
-      .then(cachedResponse => {
-        if (cachedResponse) {
-          return cachedResponse;
+    (async () => {
+      // Сначала проверяем кэш
+      const cachedResponse = await caches.match(request);
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      // Если нет в кэше, пробуем сеть
+      try {
+        const networkResponse = await fetch(request);
+        
+        if (networkResponse && networkResponse.status === 200) {
+          const cache = await caches.open(CACHE_NAME);
+          await cache.put(request, networkResponse.clone());
         }
-        return fetch(event.request)
-          .then(networkResponse => {
-            if (networkResponse && networkResponse.status === 200) {
-              const responseClone = networkResponse.clone();
-              caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
-            }
-            return networkResponse;
-          })
-          .catch(() => new Response('', { status: 408 }));
-      })
+        
+        return networkResponse;
+      } catch (error) {
+        // Для ресурсов, которые не удалось загрузить
+        console.log('[SW] Ресурс не найден:', request.url);
+        return new Response('', { status: 404 });
+      }
+    })()
   );
 });
