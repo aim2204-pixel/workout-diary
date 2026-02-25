@@ -2,8 +2,8 @@
   "name": "Мой Дневник Тренировок",
   "short_name": "Тренировки",
   "description": "Персональный дневник для отслеживания тренировок, веса и прогресса",
-  "start_url": "./",  // Изменено с "/workout-diary/"
-  "scope": "./",      // Добавлено
+  "start_url": "/workout-diary/",
+  "scope": "/workout-diary/",
   "display": "standalone",
   "background_color": "#1a1a2e",
   "theme_color": "#9d4edd",
@@ -11,66 +11,60 @@
   "categories": ["health", "fitness", "productivity"],
   "lang": "ru",
   "dir": "ltr",
- "icons": [
-  {
-    "purpose": "maskable any",
-    "sizes": "1200x1200",
-    "src": "./maskable_icon.png",
-    "type": "image/png"
-  },
-  {
- "purpose": "maskable any",
-    "sizes": "48x48",
-    "src": "./maskable_icon_x48.png",
-    "type": "image/png"
-  },
-  {
-"purpose": "maskable any",
-    "sizes": "72x72",
-    "src": "./maskable_icon_x72.png",
-    "type": "image/png"
-  },
-  {
-"purpose": "maskable any",
-    "sizes": "96x96",
-    "src": "./maskable_icon_x96.png",
-    "type": "image/png"
-  },
-  {
-"purpose": "maskable any",
-    "sizes": "128x128",
-    "src": "./maskable_icon_x128.png",
-    "type": "image/png"
-  },
-  {
-"purpose": "maskable any",
-    "sizes": "192x192",
-    "src": "./maskable_icon_x192.png",
-    "type": "image/png"
-  },
-  {
-"purpose": "maskable any",
-    "sizes": "384x384",
-    "src": "./maskable_icon_x384.png",
-    "type": "image/png"
-  },
-  {
-"purpose": "maskable any",
-    "sizes": "512x512",
-    "src": "./maskable_icon_x512.png",
-    "type": "image/png"
-  }
-],
+  "icons": [
+    {
+      "purpose": "maskable any",
+      "sizes": "48x48",
+      "src": "/workout-diary/maskable_icon_x48.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "maskable any",
+      "sizes": "72x72",
+      "src": "/workout-diary/maskable_icon_x72.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "maskable any",
+      "sizes": "96x96",
+      "src": "/workout-diary/maskable_icon_x96.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "maskable any",
+      "sizes": "128x128",
+      "src": "/workout-diary/maskable_icon_x128.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "maskable any",
+      "sizes": "192x192",
+      "src": "/workout-diary/maskable_icon_x192.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "maskable any",
+      "sizes": "384x384",
+      "src": "/workout-diary/maskable_icon_x384.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "maskable any",
+      "sizes": "512x512",
+      "src": "/workout-diary/maskable_icon_x512.png",
+      "type": "image/png"
+    }
+  ],
   "screenshots": [
     {
-      "src": "./screenshot-mobile-1.jpg",
+      "src": "/workout-diary/screenshot-mobile-1.jpg",
       "sizes": "1440x3010",
       "type": "image/jpg",
       "form_factor": "narrow",
       "label": "Главный экран на телефоне"
     },
     {
-      "src": "./screenshot-desktop.png",
+      "src": "/workout-diary/screenshot-desktop.png",
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
