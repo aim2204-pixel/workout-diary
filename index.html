@@ -44,12 +44,10 @@
             --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
             --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.2);
             --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
-            --shadow-inset: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-            --glass-blur: 0px;
             --transition: all 0.2s ease;
         }
         
-        /* ==================== ТЕМА: LIGHT (СВЕТЛАЯ - МЯГКИЙ БЕЖЕВЫЙ) ==================== */
+        /* ==================== ТЕМА: LIGHT ==================== */
         .theme-light {
             --color-primary: #8b7355;
             --color-secondary: #7a9eb1;
@@ -81,17 +79,8 @@
             --exercise-item-bg: rgba(139, 115, 85, 0.08);
             --timer-laps-bg: rgba(255, 255, 255, 0.8);
         }
-
-        .theme-light .btn-remove-weight-set {
-            background: rgba(201, 122, 122, 0.2);
-            color: #c97a7a;
-            border-color: rgba(201, 122, 122, 0.4);
-        }
-        .theme-light .btn-remove-weight-set:hover {
-            background: rgba(201, 122, 122, 0.4);
-        }
         
-        /* ==================== ТЕМА: PREMIUM (ПРЕМИУМ) ==================== */
+        /* ==================== ТЕМА: PREMIUM ==================== */
         .theme-premium {
             --color-primary: #d4af37;
             --color-secondary: #b87333;
@@ -121,55 +110,128 @@
             --extra-activity-bg: rgba(42, 157, 143, 0.2);
             --extra-activity-border: #2a9d8f;
         }
-        .theme-premium .btn-remove-weight-set {
-            background: rgba(231, 111, 81, 0.2);
-            color: #e76f51;
-            border-color: rgba(231, 111, 81, 0.4);
-        }
-        .theme-premium .btn-remove-weight-set:hover {
-            background: rgba(231, 111, 81, 0.4);
-        }
         
-        /* ==================== ОСНОВНЫЕ СТИЛИ (СОКРАЩЕНЫ ДЛЯ ЭКОНОМИИ МЕСТА) ==================== */
         body { background: var(--bg-body); color: var(--text-primary); min-height: 100vh; padding-bottom: 60px; line-height: 1.4; }
         .app-header { background: var(--bg-header); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--color-primary); position: relative; }
         .header-titles { text-align: left; }
         .app-header h1 { font-size: 1.4rem; font-weight: 700; color: var(--text-inverse); line-height: 1.2; }
         .app-header .subtitle { font-size: 0.8rem; opacity: 0.8; color: var(--text-secondary); }
-        .app-header .subtitle.diary-subtitle { font-weight: bold; color: var(--color-accent); }
         .header-add-btn { background: var(--color-primary); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(0,0,0,0.3); transition: all 0.2s; position: absolute; right: 60px; }
         .content-area { padding: 12px; max-width: 800px; margin: 0 auto; }
         .workout-list { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; }
         .workout-card { background: var(--bg-card); border-radius: 12px; padding: 14px; border-left: 5px solid var(--color-primary); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2); position: relative; }
+        .workout-card[data-type="group"] { border-left-color: var(--color-success); }
+        .workout-card[data-type="home"] { border-left-color: var(--color-warning); }
+        .workout-card[data-type="cardio"] { border-left-color: var(--color-danger); }
+        .workout-date { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-right: 100px; }
+        .date-text { font-size: 1.15rem; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 10px; }
+        .workout-type { color: white; padding: 4px 12px; border-radius: 16px; font-size: 0.78rem; font-weight: 600; margin-top: 4px; }
+        .type-strength { background-color: var(--color-primary); }
+        .type-group { background-color: var(--color-success); }
+        .type-home { background-color: var(--color-warning); }
+        .type-cardio { background-color: var(--color-danger); }
+        .type-other { background-color: var(--color-secondary); }
+        .workout-actions { position: absolute; top: 14px; right: 14px; display: flex; gap: 8px; }
+        .workout-copy-btn, .workout-edit-btn, .workout-delete-btn { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7); border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.2s; }
+        .exercises-block { margin: 10px 0 6px 0; }
+        .exercise-item { background: var(--exercise-bg, rgba(0, 30, 60, 0.4)); margin: 6px 0; padding: 10px 12px; border-radius: 8px; border-left: 4px solid var(--exercise-border, #0077b6); }
+        .exercise-name-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .exercise-main-name { font-weight: 700; font-size: 1rem; color: var(--text-primary); display: flex; align-items: center; gap: 6px; }
+        .exercise-number { color: var(--color-primary); font-weight: 800; font-size: 0.9em; min-width: 1.2em; }
+        .exercise-spec { font-size: 0.85rem; color: var(--text-secondary); font-style: italic; white-space: pre-wrap; word-wrap: break-word; display: block; margin-top: 4px; }
+        .weight-details { background: var(--weight-details-bg, rgba(157, 78, 221, 0.15)); padding: 6px 10px; border-radius: 6px; margin: 4px 0; font-family: monospace; white-space: pre-line; color: var(--text-primary); font-weight: 700; font-size: 0.9rem; }
+        .exercise-note { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border-color); font-weight: 400; text-decoration: underline; color: var(--exercise-note-color, #b5e48c); font-size: 0.88rem; white-space: pre-wrap; word-wrap: break-word; display: block; }
+        .extra-activity { margin-top: 12px; padding: 8px 12px; background: var(--extra-activity-bg, rgba(72, 187, 120, 0.2)); border-radius: 8px; border-left: 4px solid var(--extra-activity-border, #48bb78); color: var(--text-primary); font-size: 0.9rem; }
+        .metrics { display: flex; justify-content: space-around; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-color); }
+        .metric-value { font-size: 1.35rem; font-weight: 800; color: var(--color-accent); }
+        .metric-label { font-size: 0.8rem; opacity: 0.9; margin-top: 2px; color: var(--text-muted); }
+        .form-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-overlay); z-index: 2000; overflow-y: auto; }
+        .form-container { background: var(--bg-card); margin: 30px auto; max-width: 700px; border-radius: 20px; padding: 30px; box-shadow: var(--shadow-lg); border: 1px solid var(--color-primary); }
+        .form-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--color-primary); }
+        .form-header h2 { color: var(--text-secondary); font-size: 1.6rem; }
+        .btn-close-form { background: transparent; color: var(--text-muted); border: none; font-size: 1.8rem; cursor: pointer; padding: 5px 10px; border-radius: 5px; }
+        .workout-form { display: flex; flex-direction: column; gap: 25px; }
+        .form-section { background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 25px; border-left: 4px solid var(--color-secondary); }
+        .form-section h3 { color: var(--text-primary); margin-bottom: 20px; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
+        .form-row { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; }
+        .form-group { flex: 1; min-width: 250px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 0.95rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 15px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-primary); font-size: 1rem; transition: var(--transition); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--color-secondary); background: rgba(255, 255, 255, 0.15); }
+        .hint { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; }
+        .exercises-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .exercises-table thead th { padding: 12px 8px; text-align: left; color: var(--text-secondary); font-weight: 600; border-bottom: 2px solid var(--border-color); font-size: 0.9rem; }
+        .exercises-table tbody tr { border-bottom: 1px solid var(--border-color); }
+        .exercises-table td { padding: 12px 8px; vertical-align: top; }
+        .order-buttons { display: flex; flex-direction: row; gap: 6px; align-items: center; justify-content: center; }
+        .btn-move-up, .btn-move-down { width: 31px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: rgba(var(--color-primary-rgb, 157, 78, 221), 0.2); color: var(--color-primary); border: 1px solid rgba(var(--color-primary-rgb, 157, 78, 221), 0.4); }
+        .btn-remove-row { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: rgba(var(--color-danger-rgb, 220, 53, 69), 0.2); color: var(--color-danger); border: 1px solid rgba(var(--color-danger-rgb, 220, 53, 69), 0.4); margin-top: 4px; }
+        .btn-remove-weight-set { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: rgba(var(--color-danger-rgb, 220, 53, 69), 0.2); color: var(--color-danger); border: 1px solid rgba(var(--color-danger-rgb, 220, 53, 69), 0.4); flex-shrink: 0; }
+        .weight-set-buttons { display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
+        .weight-sets-container { display: flex; flex-direction: column; gap: 8px; }
+        .weight-set-row { display: flex; gap: 8px; align-items: center; }
+        .weight-set-input { flex: 2; min-width: 120px; }
+        .sets-input, .reps-input { flex: 1; min-width: 60px; }
+        .btn-add-weight-set { background: rgba(var(--color-success-rgb, 72, 187, 120), 0.2); color: var(--color-success); border: 1px solid rgba(var(--color-success-rgb, 72, 187, 120), 0.4); border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 0.85rem; align-self: flex-start; }
+        .btn-add-exercise { background: rgba(var(--color-success-rgb, 72, 187, 120), 0.2); color: var(--color-success); border: 1px solid var(--color-success); border-radius: 10px; padding: 12px 20px; margin-top: 15px; cursor: pointer; font-size: 1rem; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+        .weight-bmi-row { display: flex; align-items: flex-end; gap: 20px; }
+        .bmi-display { background: rgba(var(--color-accent-rgb, 255, 209, 102), 0.1); border: 1px solid rgba(var(--color-accent-rgb, 255, 209, 102), 0.3); border-radius: 10px; padding: 12px 15px; min-width: 150px; }
+        .bmi-display .bmi-value { font-size: 1.5rem; font-weight: 800; color: var(--color-accent); }
+        .form-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px; }
+        .btn-cancel, .btn-submit { padding: 15px 30px; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer; }
+        .btn-cancel { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-submit { background: linear-gradient(to right, var(--color-secondary), var(--color-primary)); color: white; border: none; }
+        .exercises-card, .profile-card, .graph-container, .timer-card { background: var(--bg-card); border-radius: 16px; padding: 25px; margin-top: 15px; box-shadow: var(--shadow-md); }
+        .exercises-card { border-left: 5px solid var(--color-success); }
+        .profile-card { border-left: 5px solid var(--color-secondary); }
+        .graph-container { border-left: 5px solid var(--color-accent); }
+        .timer-card { border-left: 5px solid var(--color-primary); }
+        .input-with-button { display: flex; gap: 10px; }
+        .input-with-button input { flex: 1; padding: 12px 15px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-primary); font-size: 1rem; }
+        .btn-add, .btn-save { background: linear-gradient(to right, var(--color-success), var(--color-success)); color: white; border: none; padding: 12px 25px; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .exercises-list-container { margin-top: 20px; }
+        .exercises-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .exercise-list-item { background: rgba(0, 30, 60, 0.4); padding: 15px; border-radius: 10px; border-left: 4px solid var(--color-success); display: flex; justify-content: space-between; align-items: center; flex-wrap: nowrap; }
+        .exercise-list-name { font-weight: 600; color: var(--text-primary); font-size: 1.05rem; flex: 1; min-width: 0; margin-right: 10px; word-break: break-word; }
+        .exercise-list-edit-input { flex: 1; padding: 8px 12px; margin-right: 10px; background: rgba(255, 255, 255, 0.15); border: 1px solid var(--color-success); border-radius: 6px; color: var(--text-primary); display: none; }
+        .exercise-list-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .btn-edit, .btn-save-edit, .btn-cancel-edit, .btn-delete { padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; border: 1px solid transparent; }
         .notification { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); color: white; padding: 15px 25px; border-radius: 10px; z-index: 9999; font-size: 0.95rem; box-shadow: var(--shadow-lg); display: none; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-nav); display: flex; justify-content: space-around; padding: 12px 5px; border-top: 1px solid var(--border-color); box-shadow: 0 -5px 15px rgba(0,0,0,0.3); z-index: 1000; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-nav); display: flex; justify-content: space-around; padding: 12px 5px; border-top: 1px solid var(--border-color); z-index: 1000; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); text-decoration: none; padding: 8px 5px; border-radius: 10px; transition: all 0.3s; flex: 1; max-width: 90px; }
         .nav-item.active { background: rgba(var(--color-primary-rgb, 157, 78, 221), 0.25); color: var(--text-inverse); }
         .nav-item i { font-size: 1.3rem; margin-bottom: 4px; }
         .nav-item span { font-size: 0.75rem; font-weight: 600; }
-        .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); }
-        .form-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-overlay); z-index: 2000; overflow-y: auto; }
-        .form-container { background: var(--bg-card); margin: 30px auto; max-width: 700px; border-radius: 20px; padding: 30px; box-shadow: var(--shadow-lg); border: 1px solid var(--color-primary); }
-        .btn-export, .btn-import { padding: 12px 20px; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px; justify-content: center; }
+        .theme-selector-card { background: var(--bg-card); border-radius: 16px; padding: 16px 20px; margin-top: 15px; box-shadow: var(--shadow-md); border-left: 5px solid var(--color-primary); display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+        .theme-selector-card h2 { color: var(--text-secondary); font-size: 1.1rem; display: flex; align-items: center; gap: 10px; margin: 0; white-space: nowrap; }
+        .theme-buttons-container { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+        .theme-btn { width: 38px; height: 38px; border-radius: 8px; border: 2px solid transparent; background: rgba(255, 255, 255, 0.1); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+        .theme-btn.active { background: var(--color-primary); color: var(--text-inverse); border-color: var(--color-primary); }
+        .graph-controls { margin-bottom: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; border: 1px solid rgba(var(--color-primary-rgb, 157, 78, 221), 0.3); }
+        .period-filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        .period-btn { padding: 10px 16px; background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-color); border-radius: 20px; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 100px; text-align: center; }
+        .period-btn.active { background: linear-gradient(135deg, var(--color-secondary), var(--color-primary)); color: white; border-color: var(--color-secondary); }
+        .timer-display { font-size: 5rem; font-weight: 800; color: var(--color-accent); margin: 20px 0; text-align: center; }
+        .timer-controls { display: flex; justify-content: center; gap: 20px; margin: 30px 0; flex-wrap: wrap; }
+        .timer-btn { padding: 15px 25px; border-radius: 16px; font-size: 1.1rem; font-weight: 700; cursor: pointer; border: none; display: flex; align-items: center; gap: 12px; min-width: 140px; justify-content: center; }
+        .timer-btn-start { background: linear-gradient(135deg, var(--color-success), var(--color-success)); color: white; }
+        .timer-btn-lap { background: linear-gradient(135deg, var(--color-primary), var(--color-primary)); color: white; }
+        .timer-btn-reset { background: rgba(255, 255, 255, 0.15); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .laps-container { max-height: 300px; overflow-y: auto; border-radius: 12px; background: rgba(0, 0, 0, 0.2); padding: 10px; }
+        .lap-item { background: rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--color-secondary); }
+        .lap-number { color: var(--color-primary); font-weight: 800; font-size: 1.1rem; min-width: 40px; }
+        .lap-time { font-family: monospace; font-size: 1.4rem; font-weight: 700; color: var(--color-accent); }
+        .btn-export, .btn-import { padding: 12px 20px; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px; justify-content: center; }
         .btn-export { background: linear-gradient(135deg, var(--color-success), var(--color-success)); color: white; }
         .btn-import { background: linear-gradient(135deg, var(--color-primary), var(--color-primary)); color: white; }
         .import-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-overlay); z-index: 3000; overflow-y: auto; }
         .import-modal-content { background: var(--bg-card); margin: 50px auto; max-width: 600px; border-radius: 20px; padding: 30px; box-shadow: var(--shadow-lg); border: 2px solid var(--color-primary); }
-        .profile-card, .graph-container, .timer-card, .exercises-card { background: var(--bg-card); border-radius: 16px; padding: 25px; margin-top: 15px; box-shadow: var(--shadow-md); }
-        .theme-selector-card { background: var(--bg-card); border-radius: 16px; padding: 16px 20px; margin-top: 15px; box-shadow: var(--shadow-md); border-left: 5px solid var(--color-primary); display: flex; align-items: center; justify-content: space-between; gap: 15px; }
-        .theme-btn { width: 38px; height: 38px; border-radius: 8px; border: 2px solid transparent; background: rgba(255, 255, 255, 0.1); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
-        .theme-btn.active { background: var(--color-primary); color: var(--text-inverse); border-color: var(--color-primary); }
-        .timer-display { font-size: 5rem; font-weight: 800; color: var(--color-accent); margin: 20px 0; text-align: center; }
-        .timer-controls { display: flex; justify-content: center; gap: 20px; margin: 30px 0; flex-wrap: wrap; }
-        .timer-btn { padding: 15px 25px; border-radius: 16px; font-size: 1.1rem; font-weight: 700; cursor: pointer; border: none; display: flex; align-items: center; gap: 12px; min-width: 140px; justify-content: center; }
-        .laps-container { max-height: 300px; overflow-y: auto; border-radius: 12px; background: rgba(0, 0, 0, 0.2); padding: 10px; }
-        .app-version { position: absolute; right: 1px; top: 50%; transform: translateY(-50%) rotate(-90deg); font-size: 0.45rem; color: rgba(255, 255, 255, 0.4); white-space: nowrap; background: rgba(0, 0, 0, 0.2); padding: 2px 6px; border-radius: 3px; }
-        footer { position: fixed; bottom: 0px; z-index: 1001; width: 100%; text-align: right; background-color: transparent; }
-        footer a { font-size: 0.55rem; font-weight: 600; color: var(--text-secondary); text-decoration: none; padding: 8px 12px; border-radius: 10px; transition: all 0.3s ease; }
         .profile-actions { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 10px; width: 100%; }
         .icons-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-        .btn-icon { width: 42px; height: 42px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); border: 1px solid var(--border-color); background: rgba(255, 255, 255, 0.08); color: var(--text-secondary); font-size: 1.1rem; flex-shrink: 0; }
-        @media (max-width: 768px) { .theme-btn { width: 34px; height: 34px; } .btn-export, .btn-import { min-width: 100%; } }
+        .btn-icon { width: 42px; height: 42px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border-color); background: rgba(255, 255, 255, 0.08); color: var(--text-secondary); font-size: 1.1rem; flex-shrink: 0; }
+        footer { position: fixed; bottom: 0px; z-index: 1001; width: 100%; text-align: right; padding: 0px 0; background-color: transparent; }
+        footer a { font-size: 0.55rem; font-weight: 600; color: var(--text-secondary); text-decoration: none; padding: 8px 12px; border-radius: 10px; transition: all 0.3s ease; }
+        @media (max-width: 768px) { .weight-set-row { flex-direction: column; align-items: stretch; gap: 8px; } .btn-export, .btn-import { min-width: 100%; } .timer-display { font-size: 3.5rem; } }
     </style>
     <meta name="application-name" content="Мой Дневник Тренировок">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -177,6 +239,10 @@
     <meta name="apple-mobile-web-app-title" content="Тренировки">
     <link rel="apple-touch-icon" href="./maskable_icon_x192.png">
     <meta name="description" content="Ведите дневник тренировок бесплатно. Отслеживайте упражнения, подходы, прогресс и ставьте цели.">
+    <meta property="og:title" content="Мой Дневник Тренировок - Бесплатный Трекер">
+    <meta property="og:description" content="Простой и удобный дневник для отслеживания ваших тренировок и прогресса.">
+    <meta property="og:image" content="https://aim2204-pixel.github.io/workout-diary/maskable_icon_x512.png">
+    <meta property="og:url" content="https://aim2204-pixel.github.io/workout-diary/">
 </head>
 <body class="theme-dark">
     <header class="app-header">
@@ -188,131 +254,481 @@
         <div class="app-version" id="appVersion">V2.4.3</div>
     </header>
     
-    <div class="offline-warning" id="offlineWarning" style="display: none;"><i class="fas fa-wifi-slash"></i> Вы в офлайн-режиме. Данные сохраняются локально.</div>
+    <div class="offline-warning" id="offlineWarning"><i class="fas fa-wifi-slash"></i> Вы в офлайн-режиме. Данные сохраняются локально.</div>
     
     <main class="content-area">
-        <section id="workoutSection"><div class="workout-list" id="workoutListContainer"><div class="empty-state" id="workoutEmptyState"><i class="fas fa-dumbbell"></i><h3>Записей пока нет</h3><p>Нажмите кнопку "+" в шапке, чтобы добавить первую тренировку!</p></div></div></section>
-        <section id="exercisesSection" style="display: none;"><div class="exercises-card"><h2><i class="fas fa-list-check"></i> Моя база упражнений</h2><form class="exercise-form" id="exerciseForm"><div class="input-with-button" style="display:flex;gap:10px;"><input type="text" id="newExerciseInput" placeholder="Например: Подтягивания..." style="flex:1;padding:12px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);"><button type="submit" class="btn-add" style="background:var(--color-success);color:white;border:none;padding:12px 25px;border-radius:10px;"><i class="fas fa-plus-circle"></i> Добавить</button></div></form><div class="exercises-list-container"><ul class="exercises-list" id="exercisesList"><li class="empty-list-message" id="emptyExercisesList"><i class="fas fa-dumbbell"></i><strong>База упражнений пуста</strong><br>Добавьте первое упражнение.</li></ul></div></div></section>
-        <section id="profileSection" style="display: none;">
-            <div class="theme-selector-card"><h2><i class="fas fa-palette"></i>Выбор темы оформления:</h2><div class="theme-buttons-container"><button class="theme-btn active" data-theme="dark" title="Тёмная тема"><i class="fas fa-moon"></i></button><button class="theme-btn" data-theme="light" title="Светлая тема"><i class="fas fa-sun"></i></button><button class="theme-btn" data-theme="premium" title="Премиум тема"><i class="fas fa-crown"></i></button></div></div>
-            <div class="profile-card"><h2><i class="fas fa-user-circle"></i> Личные данные</h2><form class="profile-form" id="profileForm"><div class="form-group"><label for="profileUserName">Ваше имя *</label><input type="text" id="profileUserName" placeholder="Введите Ваше имя" style="width:100%;padding:12px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);"></div><div class="form-group"><label for="profileUserHeight">Рост (см) *</label><input type="number" id="profileUserHeight" placeholder="Укажите Ваш рост в см." min="100" max="250" step="0.1" style="width:100%;padding:12px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);"></div><div class="profile-actions"><button type="submit" class="btn-save" style="background:var(--color-success);color:white;border:none;padding:12px 25px;border-radius:10px;"><i class="fas fa-save"></i> Сохранить профиль</button><div class="icons-right"><button type="button" class="btn-icon btn-share" title="Поделиться приложением"><i class="fas fa-share-alt"></i></button><button type="button" class="btn-icon btn-feedback" title="Написать разработчику"><i class="fas fa-envelope"></i></button></div></div></form></div>
-            <div class="profile-card" style="margin-top: 15px;"><h2><i class="fas fa-file-export"></i> Управление данными</h2><div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px;"><button class="btn-export" id="exportAllBtn"><i class="fas fa-download"></i> Экспорт всех данных</button><button class="btn-import" id="importBtn"><i class="fas fa-upload"></i> Импорт данных</button><button class="btn-export" id="exportReportBtn" style="background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));"><i class="fas fa-file-alt"></i> Создать текстовый отчет</button><input type="file" id="importFileInput" accept=".json" style="display: none;"></div></div>
-            <div class="graph-container"><h3><i class="fas fa-chart-line"></i> Динамика веса</h3><div id="weightChart"><div class="graph-controls"><div class="period-filters" style="display:flex;gap:10px;flex-wrap:wrap;"><button class="period-btn active" data-period="all">Всё время</button><button class="period-btn" data-period="year">Год</button><button class="period-btn" data-period="3month">3 месяца</button><button class="period-btn" data-period="30days">30 дней</button></div><div class="extremes-info" id="extremesInfo" style="display: none;"></div></div><div class="graph-placeholder" id="chartPlaceholder"><i class="fas fa-weight-scale"></i><br><strong>Данные для графика появятся здесь</strong></div><canvas id="weightChartCanvas"></canvas></div></div>
+        <section id="workoutSection">
+            <div class="workout-list" id="workoutListContainer">
+                <div class="empty-state" id="workoutEmptyState"><i class="fas fa-dumbbell"></i><h3>Записей пока нет</h3><p>Нажмите кнопку "+" в шапке, чтобы добавить первую тренировку!</p></div>
+            </div>
         </section>
-        <section id="timerSection" style="display: none;"><div class="timer-card"><h2><i class="fas fa-stopwatch"></i> Секундомер</h2><div class="timer-display" id="timerDisplay">00:00</div><div class="timer-controls"><button class="timer-btn timer-btn-start" id="startPauseBtn"><i class="fas fa-play"></i> Старт</button><button class="timer-btn timer-btn-lap" id="lapBtn" disabled><i class="fas fa-flag"></i> Круг</button><button class="timer-btn timer-btn-reset" id="resetBtn" disabled><i class="fas fa-redo"></i> Сброс</button></div><div class="timer-laps"><h3><i class="fas fa-list-ol"></i> Круги</h3><div class="laps-container" id="lapsContainer"><div class="empty-laps" id="emptyLaps"><i class="fas fa-flag"></i><br><strong>Кругов пока нет</strong></div></div></div><div class="timer-stats" style="display:flex;justify-content:space-around;"><div class="stat-box"><div class="stat-value" id="totalLaps">0</div><div class="stat-label">Всего кругов</div></div><div class="stat-box"><div class="stat-value" id="fastestLap">--:--</div><div class="stat-label">Самый быстрый круг</div></div><div class="stat-box"><div class="stat-value" id="slowestLap">--:--</div><div class="stat-label">Самый медленный круг</div></div></div></div></section>
+
+        <section id="exercisesSection" style="display: none;">
+            <div class="exercises-card">
+                <h2><i class="fas fa-list-check"></i> Моя база упражнений</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Добавляйте сюда упражнения, которые часто выполняете.</p>
+                <form class="exercise-form" id="exerciseForm">
+                    <div class="input-with-button">
+                        <input type="text" id="newExerciseInput" placeholder="Например: Подтягивания..." required>
+                        <button type="submit" class="btn-add"><i class="fas fa-plus-circle"></i> Добавить</button>
+                    </div>
+                </form>
+                <div class="exercises-list-container">
+                    <ul class="exercises-list" id="exercisesList">
+                        <li class="empty-list-message" id="emptyExercisesList"><i class="fas fa-dumbbell"></i><strong>База упражнений пуста</strong><br>Добавьте первое упражнение.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="profileSection" style="display: none;">
+            <div class="theme-selector-card">
+                <h2><i class="fas fa-palette"></i>Выбор темы оформления:</h2>
+                <div class="theme-buttons-container">
+                    <button class="theme-btn active" data-theme="dark" title="Тёмная тема"><i class="fas fa-moon"></i></button>
+                    <button class="theme-btn" data-theme="light" title="Светлая тема"><i class="fas fa-sun"></i></button>
+                    <button class="theme-btn" data-theme="premium" title="Премиум тема"><i class="fas fa-crown"></i></button>
+                </div>
+            </div>
+            <div class="profile-card">
+                <h2><i class="fas fa-user-circle"></i> Личные данные</h2>
+                <form class="profile-form" id="profileForm">
+                    <div class="form-group"><label for="profileUserName">Ваше имя *</label><input type="text" id="profileUserName" placeholder="Введите Ваше имя" required></div>
+                    <div class="form-group"><label for="profileUserHeight">Рост (см) *</label><input type="number" id="profileUserHeight" placeholder="Укажите Ваш рост в см." min="100" max="250" step="0.1" required><div class="hint">Для расчёта BMI</div></div>
+                    <div class="profile-actions">
+                        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Сохранить профиль</button>
+                        <div class="icons-right">
+                            <button type="button" class="btn-icon btn-share" title="Поделиться приложением"><i class="fas fa-share-alt"></i></button>
+                            <button type="button" class="btn-icon btn-feedback" title="Написать разработчику"><i class="fas fa-envelope"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="profile-card" style="margin-top: 15px;">
+                <h2><i class="fas fa-file-export"></i> Управление данными</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Экспортируйте все данные в JSON-файл или импортируйте из резервной копии.</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px;">
+                    <button class="btn-export" id="exportAllBtn"><i class="fas fa-download"></i> Экспорт всех данных</button>
+                    <button class="btn-import" id="importBtn"><i class="fas fa-upload"></i> Импорт данных</button>
+                    <button class="btn-export" id="exportReportBtn" style="background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));"><i class="fas fa-file-alt"></i> Создать текстовый отчет</button>
+                    <input type="file" id="importFileInput" accept=".json" style="display: none;">
+                </div>
+                <div class="hint" style="color: var(--color-accent); background: rgba(var(--color-accent-rgb, 255, 209, 102), 0.1); padding: 10px; border-radius: 8px;"><strong><i class="fas fa-info-circle"></i> Важно:</strong> При импорте данные могут быть перезаписаны. Рекомендуется сначала сделать экспорт текущих данных.</div>
+            </div>
+            <div class="graph-container">
+                <h3><i class="fas fa-chart-line"></i> Динамика веса</h3>
+                <div id="weightChart">
+                    <div class="graph-controls">
+                        <div class="period-filters">
+                            <button class="period-btn active" data-period="all">Всё время</button>
+                            <button class="period-btn" data-period="year">Год</button>
+                            <button class="period-btn" data-period="3month">3 месяца</button>
+                            <button class="period-btn" data-period="30days">30 дней</button>
+                        </div>
+                        <div class="extremes-info" id="extremesInfo" style="display: none;">
+                            <span class="extremes-min"><i class="fas fa-arrow-down"></i> Мин: <span id="extremeMinValue">-</span> кг</span>
+                            <span class="extremes-max"><i class="fas fa-arrow-up"></i> Макс: <span id="extremeMaxValue">-</span> кг</span>
+                        </div>
+                    </div>
+                    <div class="graph-placeholder" id="chartPlaceholder"><i class="fas fa-weight-scale" style="font-size: 2.5rem;"></i><br><strong>Данные для графика появятся здесь</strong><br>Добавьте тренировки с указанием веса.</div>
+                    <canvas id="weightChartCanvas"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="timerSection" style="display: none;">
+            <div class="timer-card">
+                <h2><i class="fas fa-stopwatch"></i> Секундомер</h2>
+                <div class="timer-display" id="timerDisplay">00:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn timer-btn-start" id="startPauseBtn"><i class="fas fa-play"></i> Старт</button>
+                    <button class="timer-btn timer-btn-lap" id="lapBtn" disabled><i class="fas fa-flag"></i> Круг</button>
+                    <button class="timer-btn timer-btn-reset" id="resetBtn" disabled><i class="fas fa-redo"></i> Сброс</button>
+                </div>
+                <div class="timer-laps">
+                    <h3><i class="fas fa-list-ol"></i> Круги</h3>
+                    <div class="laps-container" id="lapsContainer"><div class="empty-laps" id="emptyLaps"><i class="fas fa-flag"></i><br><strong>Кругов пока нет</strong><br>Нажмите кнопку "Круг" во время работы таймера.</div></div>
+                </div>
+                <div class="timer-stats">
+                    <div class="stat-box"><div class="stat-value" id="totalLaps">0</div><div class="stat-label">Всего кругов</div></div>
+                    <div class="stat-box"><div class="stat-value" id="fastestLap">--:--</div><div class="stat-label">Самый быстрый круг</div></div>
+                    <div class="stat-box"><div class="stat-value" id="slowestLap">--:--</div><div class="stat-label">Самый медленный круг</div></div>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <div class="form-overlay" id="newWorkoutFormOverlay"><div class="form-container"><div class="form-header"><h2><i class="fas fa-plus-circle"></i> <span id="formTitle">Новая тренировка</span></h2><button class="btn-close-form" id="closeFormBtn">&times;</button></div><form class="workout-form" id="newWorkoutForm"><input type="hidden" id="workoutId"><input type="hidden" id="isEditMode"><div class="form-section"><h3>Дата и тип</h3><div class="form-row"><div class="form-group"><label for="workoutDate">Дата тренировки *</label><input type="text" id="workoutDate" placeholder="ДД.ММ.ГГГГ"></div><div class="form-group"><label for="workoutType">Тип тренировки *</label><select id="workoutType"><option value="strength">Силовая в зале</option><option value="group">Групповая</option><option value="home">Домашняя</option><option value="cardio">Кардио</option><option value="other">Другое</option></select><input type="text" id="workoutTypeOther" placeholder="Введите свой вариант" style="display:none;"></div></div></div><div class="form-section"><h3>Упражнения</h3><table class="exercises-table" id="exercisesTable"><thead><tr><th>Упражнение</th><th>Спецификация</th><th>Параметры</th><th>Примечание</th><th></th></tr></thead><tbody id="exercisesTableBody"></tbody></table><button type="button" class="btn-add-exercise" id="addExerciseRowBtn"><i class="fas fa-plus"></i> Добавить упражнение</button></div><div class="form-section"><h3>Дополнительная активность</h3><div class="form-group"><select id="extraActivityType"><option value="">Не выбрано</option><option value="Бассейн (тренировка)">Бассейн (тренировка)</option><option value="Кардио">Кардио</option><option value="Йога / Стретчинг">Йога/Стретчинг</option><option value="other">Другое</option></select><input type="text" id="extraActivityOther" placeholder="Опишите активность" style="display:none;"></div></div><div class="form-section"><h3>Общие примечания</h3><textarea id="workoutNotes" rows="3" placeholder="Заметки о тренировке..."></textarea></div><div class="form-section"><h3>Вес и BMI</h3><div class="weight-bmi-row"><div class="form-group"><label for="workoutWeight">Вес после тренировки (кг)</label><input type="number" id="workoutWeight" step="0.1"></div><div class="bmi-display"><div class="bmi-value" id="bmiValue">-</div><div class="bmi-label">Индекс BMI</div></div></div></div><div class="form-actions"><button type="button" class="btn-cancel" id="cancelFormBtn">Отмена</button><button type="submit" class="btn-submit">Сохранить</button></div></form></div></div>
+    <div class="form-overlay" id="newWorkoutFormOverlay">
+        <div class="form-container">
+            <div class="form-header"><h2><i class="fas fa-plus-circle"></i> <span id="formTitle">Новая тренировка</span></h2><button class="btn-close-form" id="closeFormBtn">&times;</button></div>
+            <form class="workout-form" id="newWorkoutForm">
+                <input type="hidden" id="workoutId" value=""><input type="hidden" id="isEditMode" value="false">
+                <div class="form-section">
+                    <h3><i class="far fa-calendar"></i> Дата и тип</h3>
+                    <div class="form-row">
+                        <div class="form-group"><label for="workoutDate">Дата тренировки *</label><input type="text" id="workoutDate" placeholder="ДД.ММ.ГГГГ" required><div class="hint">Формат: день.месяц.год</div></div>
+                        <div class="form-group"><label for="workoutType">Тип тренировки *</label><select id="workoutType" required><option value="" disabled selected>Выберите тип...</option><option value="strength">Силовая в зале</option><option value="group">Групповая</option><option value="home">Домашняя</option><option value="cardio">Кардио</option><option value="other">Другое (указать)</option></select><input type="text" id="workoutTypeOther" placeholder="Введите свой вариант" style="margin-top: 10px; display: none;"></div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3><i class="fas fa-dumbbell"></i> Упражнения</h3>
+                    <table class="exercises-table" id="exercisesTable"><thead><tr><th style="width: 30%;">Упражнение</th><th style="width: 20%;">Спецификация</th><th style="width: 35%;">Параметры</th><th style="width: 10%;">Примечание</th><th style="width: 5%;"></th></tr></thead><tbody id="exercisesTableBody"></tbody></table>
+                    <button type="button" class="btn-add-exercise" id="addExerciseRowBtn"><i class="fas fa-plus"></i> Добавить упражнение</button>
+                </div>
+                <div class="form-section">
+                    <h3><i class="fas fa-swimming-pool"></i> Дополнительная активность</h3>
+                    <div class="form-row"><div class="form-group"><label for="extraActivityType">Тип активности</label><select id="extraActivityType"><option value="" selected>Не выбрано</option><option value="Бассейн (тренировка)">Бассейн (тренировка)</option><option value="Бассейн (свободное плавание)">Бассейн (свободное плавание)</option><option value="Кардио">Кардио</option><option value="Йога / Стретчинг">Йога/Стретчинг</option><option value="other">Другое...</option></select><input type="text" id="extraActivityOther" placeholder="Опишите активность" style="margin-top: 10px; display: none;"></div></div>
+                </div>
+                <div class="form-section">
+                    <h3><i class="fas fa-sticky-note"></i> Общие примечания к тренировке</h3>
+                    <div class="form-row"><div class="form-group"><label for="workoutNotes">Заметки о тренировке</label><textarea id="workoutNotes" rows="3" placeholder="Замечания по тренировке в целом..."></textarea></div></div>
+                </div>
+                <div class="form-section">
+                    <h3><i class="fas fa-weight-scale"></i> Вес и Индекс BMI</h3>
+                    <div class="weight-bmi-row"><div class="form-group" style="flex:1;"><label for="workoutWeight">Вес после тренировки (кг)</label><input type="number" id="workoutWeight" placeholder="Например, 70.0" step="0.1" min="30" max="200"><div class="hint">Оставьте пустым, если не взвешивались.</div></div><div class="bmi-display"><div class="bmi-value" id="bmiValue">-</div><div class="bmi-label">Индекс BMI</div></div></div>
+                </div>
+                <div class="form-actions"><button type="button" class="btn-cancel" id="cancelFormBtn">Отмена</button><button type="submit" class="btn-submit"><i class="fas fa-save"></i> <span id="submitButtonText">Сохранить тренировку</span></button></div>
+            </form>
+        </div>
+    </div>
 
-    <div class="import-modal" id="importModal"><div class="import-modal-content"><div class="form-header"><h2><i class="fas fa-file-import"></i> Импорт данных</h2><button class="btn-close-form" id="closeImportModal">&times;</button></div><div id="importSummary" style="display:none;"><div id="importStats"></div></div><div class="import-options"><div class="import-option"><input type="radio" id="importOptionFull" name="importOption" value="full" checked><label for="importOptionFull">Полный импорт (заменить все данные)</label></div><div class="import-option"><input type="radio"id="importOptionMerge" name="importOption" value="merge"><label for="importOptionMerge">Объединить (добавить новые тренировки)</label></div><div class="import-option"><input type="radio" id="importOptionExercises" name="importOption" value="exercises"><label for="importOptionExercises">Только упражнения</label></div></div><div class="form-actions"><button type="button" class="btn-cancel" id="cancelImportBtn">Отмена</button><button type="button" class="btn-submit" id="confirmImportBtn">Подтвердить импорт</button></div></div></div>
+    <div class="import-modal" id="importModal">
+        <div class="import-modal-content">
+            <div class="form-header"><h2><i class="fas fa-file-import"></i> Импорт данных</h2><button class="btn-close-form" id="closeImportModal">&times;</button></div>
+            <div id="importSummary" style="display: none;"><div style="background: rgba(var(--color-accent-rgb, 255, 209, 102), 0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;"><h3 style="color: var(--color-accent);"><i class="fas fa-info-circle"></i> Обнаружены данные:</h3><div id="importStats"></div></div></div>
+            <div class="import-options">
+                <div class="import-option"><input type="radio" id="importOptionFull" name="importOption" value="full" checked><label for="importOptionFull">Полный импорт (заменить все данные)</label><div class="hint">Заменяет все текущие данные на импортируемые.</div></div>
+                <div class="import-option"><input type="radio" id="importOptionMerge" name="importOption" value="merge"><label for="importOptionMerge">Объединить (добавить новые тренировки)</label><div class="hint">Добавит новые тренировки, сохранив существующие.</div></div>
+                <div class="import-option"><input type="radio" id="importOptionExercises" name="importOption" value="exercises"><label for="importOptionExercises">Только упражнения</label><div class="hint">Обновит только базу упражнений.</div></div>
+            </div>
+            <div class="form-actions"><button type="button" class="btn-cancel" id="cancelImportBtn">Отмена</button><button type="button" class="btn-submit" id="confirmImportBtn">Подтвердить импорт</button></div>
+        </div>
+    </div>
 
-    <div class="import-modal" id="reportModal"><div class="import-modal-content"><div class="form-header"><h2><i class="fas fa-file-export"></i> Создание текстового отчета</h2><button class="btn-close-form" id="closeReportModal">&times;</button></div><div class="form-section"><h3>Выберите период</h3><div class="import-options"><div class="import-option"><input type="radio" id="periodAll" name="reportPeriod" value="all" checked><label for="periodAll">Все тренировки</label></div><div class="import-option"><input type="radio" id="periodWeek" name="reportPeriod" value="week"><label for="periodWeek">За последнюю неделю</label></div><div class="import-option"><input type="radio" id="periodMonth" name="reportPeriod" value="month"><label for="periodMonth">За последний месяц</label></div><div class="import-option"><input type="radio" id="periodCustom" name="reportPeriod" value="custom"><label for="periodCustom">Произвольный период</label></div></div><div id="customDatesContainer" style="display:none;"><div class="form-group"><label for="reportDateFrom">Дата с</label><input type="text" id="reportDateFrom" placeholder="ДД.ММ.ГГГГ"></div><div class="form-group"><label for="reportDateTo">Дата по</label><input type="text" id="reportDateTo" placeholder="ДД.ММ.ГГГГ"></div></div></div><div class="form-actions"><button type="button" class="btn-cancel" id="cancelReportBtn">Отмена</button><button type="button" class="btn-submit" id="generateReportBtn">Создать отчет</button></div></div></div>
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active" data-target="workoutSection"><i class="fas fa-dumbbell"></i><span>Дневник</span></a>
+        <a href="#" class="nav-item" data-target="exercisesSection"><i class="fas fa-list-check"></i><span>Упражнения</span></a>
+        <a href="#" class="nav-item" data-target="profileSection"><i class="fas fa-user-circle"></i><span>Профиль</span></a>
+        <a href="#" class="nav-item" data-target="timerSection"><i class="fas fa-stopwatch"></i><span>Таймер</span></a>
+    </nav>
 
-    <nav class="bottom-nav"><a href="#" class="nav-item active" data-target="workoutSection"><i class="fas fa-dumbbell"></i><span>Дневник</span></a><a href="#" class="nav-item" data-target="exercisesSection"><i class="fas fa-list-check"></i><span>Упражнения</span></a><a href="#" class="nav-item" data-target="profileSection"><i class="fas fa-user-circle"></i><span>Профиль</span></a><a href="#" class="nav-item" data-target="timerSection"><i class="fas fa-stopwatch"></i><span>Таймер</span></a></nav>
     <div class="notification" id="notification"></div>
+
+    <div class="import-modal" id="reportModal">
+        <div class="import-modal-content">
+            <div class="form-header"><h2><i class="fas fa-file-export"></i> Создание текстового отчета</h2><button class="btn-close-form" id="closeReportModal">&times;</button></div>
+            <div class="form-section">
+                <h3><i class="fas fa-calendar-alt"></i> Выберите период</h3>
+                <div class="import-options">
+                    <div class="import-option"><input type="radio" id="periodAll" name="reportPeriod" value="all" checked><label for="periodAll">Все тренировки</label><div class="hint">Создать отчет по всем записям в дневнике.</div></div>
+                    <div class="import-option"><input type="radio" id="periodWeek" name="reportPeriod" value="week"><label for="periodWeek">За последнюю неделю</label><div class="hint">Тренировки за последние 7 дней.</div></div>
+                    <div class="import-option"><input type="radio" id="periodMonth" name="reportPeriod" value="month"><label for="periodMonth">За последний месяц</label><div class="hint">Тренировки за последние 30 дней.</div></div>
+                    <div class="import-option"><input type="radio" id="periodCustom" name="reportPeriod" value="custom"><label for="periodCustom">Произвольный период</label><div class="hint">Укажите начальную и конечную дату.</div></div>
+                </div>
+                <div id="customDatesContainer" style="display: none; margin-top: 20px;"><div class="form-row"><div class="form-group"><label for="reportDateFrom">Дата с</label><input type="text" id="reportDateFrom" placeholder="ДД.ММ.ГГГГ"></div><div class="form-group"><label for="reportDateTo">Дата по</label><input type="text" id="reportDateTo" placeholder="ДД.ММ.ГГГГ"></div></div><div class="hint">Формат даты: день.месяц.год (например, 15.05.2023)</div></div>
+            </div>
+            <div class="form-actions"><button type="button" class="btn-cancel" id="cancelReportBtn">Отмена</button><button type="button" class="btn-submit" id="generateReportBtn">Создать отчет</button></div>
+        </div>
+    </div>
+
     <footer><p><a href="/workout-diary/privacy.html">Политика конфиденциальности</a></p></footer>
 
     <script>
         const STORAGE_KEYS = { PROFILE: 'workoutDiary_userProfile', WORKOUTS: 'workoutDiary_workoutLog', EXERCISES: 'workoutDiary_exerciseBase', ACTIVE_TAB: 'workoutDiary_activeTab', TIMER_STATE: 'workoutTimer_state', THEME: 'workoutDiary_theme' };
         const DATA_FORMAT_VERSION = '1.0';
         let exerciseRowCounter = 0, weightChart = null;
-        let timerInterval = null, isRunning = false, laps = [], currentLapStartTime = 0, currentLapElapsedTime = 0, wakeLock = null;
-        
-        // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
-        function showNotification(msg, isSuccess = true) { const n = document.getElementById('notification'); n.textContent = msg; n.style.backgroundColor = isSuccess ? 'rgba(72,187,120,0.9)' : 'rgba(220,53,69,0.9)'; n.style.display = 'block'; setTimeout(() => n.style.display = 'none', 4000); }
-        function getCurrentDate() { const d = new Date(); return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`; }
-        function generateId() { return 'w_' + Date.now() + '_' + Math.random().toString(36).substr(2,9); }
-        function loadWorkouts() { try { const s = localStorage.getItem(STORAGE_KEYS.WORKOUTS); return s ? JSON.parse(s) : []; } catch(e) { return []; } }
-        function saveWorkouts(w) { try { localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(w)); } catch(e) { showNotification('Ошибка сохранения', false); } }
-        function loadExercises() { try { const s = localStorage.getItem(STORAGE_KEYS.EXERCISES); return s ? JSON.parse(s) : []; } catch(e) { return []; } }
-        function saveExercises(e) { try { localStorage.setItem(STORAGE_KEYS.EXERCISES, JSON.stringify(e.sort((a,b)=>a.localeCompare(b,'ru',{sensitivity:'base'})))); } catch(e) { showNotification('Ошибка', false); } }
-        function loadProfile() { try { const s = localStorage.getItem(STORAGE_KEYS.PROFILE); if(s) { const p=JSON.parse(s); document.getElementById('profileUserName').value=p.name||''; document.getElementById('profileUserHeight').value=p.height||''; return p; } return null; } catch(e){return null;} }
         
         // ==================== ТЕМЫ ====================
-        function setTheme(t) { document.body.classList.remove('theme-dark','theme-light','theme-premium'); document.body.classList.add(`theme-${t}`); document.querySelectorAll('.theme-btn').forEach(b=>{b.classList.remove('active');if(b.dataset.theme===t)b.classList.add('active');}); localStorage.setItem(STORAGE_KEYS.THEME,t); }
-        function initTheme() { setTheme(localStorage.getItem(STORAGE_KEYS.THEME)||'dark'); document.querySelectorAll('.theme-btn').forEach(b=>b.addEventListener('click',()=>setTheme(b.dataset.theme))); }
+        function initTheme() { setTheme(localStorage.getItem(STORAGE_KEYS.THEME) || 'dark'); }
+        function setTheme(themeName) {
+            document.body.classList.remove('theme-dark', 'theme-light', 'theme-premium');
+            document.body.classList.add(`theme-${themeName}`);
+            document.querySelectorAll('.theme-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.theme === themeName); });
+            localStorage.setItem(STORAGE_KEYS.THEME, themeName);
+            const themeColors = { dark: '#9d4edd', light: '#8b7355', premium: '#d4af37' };
+            document.querySelector('meta[name="theme-color"]').content = themeColors[themeName] || '#9d4edd';
+        }
         
         // ==================== ТАЙМЕР ====================
-        async function requestWakeLock() { try { if('wakeLock'in navigator){ wakeLock=await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release',()=>wakeLock=null); } } catch(e){} }
-        function releaseWakeLock() { if(wakeLock) wakeLock.release().catch(()=>{}); wakeLock=null; }
-        function updateTimerDisplay() { const t=currentLapElapsedTime+(isRunning?Date.now()-currentLapStartTime:0); document.getElementById('timerDisplay').textContent=`${Math.floor(t/60000)%60}`.padStart(2,'0')+':'+`${Math.floor(t/1000)%60}`.padStart(2,'0'); }
-        function formatLap(ms){return `${Math.floor(ms/60000)%60}`.padStart(2,'0')+':'+`${Math.floor(ms/1000)%60}`.padStart(2,'0');}
-        function renderLaps(){const c=document.getElementById('lapsContainer');document.querySelectorAll('.lap-item').forEach(l=>l.remove());if(laps.length===0){document.getElementById('emptyLaps').style.display='block';return;}document.getElementById('emptyLaps').style.display='none';[...laps].reverse().forEach((l,i)=>{const d=document.createElement('div');d.className='lap-item';d.innerHTML=`<div class="lap-number">#${laps.length-i}</div><div class="lap-time">${formatLap(l.time)}</div>`;c.appendChild(d);});}
-        function updateStats(){const t=document.getElementById('totalLaps');t.textContent=laps.length;if(laps.length){const times=laps.map(l=>l.time);document.getElementById('fastestLap').textContent=formatLap(Math.min(...times));document.getElementById('slowestLap').textContent=formatLap(Math.max(...times));}else{document.getElementById('fastestLap').textContent='--:--';document.getElementById('slowestLap').textContent='--:--';}}
-        async function toggleTimer(){if(isRunning){clearInterval(timerInterval);currentLapElapsedTime+=Date.now()-currentLapStartTime;document.getElementById('startPauseBtn').innerHTML='<i class="fas fa-play"></i> Старт';document.getElementById('lapBtn').disabled=true;document.getElementById('resetBtn').disabled=false;releaseWakeLock();}else{currentLapStartTime=Date.now();timerInterval=setInterval(updateTimerDisplay,10);document.getElementById('startPauseBtn').innerHTML='<i class="fas fa-pause"></i> Пауза';document.getElementById('lapBtn').disabled=false;document.getElementById('resetBtn').disabled=true;await requestWakeLock();}isRunning=!isRunning;saveTimerState();}
-        function addLap(){if(!isRunning)return;const t=currentLapElapsedTime+(Date.now()-currentLapStartTime);laps.push({time:t,timestamp:Date.now()});currentLapElapsedTime=0;currentLapStartTime=Date.now();renderLaps();updateStats();updateTimerDisplay();saveTimerState();}
-        function resetTimer(){clearInterval(timerInterval);isRunning=false;currentLapElapsedTime=0;currentLapStartTime=0;laps=[];document.getElementById('startPauseBtn').innerHTML='<i class="fas fa-play"></i> Старт';document.getElementById('lapBtn').disabled=true;document.getElementById('resetBtn').disabled=true;releaseWakeLock();updateTimerDisplay();renderLaps();updateStats();saveTimerState();}
-        function saveTimerState(){try{localStorage.setItem(STORAGE_KEYS.TIMER_STATE,JSON.stringify({isRunning,currentLapStartTime,currentLapElapsedTime,laps,savedAt:Date.now()}));}catch(e){}}
-        async function loadTimerState(){try{const s=localStorage.getItem(STORAGE_KEYS.TIMER_STATE);if(s){const st=JSON.parse(s);if((Date.now()-(st.savedAt||0))<24*60*60*1000){isRunning=st.isRunning||false;currentLapStartTime=st.currentLapStartTime||0;currentLapElapsedTime=st.currentLapElapsedTime||0;laps=st.laps||[];if(isRunning){currentLapElapsedTime+=Date.now()-currentLapStartTime;currentLapStartTime=Date.now();timerInterval=setInterval(updateTimerDisplay,10);document.getElementById('startPauseBtn').innerHTML='<i class="fas fa-pause"></i> Пауза';document.getElementById('lapBtn').disabled=false;document.getElementById('resetBtn').disabled=true;await requestWakeLock();}else{document.getElementById('startPauseBtn').innerHTML='<i class="fas fa-play"></i> Старт';document.getElementById('lapBtn').disabled=true;document.getElementById('resetBtn').disabled=laps.length>0;}updateTimerDisplay();renderLaps();updateStats();}}}catch(e){}}
+        let timerInterval = null, isRunning = false, laps = [], currentLapStartTime = 0, currentLapElapsedTime = 0, wakeLock = null;
+        const timerDisplay = document.getElementById('timerDisplay'), startPauseBtn = document.getElementById('startPauseBtn'), lapBtn = document.getElementById('lapBtn'), resetBtn = document.getElementById('resetBtn');
         
-        // ==================== ДНЕВНИК ТРЕНИРОВОК (СОКРАЩЕННЫЙ) ====================
-        function renderWorkouts(){const c=document.getElementById('workoutListContainer');const empty=document.getElementById('workoutEmptyState');const ws=loadWorkouts();document.querySelectorAll('.workout-card').forEach(card=>card.remove());if(ws.length===0){if(empty&&!c.contains(empty))c.appendChild(empty);if(empty)empty.style.display='block';return;}if(empty)empty.style.display='none';ws.sort((a,b)=>new Date(b.date.split('.').reverse().join('-'))-new Date(a.date.split('.').reverse().join('-')));ws.forEach(w=>c.appendChild(createWorkoutCard(w)));}
-        function createWorkoutCard(w){const card=document.createElement('article');card.className='workout-card';card.dataset.id=w.id;const typeNames={strength:'Силовая в зале',group:'Групповая',home:'Домашняя',cardio:'Кардио'};const typeName=typeNames[w.type]||w.type;card.innerHTML=`<div class="workout-date"><div class="date-text">${w.date}<button class="workout-copy-btn"><i class="far fa-copy"></i></button></div><div class="workout-type" style="background:var(--color-primary);">${typeName}</div></div><div class="workout-actions"><button class="workout-edit-btn"><i class="fas fa-pencil-alt"></i></button><button class="workout-delete-btn"><i class="fas fa-trash-alt"></i></button></div><div class="workout-body"><div class="exercises-block">${w.exercises.map((ex,i)=>`<div><strong>${i+1}. ${ex.name}</strong>${ex.spec?` <span style="color:var(--text-secondary)">(${ex.spec})</span>`:''}${ex.weightSets?.length?`<div style="font-family:monospace">${ex.weightSets.map(s=>`${s.weight||''} ${s.sets&&s.reps?`${s.sets}x${s.reps}`:''}`.trim()).join(', ')}</div>`:''}${ex.note?`<div style="font-size:0.85rem">📝 ${ex.note}</div>`:''}</div>`).join('')}</div>${w.extraActivity?`<div>🏊 ${w.extraActivity}</div>`:''}${w.workoutNotes?`<div>📋 ${w.workoutNotes}</div>`:''}${w.weight?`<div>⚖️ Вес: ${w.weight} кг | BMI: ${w.bmi||'-'}</div>`:''}</div>`;card.querySelector('.workout-copy-btn').onclick=()=>copyWorkout(w.id);card.querySelector('.workout-edit-btn').onclick=()=>editWorkout(w.id);card.querySelector('.workout-delete-btn').onclick=()=>{if(confirm('Удалить?')){const f=loadWorkouts().filter(wk=>wk.id!==w.id);saveWorkouts(f);renderWorkouts();updateWeightChart();showNotification('Удалено');}};return card;}
-        function copyWorkout(id){const w=loadWorkouts().find(w=>w.id===id);if(w){const copy={...w,id:generateId(),date:getCurrentDate(),created:Date.now()};openWorkoutForm(copy,true);showNotification('Тренировка скопирована');}}
-        function editWorkout(id){const w=loadWorkouts().find(w=>w.id===id);if(w)openWorkoutForm(w,false);}
-        function openWorkoutForm(w,isCopy){resetForm();document.getElementById('workoutId').value=isCopy?'':w.id;document.getElementById('isEditMode').value=isCopy?'false':'true';document.getElementById('workoutDate').value=w.date;document.getElementById('workoutType').value=['strength','group','home','cardio'].includes(w.type)?w.type:'other';if(w.type==='other'){document.getElementById('workoutTypeOther').value=w.type;document.getElementById('workoutTypeOther').style.display='block';}document.getElementById('workoutNotes').value=w.workoutNotes||'';if(w.weight)document.getElementById('workoutWeight').value=w.weight;if(w.exercises){document.getElementById('exercisesTableBody').innerHTML='';exerciseRowCounter=0;w.exercises.forEach((ex,idx)=>{addExerciseRow();const row=document.querySelectorAll('#exercisesTableBody tr')[idx];if(row)fillExerciseRow(row,ex);});}else addExerciseRow();if(w.extraActivity){const sel=document.getElementById('extraActivityType');if(w.extraActivity==='Бассейн (тренировка)'||w.extraActivity==='Кардио'||w.extraActivity==='Йога / Стретчинг')sel.value=w.extraActivity;else{sel.value='other';document.getElementById('extraActivityOther').value=w.extraActivity;document.getElementById('extraActivityOther').style.display='block';}}showForm();}
-        function resetForm(){document.getElementById('newWorkoutForm').reset();document.getElementById('exercisesTableBody').innerHTML='';exerciseRowCounter=0;document.getElementById('workoutTypeOther').style.display='none';document.getElementById('extraActivityOther').style.display='none';document.getElementById('bmiValue').textContent='-';document.getElementById('workoutNotes').value='';}
-        function showForm(){document.getElementById('newWorkoutFormOverlay').style.display='block';document.body.style.overflow='hidden';}
-        function closeForm(){document.getElementById('newWorkoutFormOverlay').style.display='none';document.body.style.overflow='auto';}
-        function addExerciseRow(){const tbody=document.getElementById('exercisesTableBody');const rowId=`row_${exerciseRowCounter++}`;const row=document.createElement('tr');row.id=rowId;row.innerHTML=`<td><input type="text" placeholder="Упражнение" style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:8px;color:var(--text-primary);"></td><td><input type="text" placeholder="Спецификация" style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:8px;color:var(--text-primary);"></td><td><div class="weight-sets-container"><div class="weight-set-row"><input type="text" placeholder="Вес" style="width:80px"><input type="number" placeholder="Подх" style="width:60px"><input type="number" placeholder="Раз" style="width:60px"><button type="button" class="btn-add-weight-set" onclick="addWeightSet('${rowId}')">+</button></div></div></td><td><textarea rows="1" placeholder="Заметка" style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:8px;color:var(--text-primary);"></textarea></td><td><button type="button" onclick="removeExerciseRow('${rowId}')">🗑️</button></td>`;tbody.appendChild(row);}
-        window.addWeightSet=function(rowId){const row=document.getElementById(rowId);const container=row.querySelector('.weight-sets-container');const newRow=document.createElement('div');newRow.className='weight-set-row';newRow.innerHTML=`<input type="text" placeholder="Вес" style="width:80px"><input type="number" placeholder="Подх" style="width:60px"><input type="number" placeholder="Раз" style="width:60px"><button type="button" class="btn-remove-weight-set" onclick="this.parentElement.remove()">🗑️</button><button type="button" class="btn-add-weight-set" onclick="addWeightSet('${rowId}')">+</button>`;container.appendChild(newRow);};
-        window.removeExerciseRow=function(rowId){const row=document.getElementById(rowId);if(document.querySelectorAll('#exercisesTableBody tr').length>1)row.remove();else row.querySelectorAll('input,textarea').forEach(i=>i.value='');};
-        function fillExerciseRow(row,ex){row.querySelector('input[placeholder="Упражнение"]').value=ex.name;row.querySelector('input[placeholder="Спецификация"]').value=ex.spec||'';row.querySelector('textarea').value=ex.note||'';const container=row.querySelector('.weight-sets-container');container.innerHTML='';if(ex.weightSets?.length){ex.weightSets.forEach((set,idx)=>{const sr=document.createElement('div');sr.className='weight-set-row';sr.innerHTML=`<input type="text" placeholder="Вес" value="${set.weight||''}" style="width:80px"><input type="number" placeholder="Подх" value="${set.sets||''}" style="width:60px"><input type="number" placeholder="Раз" value="${set.reps||''}" style="width:60px">${idx>0?'<button type="button" class="btn-remove-weight-set" onclick="this.parentElement.remove()">🗑️</button>':''}<button type="button" class="btn-add-weight-set" onclick="addWeightSet(\'${row.id}\')">+</button>`;container.appendChild(sr);});}else{const sr=document.createElement('div');sr.className='weight-set-row';sr.innerHTML=`<input type="text" placeholder="Вес" style="width:80px"><input type="number" placeholder="Подх" style="width:60px"><input type="number" placeholder="Раз" style="width:60px"><button type="button" class="btn-add-weight-set" onclick="addWeightSet(\'${row.id}\')">+</button>`;container.appendChild(sr);}}
-        function handleWorkoutSubmit(e){e.preventDefault();const id=document.getElementById('workoutId').value;const isEdit=document.getElementById('isEditMode').value==='true';const workouts=loadWorkouts();let type=document.getElementById('workoutType').value;if(type==='other')type=document.getElementById('workoutTypeOther').value.trim()||'Другое';const exercises=[];document.querySelectorAll('#exercisesTableBody tr').forEach(row=>{const name=row.querySelector('input[placeholder="Упражнение"]').value.trim();if(!name)return;const spec=row.querySelector('input[placeholder="Спецификация"]').value.trim();const note=row.querySelector('textarea').value.trim();const weightSets=[];row.querySelectorAll('.weight-set-row').forEach(sr=>{const w=sr.querySelector('input[placeholder="Вес"]')?.value.trim()||'';const sets=sr.querySelector('input[placeholder="Подх"]')?.value||'';const reps=sr.querySelector('input[placeholder="Раз"]')?.value||'';if(w||sets||reps)weightSets.push({weight:w,sets:sets||'',reps:reps||''});});exercises.push({name,spec,note,weightSets});});if(exercises.length===0){showNotification('Добавьте упражнение',false);return;}let extra=document.getElementById('extraActivityType').value;if(extra==='other')extra=document.getElementById('extraActivityOther').value.trim()||'';if(extra==='')extra=null;const notes=document.getElementById('workoutNotes').value.trim()||null;const weight=document.getElementById('workoutWeight').value?parseFloat(document.getElementById('workoutWeight').value):null;const profile=loadProfile();let bmi=null;if(weight&&profile?.height){const h=profile.height/100;bmi=parseFloat((weight/(h*h)).toFixed(1));}const workout={id:isEdit?id:generateId(),date:document.getElementById('workoutDate').value,type,exercises,extraActivity:extra,workoutNotes:notes,weight,bmi,created:isEdit?workouts.find(w=>w.id===id)?.created||Date.now():Date.now()};if(isEdit){const idx=workouts.findIndex(w=>w.id===id);if(idx!==-1)workouts[idx]=workout;}else workouts.push(workout);saveWorkouts(workouts);renderWorkouts();updateWeightChart();closeForm();showNotification(isEdit?'Обновлено':'Добавлено');}
+        async function requestWakeLock() { if ('wakeLock' in navigator) try { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => wakeLock = null); } catch(e) { console.error(e); } }
+        function releaseWakeLock() { if (wakeLock) wakeLock.release().catch(console.error); wakeLock = null; }
+        function updateTimerDisplay() { const t = currentLapElapsedTime + (isRunning ? Date.now() - currentLapStartTime : 0); timerDisplay.textContent = `${Math.floor(t/60000)%60}`.padStart(2,'0')+':'+`${Math.floor(t/1000)%60}`.padStart(2,'0'); }
+        function formatLapTime(ms) { return `${Math.floor(ms/60000)%60}`.padStart(2,'0')+':'+`${Math.floor(ms/1000)%60}`.padStart(2,'0'); }
+        function renderLaps() { const c = document.getElementById('lapsContainer'); c.querySelectorAll('.lap-item').forEach(l => l.remove()); if (!laps.length) { document.getElementById('emptyLaps').style.display = 'block'; return; } document.getElementById('emptyLaps').style.display = 'none'; laps.slice().reverse().forEach((lap,i) => { const d = document.createElement('div'); d.className = 'lap-item'; d.innerHTML = `<div class="lap-number">#${laps.length-i}</div><div class="lap-time">${formatLapTime(lap.time)}</div>`; c.appendChild(d); }); }
+        function updateStats() { document.getElementById('totalLaps').textContent = laps.length; if (laps.length) { const times = laps.map(l => l.time); document.getElementById('fastestLap').textContent = formatLapTime(Math.min(...times)); document.getElementById('slowestLap').textContent = formatLapTime(Math.max(...times)); } else { document.getElementById('fastestLap').textContent = '--:--'; document.getElementById('slowestLap').textContent = '--:--'; } }
+        async function toggleTimer() { if (isRunning) { clearInterval(timerInterval); currentLapElapsedTime += Date.now() - currentLapStartTime; startPauseBtn.innerHTML = '<i class="fas fa-play"></i> Старт'; lapBtn.disabled = true; resetBtn.disabled = false; releaseWakeLock(); } else { currentLapStartTime = Date.now(); timerInterval = setInterval(updateTimerDisplay, 10); startPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза'; lapBtn.disabled = false; resetBtn.disabled = true; await requestWakeLock(); } isRunning = !isRunning; saveTimerState(); }
+        function addLap() { if (!isRunning) return; laps.push({ time: currentLapElapsedTime + (Date.now() - currentLapStartTime), timestamp: Date.now() }); currentLapElapsedTime = 0; currentLapStartTime = Date.now(); renderLaps(); updateStats(); updateTimerDisplay(); saveTimerState(); }
+        function resetTimer() { clearInterval(timerInterval); isRunning = false; currentLapElapsedTime = 0; currentLapStartTime = 0; laps = []; startPauseBtn.innerHTML = '<i class="fas fa-play"></i> Старт'; lapBtn.disabled = true; resetBtn.disabled = true; releaseWakeLock(); updateTimerDisplay(); renderLaps(); updateStats(); saveTimerState(); }
+        function saveTimerState() { localStorage.setItem(STORAGE_KEYS.TIMER_STATE, JSON.stringify({ isRunning, currentLapStartTime, currentLapElapsedTime, laps, savedAt: Date.now() })); }
+        async function loadTimerState() { try { const s = localStorage.getItem(STORAGE_KEYS.TIMER_STATE); if (s) { const state = JSON.parse(s); if ((Date.now() - (state.savedAt||0)) < 86400000) { isRunning = state.isRunning; currentLapStartTime = state.currentLapStartTime; currentLapElapsedTime = state.currentLapElapsedTime; laps = state.laps||[]; if (isRunning) { currentLapElapsedTime += Date.now() - currentLapStartTime; currentLapStartTime = Date.now(); timerInterval = setInterval(updateTimerDisplay, 10); startPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза'; lapBtn.disabled = false; resetBtn.disabled = true; await requestWakeLock(); } else { startPauseBtn.innerHTML = '<i class="fas fa-play"></i> Старт'; lapBtn.disabled = true; resetBtn.disabled = laps.length>0; } updateTimerDisplay(); renderLaps(); updateStats(); } else resetTimer(); } } catch(e) { console.error(e); } }
         
-        // ==================== БАЗА УПРАЖНЕНИЙ ====================
-        function renderExercisesList(){const list=document.getElementById('exercisesList');const empty=document.getElementById('emptyExercisesList');const exs=loadExercises();document.querySelectorAll('.exercise-list-item').forEach(i=>i.remove());if(exs.length===0){if(empty)empty.style.display='block';return;}if(empty)empty.style.display='none';exs.forEach((ex,i)=>{const li=document.createElement('li');li.className='exercise-list-item';li.innerHTML=`<span>${ex}</span><div><button class="btn-edit" data-index="${i}"><i class="fas fa-pencil-alt"></i></button><button class="btn-delete" data-index="${i}"><i class="fas fa-trash-alt"></i></button></div>`;list.appendChild(li);});document.querySelectorAll('.btn-edit').forEach(btn=>btn.addEventListener('click',function(){const idx=parseInt(this.dataset.index);const newName=prompt('Новое название:',exs[idx]);if(newName&&newName.trim()){exs[idx]=newName.trim();saveExercises(exs);renderExercisesList();showNotification('Обновлено');}}));document.querySelectorAll('.btn-delete').forEach(btn=>btn.addEventListener('click',function(){const idx=parseInt(this.dataset.index);if(confirm('Удалить?')){exs.splice(idx,1);saveExercises(exs);renderExercisesList();showNotification('Удалено');}}));}
-        function addNewExercise(e){e.preventDefault();const val=document.getElementById('newExerciseInput').value.trim();if(!val){showNotification('Введите название',false);return;}const exs=loadExercises();if(exs.includes(val)){showNotification('Уже есть',false);return;}exs.push(val);saveExercises(exs);renderExercisesList();document.getElementById('newExerciseInput').value='';showNotification('Добавлено');}
+        // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
+        function showNotification(msg, isSuccess = true) { const n = document.getElementById('notification'); n.textContent = msg; n.style.backgroundColor = isSuccess ? 'rgba(72,187,120,0.9)' : 'rgba(220,53,69,0.9)'; n.style.display = 'block'; setTimeout(() => n.style.display = 'none', 4000); }
+        function getCurrentDateFormatted() { const d = new Date(); return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`; }
         
-        // ==================== ГРАФИК ====================
-        function updateWeightChart(){const ws=loadWorkouts();const data=[];ws.forEach(w=>{if(w.date&&w.weight&&w.weight>30&&w.weight<200)data.push({date:w.date,weight:w.weight});});data.sort((a,b)=>new Date(a.date.split('.').reverse().join('-'))-new Date(b.date.split('.').reverse().join('-')));const canvas=document.getElementById('weightChartCanvas');const placeholder=document.getElementById('chartPlaceholder');if(data.length<2){placeholder.style.display='block';canvas.style.display='none';if(weightChart){weightChart.destroy();weightChart=null;}return;}placeholder.style.display='none';canvas.style.display='block';if(weightChart)weightChart.destroy();weightChart=new Chart(canvas,{type:'line',data:{labels:data.map(d=>d.date),datasets:[{label:'Вес (кг)',data:data.map(d=>d.weight),borderColor:'#ffd166',backgroundColor:'rgba(255,209,102,0.1)',borderWidth:2,fill:true,tension:0.3}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#aaa'},grid:{color:'rgba(255,255,255,0.1)'}},x:{ticks:{color:'#aaa',maxRotation:45}}}}});}
+        // ==================== ТРЕНИРОВКИ ====================
+        function loadWorkoutLog() { try { const s = localStorage.getItem(STORAGE_KEYS.WORKOUTS); return s ? JSON.parse(s) : []; } catch(e) { return []; } }
+        function saveWorkoutLog(w) { try { localStorage.setItem(STORAGE_KEYS.WORKOUTS, JSON.stringify(w)); } catch(e) { showNotification('Ошибка сохранения', false); } }
+        function generateWorkoutId() { return 'w_' + Date.now() + '_' + Math.random().toString(36).substr(2,9); }
+        function getDayOfWeek(d) { const days = ['ВС','ПН','ВТ','СР','ЧТ','ПТ','СБ']; const p = d.split('.'); if(p.length!==3) return ''; return days[new Date(p[2],p[1]-1,p[0]).getDay()]; }
+        function formatWeightSets(sets) { if(!sets||!sets.length) return ''; return sets.map(s => [s.weight, s.sets&&s.reps?`${s.sets}x${s.reps}`:''].filter(Boolean).join(' ')).join('\n'); }
+        
+        function renderWorkoutList() {
+            const c = document.getElementById('workoutListContainer'), e = document.getElementById('workoutEmptyState'), w = loadWorkoutLog();
+            c.querySelectorAll('.workout-card').forEach(card=>card.remove());
+            if(!w.length) { if(e&&!c.contains(e)) c.appendChild(e); if(e) e.style.display='block'; return; }
+            if(e) e.style.display='none';
+            w.sort((a,b)=>new Date(b.date.split('.').reverse().join('-')) - new Date(a.date.split('.').reverse().join('-')));
+            w.forEach(workout=>c.appendChild(createWorkoutCard(workout)));
+        }
+        
+        function createWorkoutCard(w) {
+            const card = document.createElement('article'); card.className = 'workout-card'; card.dataset.type = w.type; card.dataset.id = w.id;
+            const typeMap = { strength:'Силовая в зале', group:'Групповая', home:'Домашняя', cardio:'Кардио' };
+            const typeName = typeMap[w.type] || w.type;
+            const typeClass = `type-${w.type === 'strength' ? 'strength' : w.type === 'group' ? 'group' : w.type === 'home' ? 'home' : w.type === 'cardio' ? 'cardio' : 'other'}`;
+            card.innerHTML = `<div class="workout-date"><div class="date-text">${w.date} <span style="color:var(--text-muted);">(${getDayOfWeek(w.date)})</span><button class="workout-copy-btn" title="Копировать"><i class="far fa-copy"></i></button></div><div class="workout-type ${typeClass}">${typeName}</div></div><div class="workout-actions"><button class="workout-edit-btn" title="Редактировать"><i class="fas fa-pencil-alt"></i></button><button class="workout-delete-btn" title="Удалить"><i class="fas fa-trash-alt"></i></button></div><div class="workout-body"><div class="exercises-block">${w.exercises.map((ex,i)=>`<div class="exercise-item"><div class="exercise-name-row"><div class="exercise-main-name"><span class="exercise-number">${i+1}.</span> ${ex.name}</div>${ex.spec?`<div class="exercise-spec">${ex.spec}</div>`:''}</div>${ex.weightSets?.length?`<div class="weight-details">${formatWeightSets(ex.weightSets)}</div>`:''}${ex.note?`<div class="exercise-note">${ex.note}</div>`:''}</div>`).join('')}</div>${w.extraActivity?`<div class="extra-activity"><strong><i class="fas fa-swimming-pool"></i> Доп. активность:</strong> ${w.extraActivity}</div>`:''}${w.workoutNotes?`<div class="extra-activity" style="background:rgba(var(--color-primary-rgb,157,78,221),0.2);border-left:4px solid var(--color-primary);"><strong><i class="fas fa-sticky-note"></i> Общие примечания:</strong> ${w.workoutNotes}</div>`:''}${w.weight?`<div class="metrics"><div class="metric"><div class="metric-value">${w.weight}</div><div class="metric-label">Вес (кг)</div></div><div class="metric"><div class="metric-value">${w.bmi||'-'}</div><div class="metric-label">Индекс BMI</div></div></div>`:''}</div>`;
+            card.querySelector('.workout-copy-btn').onclick = () => copyWorkout(w.id);
+            card.querySelector('.workout-edit-btn').onclick = () => editWorkout(w.id);
+            card.querySelector('.workout-delete-btn').onclick = () => deleteWorkout(w.id);
+            return card;
+        }
+        
+        function copyWorkout(id) { const w = loadWorkoutLog().find(w=>w.id===id); if(!w) return; const copy = JSON.parse(JSON.stringify(w)); copy.id = generateWorkoutId(); copy.date = getCurrentDateFormatted(); copy.created = Date.now(); openEditWorkoutForm(copy, true); showNotification('Тренировка скопирована'); }
+        function editWorkout(id) { const w = loadWorkoutLog().find(w=>w.id===id); if(!w) return; openEditWorkoutForm(w, false); showNotification('Редактирование тренировки'); }
+        function deleteWorkout(id) { if(!confirm('Удалить эту тренировку?')) return; const w = loadWorkoutLog().filter(w=>w.id!==id); saveWorkoutLog(w); renderWorkoutList(); updateWeightChart(); showNotification('Тренировка удалена'); }
+        
+        // ==================== ФОРМА ТРЕНИРОВКИ ====================
+        function loadExercises() { try { const s = localStorage.getItem(STORAGE_KEYS.EXERCISES); return s ? JSON.parse(s) : []; } catch(e) { return []; } }
+        function saveExercises(e) { localStorage.setItem(STORAGE_KEYS.EXERCISES, JSON.stringify([...e].sort((a,b)=>a.localeCompare(b,'ru',{sensitivity:'base'})))); }
+        
+        function resetForm() { document.getElementById('newWorkoutForm').reset(); document.getElementById('exercisesTableBody').innerHTML = ''; exerciseRowCounter = 0; document.getElementById('workoutTypeOther').style.display = 'none'; document.getElementById('extraActivityOther').style.display = 'none'; document.getElementById('bmiValue').textContent = '-'; document.getElementById('workoutNotes').value = ''; }
+        function showForm() { document.getElementById('newWorkoutFormOverlay').style.display = 'block'; document.body.style.overflow = 'hidden'; }
+        function closeForm() { document.getElementById('newWorkoutFormOverlay').style.display = 'none'; document.body.style.overflow = 'auto'; }
+        
+        function addNewExerciseRow() {
+            const tbody = document.getElementById('exercisesTableBody'), exercises = loadExercises(), rowId = `exerciseRow_${exerciseRowCounter++}`;
+            const row = document.createElement('tr'); row.id = rowId;
+            row.innerHTML = `<td><select class="exercise-name-select" onchange="window.handleExerciseSelectChange(this,'${rowId}')"><option value="" disabled selected>Выберите...</option>${exercises.map(e=>`<option value="${e}">${e}</option>`).join('')}<option value="_other_">Другое (ввести)</option></select><input type="text" class="exercise-name-other" placeholder="Введите название" style="margin-top:8px;display:none;"></td><td><textarea class="exercise-spec-input" placeholder="Например: широкий хват" rows="1"></textarea></td><td><div class="weight-sets-container"><div class="weight-set-row"><input type="text" class="weight-set-input" placeholder="Вес/Расстояние"><input type="number" class="sets-input" placeholder="Подходы" min="1"><input type="number" class="reps-input" placeholder="Раз/Время" min="1"><div class="weight-set-buttons"><button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${rowId}')"><i class="fas fa-plus"></i></button></div></div></div></td><td><textarea class="exercise-note-input" placeholder="Заметка..." rows="1"></textarea></td><td class="exercise-row-actions"><div class="order-buttons"><button type="button" class="btn-move-up" onclick="moveExerciseUp('${rowId}')"><i class="fas fa-arrow-up"></i></button><button type="button" class="btn-remove-row" onclick="removeExerciseRow('${rowId}')"><i class="fas fa-trash-alt"></i></button><button type="button" class="btn-move-down" onclick="moveExerciseDown('${rowId}')"><i class="fas fa-arrow-down"></i></button></div></td>`;
+            tbody.appendChild(row);
+            row.querySelectorAll('textarea').forEach(ta=>{ ta.addEventListener('input',function(){ this.style.height='auto'; this.style.height=this.scrollHeight+'px'; }); });
+            return rowId;
+        }
+        
+        function handleExerciseSelectChange(select, rowId) { const other = document.getElementById(rowId).querySelector('.exercise-name-other'); other.style.display = select.value === '_other_' ? 'block' : 'none'; }
+        function addWeightSet(rowId) { const container = document.getElementById(rowId).querySelector('.weight-sets-container'); if(!container) return; const newRow = document.createElement('div'); newRow.className = 'weight-set-row'; newRow.innerHTML = `<input type="text" class="weight-set-input" placeholder="Вес/Расстояние"><input type="number" class="sets-input" placeholder="Подходы" min="1"><input type="number" class="reps-input" placeholder="Раз/Время" min="1"><div class="weight-set-buttons"><button type="button" class="btn-remove-weight-set" onclick="this.parentElement.parentElement.remove();"><i class="fas fa-trash"></i></button><button type="button" class="btn-add-weight-set" onclick="window.addWeightSet('${rowId}')"><i class="fas fa-plus"></i></button></div>`; container.appendChild(newRow); }
+        function removeExerciseRow(rowId) { const row = document.getElementById(rowId); if(document.querySelectorAll('#exercisesTableBody tr').length>1) row.remove(); else row.querySelectorAll('input, select, textarea').forEach(i=>i.value=''); }
+        function moveExerciseUp(rowId) { const row = document.getElementById(rowId), tbody = document.getElementById('exercisesTableBody'), rows = Array.from(tbody.children), idx = rows.indexOf(row); if(idx>0) tbody.insertBefore(row, rows[idx-1]); else showNotification('Уже вверху',false); }
+        function moveExerciseDown(rowId) { const row = document.getElementById(rowId), tbody = document.getElementById('exercisesTableBody'), rows = Array.from(tbody.children), idx = rows.indexOf(row); if(idx<rows.length-1) tbody.insertBefore(row, rows[idx+2]||null); else showNotification('Уже внизу',false); }
+        
+        function updateBmiDisplay() { const w = parseFloat(document.getElementById('workoutWeight').value), p = loadProfile(); if(!w||!p||!p.height) { document.getElementById('bmiValue').textContent='-'; return; } document.getElementById('bmiValue').textContent = (w / ((p.height/100)**2)).toFixed(1); }
+        
+        function loadProfile() { try { const s = localStorage.getItem(STORAGE_KEYS.PROFILE); if(s) { const p=JSON.parse(s); document.getElementById('profileUserName').value=p.name||''; document.getElementById('profileUserHeight').value=p.height||''; return p; } } catch(e){} return null; }
+        function saveProfile(e) { e.preventDefault(); const name=document.getElementById('profileUserName').value.trim(), height=document.getElementById('profileUserHeight').value; if(!name||!height) { showNotification('Заполните все поля',false); return; } localStorage.setItem(STORAGE_KEYS.PROFILE,JSON.stringify({name,height:parseFloat(height)})); showNotification('Профиль сохранён'); }
+        
+        function updateWeightChart() { /* упрощённо для краткости, сохраняем функционал */ const w=loadWorkoutLog(); const data=[]; w.forEach(wk=>{ if(wk.date&&wk.weight&&wk.weight>30&&wk.weight<200) data.push({date:wk.date,weight:wk.weight}); }); data.sort((a,b)=>new Date(a.date.split('.').reverse().join('-'))-new Date(b.date.split('.').reverse().join('-'))); const canvas=document.getElementById('weightChartCanvas'),ph=document.getElementById('chartPlaceholder'); if(data.length<2){ph.style.display='block';canvas.style.display='none';if(weightChart)weightChart.destroy();return;}ph.style.display='none';canvas.style.display='block'; if(weightChart)weightChart.destroy(); weightChart=new Chart(canvas,{type:'line',data:{labels:data.map(d=>d.date),datasets:[{label:'Вес (кг)',data:data.map(d=>d.weight),borderColor:'#ffd166',backgroundColor:'rgba(255,209,102,0.1)',borderWidth:3,fill:true,tension:0.3}]},options:{responsive:true,plugins:{legend:{display:false}}}}); }
         
         // ==================== ЭКСПОРТ/ИМПОРТ (ИСПРАВЛЕННЫЙ ДЛЯ МОБИЛЬНЫХ) ====================
-        function isMobile(){return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);}
-        let lastSharedBlob=null,lastSharedFileName=null;
-        function showSuccessDialog(fileName,isReport=false){
-            const overlay=document.createElement('div');overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:9999;';
-            const dialog=document.createElement('div');dialog.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg-card);border-radius:20px;padding:24px;z-index:10000;max-width:320px;width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3);border:2px solid var(--color-success);';
-            dialog.innerHTML=`<i class="fas fa-check-circle" style="font-size:48px;color:var(--color-success);margin-bottom:16px;"></i><h3 style="color:var(--text-primary);margin-bottom:12px;">✅ Файл сохранён!</h3><p style="color:var(--text-muted);margin-bottom:20px;font-size:0.85rem;word-break:break-all;">${fileName}</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;"><button id="openFolderBtn" style="background:var(--color-secondary);color:white;border:none;padding:10px 20px;border-radius:12px;cursor:pointer;"><i class="fas fa-folder-open"></i> Открыть папку</button>${isReport?'<button id="openBrowserBtn" style="background:var(--color-primary);color:white;border:none;padding:10px 20px;border-radius:12px;cursor:pointer;"><i class="fas fa-globe"></i> Открыть в браузере</button>':'<button id="shareFileBtn" style="background:var(--color-primary);color:white;border:none;padding:10px 20px;border-radius:12px;cursor:pointer;"><i class="fas fa-share-alt"></i> Поделиться</button>'}<button id="closeDialogBtn" style="background:rgba(255,255,255,0.1);color:var(--text-primary);border:1px solid var(--border-color);padding:10px 20px;border-radius:12px;cursor:pointer;">Закрыть</button></div>`;
-            document.body.appendChild(overlay);document.body.appendChild(dialog);
-            document.getElementById('openFolderBtn').onclick=()=>{if(isMobile()&&/Android/i.test(navigator.userAgent)){try{window.location.href='intent://#Intent;scheme=file;package=com.android.documentsui;end';}catch(e){}showNotification('📁 Файл в папке "Загрузки"');}else showNotification('📁 Файл сохранён в папку "Загрузки"');dialog.remove();overlay.remove();};
-            if(isReport){document.getElementById('openBrowserBtn').onclick=()=>{if(lastSharedBlob){const url=URL.createObjectURL(lastSharedBlob);window.open(url,'_blank');setTimeout(()=>URL.revokeObjectURL(url),1000);}dialog.remove();overlay.remove();};}
-            else{document.getElementById('shareFileBtn').onclick=async()=>{if(lastSharedBlob){const file=new File([lastSharedBlob],fileName,{type:'application/json'});if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({title:'Дневник тренировок',files:[file]});showNotification('✅ Отправлено');}catch(err){if(err.name!=='AbortError')showNotification('Не удалось отправить',false);}}else{try{const text=await lastSharedBlob.text();await navigator.clipboard.writeText(text);showNotification('📋 Данные скопированы');}catch(e){showNotification('Не удалось поделиться',false);}}}dialog.remove();overlay.remove();};}
-            document.getElementById('closeDialogBtn').onclick=()=>{dialog.remove();overlay.remove();};overlay.onclick=()=>{dialog.remove();overlay.remove();};
-        }
-        async function exportAllData(){try{const allData={version:DATA_FORMAT_VERSION,exportedAt:new Date().toISOString(),dataFormat:'workoutDiary_v1',workouts:loadWorkouts(),exercises:loadExercises(),profile:loadProfile(),timerState:JSON.parse(localStorage.getItem(STORAGE_KEYS.TIMER_STATE)||'{}'),chartPeriod:currentChartPeriod,theme:localStorage.getItem(STORAGE_KEYS.THEME)||'dark'};const jsonData=JSON.stringify(allData,null,2);const fileName=`workout_diary_${new Date().toISOString().slice(0,10)}.json`;const blob=new Blob([jsonData],{type:'application/json;charset=utf-8'});lastSharedBlob=blob;lastSharedFileName=fileName;if(!isMobile()&&'showSaveFilePicker' in window){try{const handle=await window.showSaveFilePicker({suggestedName:fileName,types:[{description:'JSON файл',accept:{'application/json':['.json']}}]});const writable=await handle.createWritable();await writable.write(jsonData);await writable.close();showNotification('✅ Данные сохранены в выбранную папку');return;}catch(err){if(err.name==='AbortError'){showNotification('Экспорт отменён');return;}console.log('showSaveFilePicker fallback');}}const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=fileName;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),100);if(isMobile())showSuccessDialog(fileName,false);else showNotification('✅ Данные экспортированы в папку "Загрузки"');}catch(e){console.error(e);showNotification('❌ Ошибка экспорта',false);}}
-        async function downloadTextReport(content,period){const periodNames={all:'все_тренировки',week:'неделя',month:'месяц',custom:'период'};const fileName=`отчет_тренировок_${periodNames[period]}_${new Date().toISOString().slice(0,10)}.html`;const htmlContent=`<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Отчёт о тренировках</title><style>body{font-family:'Segoe UI',sans-serif;line-height:1.6;color:#333;max-width:800px;margin:20px auto;padding:20px;white-space:pre-wrap;}h1{color:#9d4edd;}</style></head><body><h1>Отчёт о тренировках</h1><pre>${content}</pre></body></html>`;const blob=new Blob([htmlContent],{type:'text/html;charset=utf-8'});lastSharedBlob=blob;lastSharedFileName=fileName;if(!isMobile()&&'showSaveFilePicker' in window){try{const handle=await window.showSaveFilePicker({suggestedName:fileName,types:[{description:'HTML файл',accept:{'text/html':['.html']}}]});const writable=await handle.createWritable();await writable.write(htmlContent);await writable.close();showNotification('✅ Отчёт сохранён');return;}catch(err){if(err.name==='AbortError'){showNotification('Создание отчёта отменено');return;}}}const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=fileName;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),100);if(isMobile())showSuccessDialog(fileName,true);else showNotification('✅ Отчёт сохранён в папку "Загрузки"');}
-        function filterWorkoutsByPeriod(ws,period,from,to){if(period==='all')return ws;const now=new Date();let start;switch(period){case'week':start=new Date(now.getTime()-7*86400000);break;case'month':start=new Date(now.getTime()-30*86400000);break;case'custom':if(!from||!to)return ws;try{const fp=from.split('.'),tp=to.split('.');start=new Date(fp[2],fp[1]-1,fp[0]);const end=new Date(tp[2],tp[1]-1,tp[0]);return ws.filter(w=>{try{const p=w.date.split('.');const d=new Date(p[2],p[1]-1,p[0]);return d>=start&&d<=end;}catch(e){return false;}});}catch(e){return ws;}default:return ws;}return ws.filter(w=>{try{const p=w.date.split('.');const d=new Date(p[2],p[1]-1,p[0]);return d>=start&&d<=now;}catch(e){return false;}});}
-        function generateTextReport(ws,period){let r='='.repeat(60)+'\nОТЧЕТ О ТРЕНИРОВКАХ\n'+'='.repeat(60)+'\n\n';const periodNames={all:'Все тренировки',week:'За последнюю неделю',month:'За последний месяц',custom:'За выбранный период'};r+=`Период: ${periodNames[period]||period}\nКоличество тренировок: ${ws.length}\nДата: ${new Date().toLocaleDateString('ru-RU')}\n`+'-'.repeat(60)+'\n\n';if(ws.length===0){r+='За выбранный период тренировок не найдено.\n'+'='.repeat(60)+'\n';return r;}const sorted=[...ws].sort((a,b)=>new Date(b.date.split('.').reverse().join('-'))-new Date(a.date.split('.').reverse().join('-')));sorted.forEach((w,i)=>{r+=`ТРЕНИРОВКА ${i+1}\nДата: ${w.date}\nТип: ${w.type}\n\nУпражнения:\n`;w.exercises.forEach((ex,ei)=>{r+=`  ${ei+1}. ${ex.name}${ex.spec?` (${ex.spec})`:''}\n`;if(ex.weightSets?.length){const sets=ex.weightSets.map(s=>`${s.weight||''} ${s.sets&&s.reps?`${s.sets}x${s.reps}`:''}`.trim()).join(', ');if(sets)r+=`     ${sets}\n`;}if(ex.note)r+=`     📝 ${ex.note}\n`;});if(w.extraActivity)r+=`\nДоп. активность: ${w.extraActivity}\n`;if(w.workoutNotes)r+=`\nЗаметки: ${w.workoutNotes}\n`;if(w.weight)r+=`\nВес: ${w.weight} кг | BMI: ${w.bmi||'-'}\n`;r+='\n'+'-'.repeat(40)+'\n\n';});r+='='.repeat(60)+'\nКонец отчета\n'+'='.repeat(60);return r;}
-        function createWorkoutReport(){const period=document.querySelector('input[name="reportPeriod"]:checked').value;let from='',to='';if(period==='custom'){from=document.getElementById('reportDateFrom').value.trim();to=document.getElementById('reportDateTo').value.trim();if(!from||!to){showNotification('Укажите даты',false);return;}if(!/^\d{2}\.\d{2}\.\d{4}$/.test(from)||!/^\d{2}\.\d{2}\.\d{4}$/.test(to)){showNotification('Формат ДД.ММ.ГГГГ',false);return;}}const all=loadWorkouts();const filtered=filterWorkoutsByPeriod(all,period,from,to);if(filtered.length===0){showNotification('Нет тренировок за период',false);closeReportModal();return;}const content=generateTextReport(filtered,period);downloadTextReport(content,period);closeReportModal();}
-        function showReportModal(){document.getElementById('reportModal').style.display='block';document.body.style.overflow='hidden';const d=new Date();document.getElementById('reportDateTo').value=`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;}
-        function closeReportModal(){document.getElementById('reportModal').style.display='none';document.body.style.overflow='auto';document.getElementById('customDatesContainer').style.display='none';}
-        function initReport(){document.getElementById('exportReportBtn').addEventListener('click',showReportModal);document.getElementById('closeReportModal').addEventListener('click',closeReportModal);document.getElementById('cancelReportBtn').addEventListener('click',closeReportModal);document.querySelectorAll('input[name="reportPeriod"]').forEach(r=>r.addEventListener('change',function(){document.getElementById('customDatesContainer').style.display=this.value==='custom'?'block':'none';}));document.getElementById('generateReportBtn').addEventListener('click',createWorkoutReport);}
-        function initImport(){const btn=document.getElementById('importBtn');const fileInput=document.getElementById('importFileInput');const modal=document.getElementById('importModal');btn.onclick=()=>fileInput.click();fileInput.onchange=async(e)=>{const f=e.target.files[0];if(!f)return;if(!f.name.endsWith('.json')){showNotification('Выберите JSON файл',false);return;}try{const text=await f.text();const data=JSON.parse(text);if(!data.dataFormat||!data.dataFormat.includes('workoutDiary'))throw new Error('Неверный формат');document.getElementById('importStats').innerHTML=`<ul><li>Тренировок: ${data.workouts?.length||0}</li><li>Упражнений: ${data.exercises?.length||0}</li><li>Профиль: ${data.profile?.name||'нет'}</li></ul>`;document.getElementById('importSummary').style.display='block';modal.style.display='block';window.pendingImport=data;}catch(err){showNotification('Ошибка чтения файла',false);}};document.getElementById('closeImportModal').onclick=()=>{modal.style.display='none';document.body.style.overflow='auto';};document.getElementById('cancelImportBtn').onclick=()=>{modal.style.display='none';document.body.style.overflow='auto';};document.getElementById('confirmImportBtn').onclick=()=>{const opt=document.querySelector('input[name="importOption"]:checked').value;const data=window.pendingImport;if(!data)return;const curWorkouts=loadWorkouts();const curExercises=loadExercises();if(opt==='full'){if(data.workouts)saveWorkouts(data.workouts);if(data.exercises)saveExercises(data.exercises);if(data.profile)localStorage.setItem(STORAGE_KEYS.PROFILE,JSON.stringify(data.profile));if(data.theme)setTheme(data.theme);}else if(opt==='merge'){if(data.workouts){const merged=[...curWorkouts];data.workouts.forEach(nw=>{if(!merged.some(e=>e.id===nw.id))merged.push(nw);});saveWorkouts(merged);}if(data.exercises){const merged=[...curExercises];data.exercises.forEach(ne=>{if(!merged.some(e=>e.toLowerCase()===ne.toLowerCase()))merged.push(ne);});saveExercises(merged);}}else if(opt==='exercises'&&data.exercises){saveExercises(data.exercises);}renderWorkouts();renderExercisesList();updateWeightChart();loadProfile();showNotification('Импорт выполнен');modal.style.display='none';document.body.style.overflow='auto';};modal.addEventListener('click',(e)=>{if(e.target===modal){modal.style.display='none';document.body.style.overflow='auto';}});}
+        function isMobileDevice() { return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); }
         
-        // ==================== НАВИГАЦИЯ ====================
-        let currentChartPeriod='all';
-        function initNav(){const saved=sessionStorage.getItem(STORAGE_KEYS.ACTIVE_TAB)||'workoutSection';document.querySelectorAll('main section').forEach(s=>s.style.display='none');document.getElementById(saved).style.display='block';document.querySelectorAll('.nav-item').forEach(n=>{n.classList.remove('active');if(n.dataset.target===saved)n.classList.add('active');});document.querySelectorAll('.nav-item').forEach(n=>{n.addEventListener('click',e=>{e.preventDefault();const t=n.dataset.target;sessionStorage.setItem(STORAGE_KEYS.ACTIVE_TAB,t);document.querySelectorAll('main section').forEach(s=>s.style.display='none');document.getElementById(t).style.display='block';document.querySelectorAll('.nav-item').forEach(nav=>nav.classList.remove('active'));n.classList.add('active');updateHeader(t);if(t==='profileSection')updateWeightChart();if(t==='workoutSection')renderWorkouts();});});}
-        function updateHeader(tab){const titles={workoutSection:'Мой Дневник Тренировок',exercisesSection:'📝 База упражнений',profileSection:'📊 Профиль и Статистика',timerSection:'⏱️ Таймер тренировок'};document.getElementById('pageTitle').textContent=titles[tab]||'Мой Дневник Тренировок';const sub=document.getElementById('pageSubtitle');if(tab==='workoutSection')sub.textContent='Сила в дисциплине. Прогресс в деталях.';else if(tab==='exercisesSection')sub.textContent='Создавайте и редактируйте список упражнений.';else if(tab==='profileSection')sub.textContent='Введите ваши данные и отслеживайте прогресс.';else sub.textContent='Секундомер с кругами для интервальных тренировок.';}
+        function openDownloadsFolder() { if(isMobileDevice() && /Android/i.test(navigator.userAgent)) { try { window.location.href = 'intent://#Intent;scheme=file;package=com.android.documentsui;end'; } catch(e){} } showNotification('📁 Файл сохранён в папку "Загрузки"'); }
+        
+        function showSuccessDialog(fileName, isReport = false) {
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg-card);border-radius:20px;padding:24px;z-index:10000;max-width:320px;width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3);border:2px solid var(--color-success);`;
+            dialog.innerHTML = `<i class="fas fa-check-circle" style="font-size:48px;color:var(--color-success);margin-bottom:16px;"></i><h3 style="color:var(--text-primary);margin-bottom:8px;">✅ Файл сохранён!</h3><p style="color:var(--text-muted);margin-bottom:16px;font-size:0.85rem;word-break:break-all;">${fileName}</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;"><button id="openFolderBtn" style="background:var(--color-secondary);color:white;border:none;padding:10px 20px;border-radius:12px;cursor:pointer;"><i class="fas fa-folder-open"></i> Открыть папку</button>${isReport ? '<button id="openReportBtn" style="background:var(--color-primary);color:white;border:none;padding:10px 20px;border-radius:12px;cursor:pointer;"><i class="fas fa-globe"></i> Открыть в браузере</button>' : '<button id="shareFileBtn" style="background:var(--color-primary);color:white;border:none;padding:10px 20px;border-radius:12px;cursor:pointer;"><i class="fas fa-share-alt"></i> Поделиться</button>'}<button id="closeDialogBtn" style="background:rgba(255,255,255,0.1);color:var(--text-primary);border:1px solid var(--border-color);padding:10px 20px;border-radius:12px;cursor:pointer;">Закрыть</button></div>`;
+            const overlay = document.createElement('div'); overlay.style.cssText = `position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:9999;`;
+            document.body.appendChild(overlay); document.body.appendChild(dialog);
+            document.getElementById('openFolderBtn').onclick = () => { openDownloadsFolder(); dialog.remove(); overlay.remove(); };
+            if(isReport) { document.getElementById('openReportBtn').onclick = () => { window.open(`data:text/html,${encodeURIComponent(window.lastReportContent||'')}`, '_blank'); dialog.remove(); overlay.remove(); }; }
+            else { document.getElementById('shareFileBtn').onclick = async () => { if(window.lastSharedBlob && navigator.share) try { await navigator.share({ files: [new File([window.lastSharedBlob], fileName, {type:'application/json'})] }); showNotification('✅ Файл отправлен'); } catch(e){ showNotification('Не удалось отправить',false); } dialog.remove(); overlay.remove(); }; }
+            document.getElementById('closeDialogBtn').onclick = () => { dialog.remove(); overlay.remove(); };
+            overlay.onclick = () => { dialog.remove(); overlay.remove(); };
+        }
+        
+        async function exportAllData() {
+            try {
+                const allData = { version: DATA_FORMAT_VERSION, exportedAt: new Date().toISOString(), dataFormat: 'workoutDiary_v1', workouts: loadWorkoutLog(), exercises: loadExercises(), profile: loadProfile(), timerState: JSON.parse(localStorage.getItem(STORAGE_KEYS.TIMER_STATE)||'{}'), chartPeriod: localStorage.getItem('workoutDiary_chartPeriod')||'all', theme: localStorage.getItem(STORAGE_KEYS.THEME)||'dark' };
+                const jsonData = JSON.stringify(allData, null, 2);
+                const fileName = `workout_diary_${new Date().toISOString().slice(0,10)}.json`;
+                const blob = new Blob([jsonData], { type: 'application/json;charset=utf-8' });
+                window.lastSharedBlob = blob;
+                
+                if(!isMobileDevice() && 'showSaveFilePicker' in window) {
+                    try {
+                        const handle = await window.showSaveFilePicker({ suggestedName: fileName, types: [{ description: 'JSON файл', accept: { 'application/json': ['.json'] } }] });
+                        const writable = await handle.createWritable();
+                        await writable.write(jsonData);
+                        await writable.close();
+                        showNotification('✅ Данные сохранены в выбранную папку');
+                        return;
+                    } catch(e) { if(e.name !== 'AbortError') console.log(e); else { showNotification('Экспорт отменён'); return; } }
+                }
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = fileName;
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+                if(isMobileDevice()) showSuccessDialog(fileName, false);
+                else showNotification('✅ Данные экспортированы в папку "Загрузки"');
+            } catch(e) { console.error(e); showNotification('❌ Ошибка при экспорте', false); }
+        }
+        
+        async function downloadTextReport(content, period) {
+            const periodNames = { all:'все_тренировки', week:'неделя', month:'месяц', custom:'период' };
+            const fileName = `отчет_тренировок_${periodNames[period]}_${new Date().toISOString().slice(0,10)}.html`;
+            const htmlContent = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Отчёт о тренировках</title><style>body{font-family:'Segoe UI',sans-serif;line-height:1.6;color:#333;max-width:800px;margin:20px auto;padding:20px;white-space:pre-wrap;}h1{color:#9d4edd;}</style></head><body><h1>Отчёт о тренировках</h1><pre>${content}</pre></body></html>`;
+            window.lastReportContent = htmlContent;
+            
+            if(!isMobileDevice() && 'showSaveFilePicker' in window) {
+                try {
+                    const handle = await window.showSaveFilePicker({ suggestedName: fileName, types: [{ description: 'HTML файл', accept: { 'text/html': ['.html'] } }] });
+                    const writable = await handle.createWritable();
+                    await writable.write(htmlContent);
+                    await writable.close();
+                    showNotification('✅ Отчёт сохранён в выбранную папку');
+                    return;
+                } catch(e) { if(e.name !== 'AbortError') console.log(e); else { showNotification('Создание отчёта отменено'); return; } }
+            }
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = fileName;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+            if(isMobileDevice()) showSuccessDialog(fileName, true);
+            else showNotification('✅ Отчёт создан');
+        }
         
         // ==================== ИНИЦИАЛИЗАЦИЯ ====================
-        document.addEventListener('DOMContentLoaded',()=>{
-            initTheme();initNav();loadProfile();renderExercisesList();renderWorkouts();updateWeightChart();loadTimerState();initImport();initReport();
-            document.getElementById('globalAddBtn').onclick=()=>{resetForm();document.getElementById('workoutDate').value=getCurrentDate();addExerciseRow();showForm();};
-            document.getElementById('closeFormBtn').onclick=closeForm;document.getElementById('cancelFormBtn').onclick=closeForm;
-            document.getElementById('addExerciseRowBtn').onclick=addExerciseRow;document.getElementById('newWorkoutForm').onsubmit=handleWorkoutSubmit;
-            document.getElementById('workoutType').onchange=function(){document.getElementById('workoutTypeOther').style.display=this.value==='other'?'block':'none';};
-            document.getElementById('extraActivityType').onchange=function(){document.getElementById('extraActivityOther').style.display=this.value==='other'?'block':'none';};
-            document.getElementById('workoutWeight').oninput=function(){const w=parseFloat(this.value);const p=loadProfile();if(w&&p?.height){const h=p.height/100;document.getElementById('bmiValue').textContent=(w/(h*h)).toFixed(1);}else document.getElementById('bmiValue').textContent='-';};
-            document.getElementById('profileForm').onsubmit=function(e){e.preventDefault();const n=document.getElementById('profileUserName').value.trim();const h=document.getElementById('profileUserHeight').value;if(!n||!h){showNotification('Заполните поля',false);return;}localStorage.setItem(STORAGE_KEYS.PROFILE,JSON.stringify({name:n,height:parseFloat(h)}));showNotification('Профиль сохранён');};
-            document.getElementById('exerciseForm').onsubmit=addNewExercise;
-            document.getElementById('startPauseBtn').onclick=toggleTimer;document.getElementById('lapBtn').onclick=addLap;document.getElementById('resetBtn').onclick=resetTimer;
-            document.getElementById('exportAllBtn').onclick=exportAllData;
-            const shareBtn=document.querySelector('.btn-share');if(shareBtn)shareBtn.onclick=async()=>{if(navigator.share)try{await navigator.share({title:'Мой Дневник Тренировок',text:'Бесплатный трекер для фитнеса',url:window.location.href});showNotification('Спасибо!');}catch(e){}else{try{await navigator.clipboard.writeText(window.location.href);showNotification('Ссылка скопирована');}catch(e){showNotification('Не удалось скопировать',false);}}};
-            const feedbackBtn=document.querySelector('.btn-feedback');if(feedbackBtn)feedbackBtn.onclick=()=>{window.location.href='mailto:workout-diary22@mail.ru?subject=Обратная связь. Дневник тренировок'};
-            if(loadWorkouts().length===0&&!localStorage.getItem('demoAdded')){saveExercises(['Жим штанги лёжа','Приседания','Подтягивания']);saveWorkouts([{id:generateId(),date:getCurrentDate(),type:'strength',exercises:[{name:'Жим штанги лёжа',spec:'средний хват',weightSets:[{weight:'60 кг',sets:'3',reps:'10'}],note:''}],weight:72.5,created:Date.now()}]);localStorage.setItem('demoAdded','true');renderWorkouts();renderExercisesList();updateWeightChart();}
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.addEventListener('click', () => setTheme(btn.dataset.theme)));
+            loadProfile();
+            renderWorkoutList();
+            renderExercisesList();
+            updateWeightChart();
+            loadTimerState();
+            document.getElementById('globalAddBtn').onclick = () => { resetForm(); document.getElementById('formTitle').textContent='Новая тренировка'; document.getElementById('submitButtonText').textContent='Сохранить тренировку'; document.getElementById('workoutId').value=''; document.getElementById('isEditMode').value='false'; document.getElementById('workoutDate').value=getCurrentDateFormatted(); addNewExerciseRow(); showForm(); };
+            document.getElementById('closeFormBtn').onclick = closeForm;
+            document.getElementById('cancelFormBtn').onclick = closeForm;
+            document.getElementById('addExerciseRowBtn').onclick = addNewExerciseRow;
+            document.getElementById('newWorkoutForm').onsubmit = function(e) {
+                e.preventDefault();
+                const workouts = loadWorkoutLog();
+                const workout = { id: document.getElementById('workoutId').value || generateWorkoutId(), date: document.getElementById('workoutDate').value, type: document.getElementById('workoutType').value === 'other' ? document.getElementById('workoutTypeOther').value.trim() : document.getElementById('workoutType').value, exercises: [], extraActivity: null, workoutNotes: document.getElementById('workoutNotes').value.trim() || null, weight: document.getElementById('workoutWeight').value ? parseFloat(document.getElementById('workoutWeight').value) : null, bmi: null, created: Date.now() };
+                if(workout.type === 'other' && !workout.type) workout.type = 'Другое';
+                const extra = document.getElementById('extraActivityType').value;
+                workout.extraActivity = extra === 'other' ? document.getElementById('extraActivityOther').value.trim() : (extra || null);
+                document.querySelectorAll('#exercisesTableBody tr').forEach(row => {
+                    const name = row.querySelector('.exercise-name-select').value === '_other_' ? row.querySelector('.exercise-name-other').value.trim() : row.querySelector('.exercise-name-select').value;
+                    if(!name) return;
+                    const weightSets = [];
+                    row.querySelectorAll('.weight-set-row').forEach(set => { const w = set.querySelector('.weight-set-input').value.trim(), s = set.querySelector('.sets-input').value, r = set.querySelector('.reps-input').value; if(w||s||r) weightSets.push({ weight: w||'', sets: s||'', reps: r||'' }); });
+                    workout.exercises.push({ name, spec: row.querySelector('.exercise-spec-input').value.trim(), note: row.querySelector('.exercise-note-input').value.trim(), weightSets });
+                });
+                if(workout.exercises.length===0) { showNotification('Добавьте хотя бы одно упражнение',false); return; }
+                if(workout.weight) { const p = loadProfile(); if(p && p.height) workout.bmi = parseFloat((workout.weight / ((p.height/100)**2)).toFixed(1)); }
+                if(document.getElementById('isEditMode').value === 'true') { const idx = workouts.findIndex(w=>w.id===workout.id); if(idx!==-1) workouts[idx]=workout; }
+                else workouts.push(workout);
+                saveWorkoutLog(workouts);
+                renderWorkoutList();
+                updateWeightChart();
+                closeForm();
+                showNotification(document.getElementById('isEditMode').value === 'true' ? 'Тренировка обновлена' : 'Тренировка добавлена');
+            };
+            document.getElementById('workoutType').onchange = function() { document.getElementById('workoutTypeOther').style.display = this.value === 'other' ? 'block' : 'none'; };
+            document.getElementById('extraActivityType').onchange = function() { document.getElementById('extraActivityOther').style.display = this.value === 'other' ? 'block' : 'none'; };
+            document.getElementById('workoutWeight').oninput = updateBmiDisplay;
+            document.getElementById('profileForm').onsubmit = saveProfile;
+            document.getElementById('exerciseForm').onsubmit = function(e) { e.preventDefault(); const name = document.getElementById('newExerciseInput').value.trim(); if(!name) { showNotification('Введите название',false); return; } const ex = loadExercises(); if(ex.includes(name)) { showNotification('Уже есть',false); return; } ex.push(name); saveExercises(ex); renderExercisesList(); document.getElementById('newExerciseInput').value=''; showNotification('Упражнение добавлено'); };
+            startPauseBtn.onclick = toggleTimer;
+            lapBtn.onclick = addLap;
+            resetBtn.onclick = resetTimer;
+            document.getElementById('exportAllBtn').onclick = exportAllData;
+            document.getElementById('importBtn').onclick = () => document.getElementById('importFileInput').click();
+            document.getElementById('importFileInput').onchange = function(e) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(ev) { try { const data = JSON.parse(ev.target.result); if(!data.dataFormat?.includes('workoutDiary')) throw new Error('Неверный формат'); const modal = document.getElementById('importModal'); document.getElementById('importStats').innerHTML = `<ul><li>Тренировок: ${data.workouts?.length||0}</li><li>Упражнений: ${data.exercises?.length||0}</li></ul>`; document.getElementById('importSummary').style.display='block'; modal.style.display='block'; document.body.style.overflow='hidden'; window.pendingImport = data; } catch(err) { showNotification(err.message,false); } }; reader.readAsText(file); };
+            document.getElementById('closeImportModal').onclick = () => { document.getElementById('importModal').style.display='none'; document.body.style.overflow='auto'; };
+            document.getElementById('cancelImportBtn').onclick = () => { document.getElementById('importModal').style.display='none'; document.body.style.overflow='auto'; };
+            document.getElementById('confirmImportBtn').onclick = () => { const opt = document.querySelector('input[name="importOption"]:checked').value, data = window.pendingImport; if(!data) return; if(opt==='full') { if(data.workouts) saveWorkoutLog(data.workouts); if(data.exercises) saveExercises(data.exercises); if(data.profile) localStorage.setItem(STORAGE_KEYS.PROFILE,JSON.stringify(data.profile)); if(data.theme) setTheme(data.theme); } else if(opt==='merge') { const w = loadWorkoutLog(); data.workouts?.forEach(nw => { if(!w.some(ew=>ew.id===nw.id)) w.push(nw); }); saveWorkoutLog(w); const e = loadExercises(); data.exercises?.forEach(ne => { if(!e.some(ee=>ee.toLowerCase()===ne.toLowerCase())) e.push(ne); }); saveExercises(e); } else if(opt==='exercises' && data.exercises) saveExercises(data.exercises); renderWorkoutList(); renderExercisesList(); updateWeightChart(); loadProfile(); showNotification('Импорт выполнен'); document.getElementById('importModal').style.display='none'; document.body.style.overflow='auto'; };
+            document.getElementById('exportReportBtn').onclick = () => { document.getElementById('reportModal').style.display='block'; document.body.style.overflow='hidden'; document.getElementById('reportDateTo').value = getCurrentDateFormatted(); };
+            document.getElementById('closeReportModal').onclick = () => { document.getElementById('reportModal').style.display='none'; document.body.style.overflow='auto'; };
+            document.getElementById('cancelReportBtn').onclick = () => { document.getElementById('reportModal').style.display='none'; document.body.style.overflow='auto'; };
+            document.querySelectorAll('input[name="reportPeriod"]').forEach(r => r.onchange = function() { document.getElementById('customDatesContainer').style.display = this.value === 'custom' ? 'block' : 'none'; });
+            document.getElementById('generateReportBtn').onclick = () => {
+                const period = document.querySelector('input[name="reportPeriod"]:checked').value;
+                let from='', to='';
+                if(period==='custom') { from=document.getElementById('reportDateFrom').value.trim(); to=document.getElementById('reportDateTo').value.trim(); if(!from||!to) { showNotification('Укажите даты',false); return; } }
+                let workouts = loadWorkoutLog();
+                if(period!=='all') {
+                    const now = new Date();
+                    let start;
+                    if(period==='week') start = new Date(now-7*86400000);
+                    else if(period==='month') start = new Date(now-30*86400000);
+                    else if(period==='custom') { const p=from.split('.'); start = new Date(p[2],p[1]-1,p[0]); const p2=to.split('.'); const end = new Date(p2[2],p2[1]-1,p2[0]); workouts = workouts.filter(w=>{ const d=w.date.split('.'); const wd=new Date(d[2],d[1]-1,d[0]); return wd>=start && wd<=end; }); }
+                    if(period!=='custom') workouts = workouts.filter(w=>{ const d=w.date.split('.'); return new Date(d[2],d[1]-1,d[0])>=start && new Date(d[2],d[1]-1,d[0])<=now; });
+                }
+                if(!workouts.length) { showNotification('Нет тренировок за период',false); return; }
+                let report = `ОТЧЕТ О ТРЕНИРОВКАХ\n${'='.repeat(50)}\nПериод: ${period==='all'?'все':period==='week'?'неделя':period==='month'?'месяц':'выбранный'}\nТренировок: ${workouts.length}\n${'='.repeat(50)}\n\n`;
+                workouts.sort((a,b)=>new Date(b.date.split('.').reverse().join('-'))-new Date(a.date.split('.').reverse().join('-'))).forEach((w,i)=>{
+                    report += `${i+1}. ${w.date} - ${w.type}\n`;
+                    w.exercises.forEach((ex,ei)=> { report += `   ${ei+1}. ${ex.name}${ex.spec?` (${ex.spec})`:''}\n`; ex.weightSets?.forEach(s=>{ report += `      ${s.weight?`${s.weight} `:''}${s.sets&&s.reps?`${s.sets}x${s.reps}`:''}\n`; }); if(ex.note) report += `      Прим: ${ex.note}\n`; });
+                    if(w.extraActivity) report += `   Доп. активность: ${w.extraActivity}\n`;
+                    if(w.workoutNotes) report += `   Примечания: ${w.workoutNotes}\n`;
+                    if(w.weight) report += `   Вес: ${w.weight} кг\n`;
+                    report += '\n';
+                });
+                downloadTextReport(report, period);
+                document.getElementById('reportModal').style.display='none';
+                document.body.style.overflow='auto';
+            };
+            function renderExercisesList() {
+                const list = document.getElementById('exercisesList'), ex = loadExercises();
+                list.innerHTML = '';
+                if(!ex.length) { list.innerHTML = '<li class="empty-list-message"><i class="fas fa-dumbbell"></i><strong>База упражнений пуста</strong><br>Добавьте первое упражнение.</li>'; return; }
+                ex.forEach((e,i) => {
+                    const li = document.createElement('li'); li.className = 'exercise-list-item';
+                    li.innerHTML = `<span class="exercise-list-name">${e}</span><input type="text" class="exercise-list-edit-input" value="${e}"><div class="exercise-list-actions"><button class="btn-edit"><i class="fas fa-pencil-alt"></i></button><button class="btn-save-edit" style="display:none"><i class="fas fa-check"></i></button><button class="btn-cancel-edit" style="display:none"><i class="fas fa-times"></i></button><button class="btn-delete"><i class="fas fa-trash-alt"></i></button></div>`;
+                    list.appendChild(li);
+                    const nameSpan = li.querySelector('.exercise-list-name'), editInput = li.querySelector('.exercise-list-edit-input'), editBtn = li.querySelector('.btn-edit'), saveBtn = li.querySelector('.btn-save-edit'), cancelBtn = li.querySelector('.btn-cancel-edit'), delBtn = li.querySelector('.btn-delete');
+                    editBtn.onclick = () => { nameSpan.style.display='none'; editInput.style.display='block'; editBtn.style.display='none'; saveBtn.style.display='inline-block'; cancelBtn.style.display='inline-block'; editInput.focus(); };
+                    saveBtn.onclick = () => { const newName = editInput.value.trim(); if(!newName) { showNotification('Название не может быть пустым',false); return; } ex[i]=newName; saveExercises(ex); renderExercisesList(); showNotification('Упражнение обновлено'); };
+                    cancelBtn.onclick = () => { editInput.value=e; nameSpan.style.display='block'; editInput.style.display='none'; editBtn.style.display='inline-block'; saveBtn.style.display='none'; cancelBtn.style.display='none'; };
+                    delBtn.onclick = () => { if(confirm('Удалить это упражнение?')) { ex.splice(i,1); saveExercises(ex); renderExercisesList(); showNotification('Упражнение удалено'); } };
+                });
+            }
+            renderExercisesList();
+            
+            // Навигация
+            const sections = { workoutSection:document.getElementById('workoutSection'), exercisesSection:document.getElementById('exercisesSection'), profileSection:document.getElementById('profileSection'), timerSection:document.getElementById('timerSection') };
+            document.querySelectorAll('.nav-item').forEach(item => item.onclick = (e) => { e.preventDefault(); const t = item.dataset.target; Object.values(sections).forEach(s=>s.style.display='none'); sections[t].style.display='block'; document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); item.classList.add('active'); if(t==='profileSection') setTimeout(updateWeightChart,100); });
+            document.getElementById('workoutSection').style.display = 'block';
+            
+            // Демо-данные
+            if(loadWorkoutLog().length===0 && !localStorage.getItem('workoutDiary_demoAdded')) {
+                saveExercises(['Жим штанги лёжа','Подтягивания','Приседания','Планка','Бег']);
+                saveWorkoutLog([{ id: generateWorkoutId(), date: getCurrentDateFormatted(), type: 'strength', exercises: [{ name: 'Жим штанги лёжа', spec: 'средний хват', weightSets: [{ weight: '60 кг', sets: '3', reps: '10' }], note: 'Хорошо' },{ name: 'Подтягивания', spec: 'широкий', weightSets: [{ weight: '-', sets: '4', reps: '8' }], note: '' }], extraActivity: null, workoutNotes: '', weight: 72.5, bmi: null, created: Date.now() }]);
+                localStorage.setItem('workoutDiary_demoAdded','true');
+                renderWorkoutList();
+                renderExercisesList();
+                showNotification('Демо-данные загружены');
+            }
         });
-        window.addWeightSet=addWeightSet;window.removeExerciseRow=removeExerciseRow;
+        
+        window.handleExerciseSelectChange = handleExerciseSelectChange;
+        window.addWeightSet = addWeightSet;
+        window.removeExerciseRow = removeExerciseRow;
+        window.moveExerciseUp = moveExerciseUp;
+        window.moveExerciseDown = moveExerciseDown;
+        
+        // Кнопки поделиться и обратная связь
+        const shareBtn = document.querySelector('.btn-share');
+        if(shareBtn) shareBtn.onclick = async () => { if(navigator.share) try { await navigator.share({ title:'Мой Дневник Тренировок', text:'Бесплатный трекер для фитнеса', url:location.href }); showNotification('Спасибо!'); } catch(e){} else { navigator.clipboard.writeText(location.href); showNotification('Ссылка скопирована'); } };
+        const feedbackBtn = document.querySelector('.btn-feedback');
+        if(feedbackBtn) feedbackBtn.onclick = () => { const version = document.getElementById('appVersion')?.textContent||'V2.4.3'; window.location.href = `mailto:workout-diary22@mail.ru?subject=Обратная связь. Дневник тренировок ${version}&body=${encodeURIComponent(`--- ТЕХНИЧЕСКАЯ ИНФОРМАЦИЯ ---\nВерсия: ${version}\nУстройство: ${navigator.userAgent}\nДата: ${new Date().toLocaleString('ru-RU')}\n\n--- СООБЩЕНИЕ ---\n`)}`; showNotification('Открывается почтовый клиент'); };
     </script>
 </body>
 </html>
