@@ -3703,71 +3703,108 @@
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent) || (window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
         }
         function showSuccessDialog(fileName, fileType, fileBlob) {
-            const modal = document.createElement('div');
-            modal.style.position = 'fixed';
-            modal.style.top = '0';
-            modal.style.left = '0';
-            modal.style.width = '100%';
-            modal.style.height = '100%';
-            modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
-            modal.style.zIndex = '10000';
-            modal.style.display = 'flex';
-            modal.style.alignItems = 'center';
-            modal.style.justifyContent = 'center';
-            const content = document.createElement('div');
-            content.style.backgroundColor = 'var(--bg-card)';
-            content.style.borderRadius = '20px';
-            content.style.padding = '24px';
-            content.style.maxWidth = '320px';
-            content.style.width = '90%';
-            content.style.textAlign = 'center';
-            content.style.boxShadow = 'var(--shadow-lg)';
-            content.style.border = `2px solid var(--color-primary)`;
-            content.innerHTML = `
-                <i class="fas fa-check-circle" style="font-size: 48px; color: var(--color-success); margin-bottom: 16px;"></i>
-                <h3 style="margin-bottom: 8px;">Файл сохранён</h3>
-                <p style="margin-bottom: 20px; color: var(--text-muted); word-break: break-all;">${fileName}</p>
-                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-                    <button id="successOpenFolder" style="padding: 10px 20px; background: var(--color-primary); color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer;"><i class="fas fa-folder-open"></i> Открыть папку</button>
-                    ${fileType === 'json' ? '<button id="successShareFile" style="padding: 10px 20px; background: var(--color-secondary); color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer;"><i class="fas fa-share-alt"></i> Поделиться</button>' : ''}
-                    ${fileType === 'html' ? '<button id="successOpenBrowser" style="padding: 10px 20px; background: var(--color-secondary); color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer;"><i class="fas fa-external-link-alt"></i> Открыть в браузере</button>' : ''}
-                </div>
-            `;
-            modal.appendChild(content);
-            document.body.appendChild(modal);
-            document.getElementById('successOpenFolder')?.addEventListener('click', () => {
-                if (navigator.userAgent.match(/Android/i)) {
-                    try {
-                        window.location.href = 'intent://#Intent;scheme=file;package=com.android.documentsui;end;';
-                        showNotification('Попробуйте открыть папку "Загрузки" в файловом менеджере');
-                    } catch(e) { showNotification('Откройте папку "Загрузки" вручную'); }
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
+    modal.style.zIndex = '10000';
+    modal.style.display = 'flex';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    
+    const content = document.createElement('div');
+    content.style.backgroundColor = 'var(--bg-card)';
+    content.style.borderRadius = '20px';
+    content.style.padding = '24px';
+    content.style.maxWidth = '320px';
+    content.style.width = '90%';
+    content.style.textAlign = 'center';
+    content.style.boxShadow = 'var(--shadow-lg)';
+    content.style.border = `2px solid var(--color-primary)`;
+    
+    content.innerHTML = `
+        <i class="fas fa-check-circle" style="font-size: 48px; color: var(--color-success); margin-bottom: 16px;"></i>
+        <h3 style="margin-bottom: 8px;">Файл сохранён</h3>
+        <p style="margin-bottom: 20px; color: var(--text-muted); word-break: break-all;">${fileName}</p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <button id="successOpenFolder" style="padding: 10px 20px; background: var(--color-primary); color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer;"><i class="fas fa-folder-open"></i> Открыть папку</button>
+            ${fileType === 'json' ? '<button id="successShareFile" style="padding: 10px 20px; background: var(--color-secondary); color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer;"><i class="fas fa-share-alt"></i> Поделиться</button>' : ''}
+            ${fileType === 'html' ? '<button id="successOpenBrowser" style="padding: 10px 20px; background: var(--color-secondary); color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer;"><i class="fas fa-external-link-alt"></i> Открыть в браузере</button>' : ''}
+        </div>
+    `;
+    
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+    
+    // Кнопка "Открыть папку"
+    document.getElementById('successOpenFolder')?.addEventListener('click', () => {
+        if (navigator.userAgent.match(/Android/i)) {
+            try {
+                window.location.href = 'intent://#Intent;scheme=file;package=com.android.documentsui;end;';
+                showNotification('Попробуйте открыть папку "Загрузки" в файловом менеджере');
+            } catch(e) { 
+                showNotification('Откройте папку "Загрузки" вручную'); 
+            }
+        } else {
+            showNotification('Файл сохранён в папке "Загрузки"');
+        }
+        modal.remove();
+    });
+    
+    // Кнопка "Поделиться" для JSON
+    if (fileType === 'json') {
+        document.getElementById('successShareFile')?.addEventListener('click', async () => {
+            try {
+                // СОЗДАЁМ ПРАВИЛЬНЫЙ FILE ОБЪЕКТ
+                const file = new File([fileBlob], fileName, { type: 'application/json' });
+                
+                // ПРОВЕРЯЕМ ПОДДЕРЖКУ
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        title: 'Мой Дневник Тренировок',
+                        text: 'Экспорт данных тренировок',
+                        files: [file]
+                    });
+                    showNotification('✅ Файл отправлен');
                 } else {
-                    showNotification('Файл сохранён в папке "Загрузки"');
-                }
-                modal.remove();
-            });
-            if (fileType === 'json') {
-                document.getElementById('successShareFile')?.addEventListener('click', async () => {
-                    if (navigator.canShare && navigator.canShare({ files: [fileBlob] })) {
-                        try {
-                            const file = new File([fileBlob], fileName, { type: 'application/json' });
-                            await navigator.share({ files: [file], title: 'Поделиться тренировками' });
-                        } catch(e) { if(e.name !== 'AbortError') showNotification('Не удалось поделиться', false); }
+                    // FALLBACK: пробуем поделиться только ссылкой
+                    if (navigator.share) {
+                        await navigator.share({
+                            title: 'Мой Дневник Тренировок',
+                            text: `Экспорт данных: ${fileName}`,
+                            url: window.location.href
+                        });
+                        showNotification('✅ Ссылка на приложение отправлена');
                     } else {
                         showNotification('Поделиться файлом можно из папки "Загрузки"', false);
                     }
-                    modal.remove();
-                });
+                }
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error('Ошибка при шеринге:', err);
+                    showNotification('Не удалось поделиться файлом', false);
+                }
             }
-            if (fileType === 'html') {
-                document.getElementById('successOpenBrowser')?.addEventListener('click', () => {
-                    const url = URL.createObjectURL(fileBlob);
-                    window.open(url, '_blank');
-                    modal.remove();
-                });
-            }
-            modal.addEventListener('click', (e) => { if(e.target === modal) modal.remove(); });
-        }
+            modal.remove();
+        });
+    }
+    
+    // Кнопка "Открыть в браузере" для HTML отчёта
+    if (fileType === 'html') {
+        document.getElementById('successOpenBrowser')?.addEventListener('click', () => {
+            const url = URL.createObjectURL(fileBlob);
+            window.open(url, '_blank');
+            modal.remove();
+        });
+    }
+    
+    modal.addEventListener('click', (e) => { 
+        if (e.target === modal) modal.remove(); 
+    });
+}
         async function exportAllData() {
             try {
                 const allData = {
