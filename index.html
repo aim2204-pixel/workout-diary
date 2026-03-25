@@ -4132,11 +4132,89 @@
         window.removeExerciseRow = removeExerciseRow;
         window.moveExerciseUp = moveExerciseUp;
         window.moveExerciseDown = moveExerciseDown;
-              // ========== РАСШИРЕННАЯ ОБРАБОТКА SERVICE WORKER ==========
+        // ========== ФУНКЦИИ ДЛЯ КНОПОК ПРОФИЛЯ ==========
+const APP_URL = window.location.origin + window.location.pathname;
+const APP_NAME = 'Мой Дневник Тренировок';
+const APP_DESC = 'Бесплатный трекер для фитнеса. Веди дневник, следи за прогрессом!';
+
+async function shareApp() {
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: APP_NAME,
+                text: APP_DESC,
+                url: APP_URL,
+            });
+            showNotification('✅ Спасибо, что делитесь приложением!');
+            return;
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                console.log('Web Share ошибка:', err);
+            }
+        }
+    }
+    try {
+        await navigator.clipboard.writeText(APP_URL);
+        showNotification('🔗 Ссылка на приложение скопирована!');
+    } catch (err) {
+        console.error('Ошибка копирования:', err);
+        showNotification('❌ Не удалось скопировать ссылку', false);
+    }
+}
+
+function sendFeedback() {
+    const version = document.getElementById('appVersion')?.textContent || 'V2.4.3';
+    const theme = document.body.classList.value.match(/theme-(\w+)/)?.[1] || 'dark';
+    const workouts = loadWorkoutLog?.() || [];
+    const exercises = loadExercises?.() || [];
+    const profile = loadProfile?.() || {};
+    const body = `--- ТЕХНИЧЕСКАЯ ИНФОРМАЦИЯ ---\nВерсия: ${version}\nТема: ${theme}\nТренировок: ${workouts.length}\nУпражнений в базе: ${exercises.length}\nПользователь: ${profile.name || 'не указан'}\nУстройство: ${navigator.userAgent}\nДата: ${new Date().toLocaleString('ru-RU')}\n\n--- СООБЩЕНИЕ ---\n[Напишите ваше сообщение здесь]\n`.trim();
+    const subject = encodeURIComponent(`Обратная связь. Дневник тренировок ${version}`);
+    const mailtoLink = `mailto:workout-diary22@mail.ru?subject=${subject}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoLink;
+    setTimeout(() => {
+        showNotification('✉️ Открывается почтовый клиент...');
+    }, 100);
+}
+
+function initProfileButtons() {
+    const shareBtn = document.querySelector('.btn-share');
+    if (shareBtn && !shareBtn.hasAttribute('data-handler-attached')) {
+        const newShareBtn = shareBtn.cloneNode(true);
+        shareBtn.parentNode.replaceChild(newShareBtn, shareBtn);
+        newShareBtn.addEventListener('click', shareApp);
+        newShareBtn.setAttribute('data-handler-attached', 'true');
+    }
+    
+    const feedbackBtn = document.querySelector('.btn-feedback');
+    if (feedbackBtn && !feedbackBtn.hasAttribute('data-handler-attached')) {
+        const newFeedbackBtn = feedbackBtn.cloneNode(true);
+        feedbackBtn.parentNode.replaceChild(newFeedbackBtn, feedbackBtn);
+        newFeedbackBtn.addEventListener('click', sendFeedback);
+        newFeedbackBtn.setAttribute('data-handler-attached', 'true');
+    }
+}
+
+// Инициализация кнопок
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initProfileButtons);
+} else {
+    initProfileButtons();
+}
+
+// Обновляем кнопки при переключении вкладок
+const navItems = document.querySelectorAll('.nav-item');
+if (navItems.length) {
+    navItems.forEach(item => {
+        item.addEventListener('click', function() {
+            setTimeout(initProfileButtons, 100);
+        });
+    });
+}
+        // ========== РАСШИРЕННАЯ ОБРАБОТКА SERVICE WORKER ==========
         let swRegistration = null;
 
         if ('serviceWorker' in navigator) {
-            // Регистрация с сохранением ссылки
             window.addEventListener('load', async () => {
                 try {
                     const registration = await navigator.serviceWorker.getRegistration();
@@ -4152,7 +4230,6 @@
                         console.log('Service Worker зарегистрирован:', newReg);
                     }
                     
-                    // Обработка сообщений от Service Worker
                     navigator.serviceWorker.addEventListener('message', event => {
                         if (event.data.type === 'CACHE_STATUS') {
                             console.log('Статус кэша:', event.data);
@@ -4161,7 +4238,6 @@
                             console.log('Новая версия Service Worker активирована');
                             showNotification('Приложение обновлено! Перезагрузите страницу.');
                             
-                            // Показываем кнопку обновления
                             const updateBtn = document.createElement('div');
                             updateBtn.id = 'sw-update-notification';
                             updateBtn.innerHTML = `
@@ -4178,7 +4254,6 @@
                         }
                     });
                     
-                    // Автоматическая проверка обновлений каждые 30 минут
                     setInterval(() => {
                         if (swRegistration) {
                             swRegistration.update();
@@ -4191,7 +4266,6 @@
                 }
             });
             
-            // Отслеживаем изменения контроллера
             let refreshing = false;
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 if (refreshing) return;
@@ -4219,7 +4293,6 @@
                 if (pullDistance > 60) {
                     isRefreshing = true;
                     
-                    // Показываем индикатор обновления
                     const refreshIndicator = document.createElement('div');
                     refreshIndicator.id = 'pull-to-refresh';
                     refreshIndicator.innerHTML = `
@@ -4235,15 +4308,12 @@
                     `;
                     document.body.appendChild(refreshIndicator);
                     
-                    // Проверяем интернет и обновляем
                     if (navigator.onLine) {
-                        // Принудительно проверяем обновления Service Worker
                         if (swRegistration) {
                             swRegistration.update().then(() => {
                                 console.log('Принудительная проверка обновлений');
                             });
                         }
-                        // Обновляем страницу
                         setTimeout(() => {
                             window.location.reload();
                         }, 500);
@@ -4277,7 +4347,6 @@
         // ========== ОТСЛЕЖИВАНИЕ СТАТУСА ИНТЕРНЕТА ==========
         window.addEventListener('online', () => {
             showNotification('Интернет восстановлен!', true);
-            // Принудительно проверяем обновления
             if (swRegistration) {
                 swRegistration.update();
             }
