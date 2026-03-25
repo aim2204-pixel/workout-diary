@@ -3785,7 +3785,7 @@
             } catch (err) {
                 if (err.name !== 'AbortError') {
                     console.error('Ошибка при шеринге:', err);
-                    showNotification('Не удалось поделиться файлом', false);
+                    showNotification('Поделиться файлом можно из папки "Загрузки"' , false);
                 }
             }
             modal.remove();
