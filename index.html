@@ -4323,7 +4323,12 @@ if (navItems.length) {
         });
 
         document.addEventListener('touchmove', (e) => {
-            if (window.scrollY === 0 && touchStartY && !isRefreshing) {
+            // ПРОВЕРКА: если форма редактирования открыта — НЕ ДЕЛАЕМ ОБНОВЛЕНИЕ
+const formOverlay = document.getElementById('newWorkoutFormOverlay');
+if (formOverlay && formOverlay.style.display === 'block') {
+    return;
+}
+if (window.scrollY === 0 && touchStartY && !isRefreshing) {
                 const touchY = e.touches[0].clientY;
                 const pullDistance = touchY - touchStartY;
                 
