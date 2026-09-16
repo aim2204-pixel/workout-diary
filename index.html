@@ -1984,6 +1984,23 @@
                 gap: 16px;
             }
         }
+
+        /* ========== TELEGRAM MINI APP ========== */
+        body.tg-mode {
+            padding-top: env(safe-area-inset-top);
+        }
+        body.tg-mode footer {
+            display: none;
+        }
+        body.tg-mode .bottom-nav {
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        }
+        body.tg-mode .app-version {
+            display: none;
+        }
+        body.tg-mode .offline-warning {
+            top: env(safe-area-inset-top);
+        }
     </style>
     <meta name="application-name" content="Мой Дневник Тренировок">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -4397,6 +4414,95 @@ if (window.scrollY === 0 && touchStartY && !isRefreshing) {
         window.addEventListener('offline', () => {
             showNotification('Нет интернета. Используем кэшированные данные.', false);
         });
+
+        // ========== ИНТЕГРАЦИЯ С TELEGRAM MINI APP ==========
+        // Скрипт Telegram загружается АСИНХРОННО, чтобы блокировка telegram.org
+        // в России не тормозила загрузку PWA. Если SDK не загрузился за 3 секунды,
+        // приложение продолжает работать как обычный PWA.
+        (function() {
+            let tgInited = false;
+            
+            function initTelegramApp() {
+                if (tgInited) return;
+                const tg = window.Telegram && window.Telegram.WebApp;
+                if (!tg || tg.initData === undefined) {
+                    console.log('Приложение работает в PWA-режиме (Telegram SDK недоступен)');
+                    return;
+                }
+                
+                tgInited = true;
+                console.log('Приложение запущено в Telegram Mini App');
+                
+                try {
+                    tg.ready();
+                    tg.expand();
+                    tg.disableVerticalSwipes && tg.disableVerticalSwipes();
+                } catch(e) {}
+                
+                try {
+                    setTheme(tg.colorScheme === 'light' ? 'light' : 'dark');
+                    const themeColor = tg.colorScheme === 'light' ? '#f5f1eb' : '#16213e';
+                    tg.setHeaderColor && tg.setHeaderColor(themeColor);
+                    tg.setBackgroundColor && tg.setBackgroundColor(themeColor);
+                } catch(e) { console.log('Не удалось применить тему Telegram:', e); }
+                
+                document.body.classList.add('tg-mode');
+                
+                if (tg.HapticFeedback) {
+                    document.addEventListener('click', (e) => {
+                        const target = e.target.closest('button, .nav-item, .theme-btn, .btn-icon, .timer-btn');
+                        if (target) {
+                            try { tg.HapticFeedback.impactOccurred('light'); } catch(err) {}
+                        }
+                    }, true);
+                }
+                
+                function updateBackButton() {
+                    if (!tg.BackButton) return;
+                    const formOverlay = document.getElementById('newWorkoutFormOverlay');
+                    const importModal = document.getElementById('importModal');
+                    const reportModal = document.getElementById('reportModal');
+                    const anyOpen =
+                        (formOverlay && formOverlay.style.display === 'block') ||
+                        (importModal && importModal.style.display === 'block') ||
+                        (reportModal && reportModal.style.display === 'block');
+                    if (anyOpen) tg.BackButton.show();
+                    else tg.BackButton.hide();
+                }
+                
+                if (tg.BackButton) {
+                    tg.BackButton.onClick(() => {
+                        const formOverlay = document.getElementById('newWorkoutFormOverlay');
+                        const importModal = document.getElementById('importModal');
+                        const reportModal = document.getElementById('reportModal');
+                        if (formOverlay && formOverlay.style.display === 'block') { closeForm(); return; }
+                        if (importModal && importModal.style.display === 'block') { closeImportModal(); return; }
+                        if (reportModal && reportModal.style.display === 'block') { closeReportModal(); return; }
+                    });
+                }
+                
+                ['newWorkoutFormOverlay', 'importModal', 'reportModal'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    new MutationObserver(updateBackButton).observe(el, { attributes: true, attributeFilter: ['style'] });
+                });
+            }
+            
+            const script = document.createElement('script');
+            script.src = 'https://telegram.org/js/telegram-web-app.js';
+            script.async = true;
+            script.onload = initTelegramApp;
+            script.onerror = function() {
+                console.log('Telegram SDK не загрузился — работаем как PWA');
+            };
+            document.head.appendChild(script);
+            
+            setTimeout(() => {
+                if (window.Telegram && window.Telegram.WebApp) initTelegramApp();
+            }, 1500);
+            
+            setTimeout(initTelegramApp, 3500);
+        })();
     </script>
 </body>
 <footer>
