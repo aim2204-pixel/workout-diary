@@ -1990,13 +1990,21 @@
             padding-top: env(safe-area-inset-top);
         }
         body.tg-mode footer {
-            display: none;
+            /* Footer остаётся видимым, но приподнят над системной панелью Telegram */
+            bottom: env(safe-area-inset-bottom);
+            padding-bottom: 4px;
+        }
+        body.tg-mode footer a {
+            font-size: 0.65rem;
+            padding: 6px 10px;
         }
         body.tg-mode .bottom-nav {
             padding-bottom: calc(12px + env(safe-area-inset-bottom));
         }
         body.tg-mode .app-version {
-            display: none;
+            /* Версия остаётся видимой, чуть компактнее */
+            font-size: 0.4rem;
+            right: 0px;
         }
         body.tg-mode .offline-warning {
             top: env(safe-area-inset-top);
@@ -2024,7 +2032,7 @@
             <div class="subtitle" id="pageSubtitle">Сила в дисциплине. Прресс в деталях.</div>
         </div>
         <button class="header-add-btn" id="globalAddBtn" title="Добавить новую тренировку">+</button>
-        <div class="app-version" id="appVersion">V2.4.4</div>
+        <div class="app-version" id="appVersion">V2.4.5</div>
     </header>
     <div class="offline-warning" id="offlineWarning">
         <i class="fas fa-wifi-slash"></i> Вы в офлайн-режиме. Данные сохраняются локально.
