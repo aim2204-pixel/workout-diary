@@ -1990,7 +1990,6 @@
             padding-top: env(safe-area-inset-top);
         }
         body.tg-mode footer {
-            /* Footer остаётся видимым, но приподнят над системной панелью Telegram */
             bottom: env(safe-area-inset-bottom);
             padding-bottom: 4px;
         }
@@ -2002,7 +2001,6 @@
             padding-bottom: calc(12px + env(safe-area-inset-bottom));
         }
         body.tg-mode .app-version {
-            /* Версия остаётся видимой, чуть компактнее */
             font-size: 0.4rem;
             right: 0px;
         }
@@ -2032,7 +2030,7 @@
             <div class="subtitle" id="pageSubtitle">Сила в дисциплине. Прресс в деталях.</div>
         </div>
         <button class="header-add-btn" id="globalAddBtn" title="Добавить новую тренировку">+</button>
-        <div class="app-version" id="appVersion">V2.4.6</div>
+        <div class="app-version" id="appVersion">V2.4.7</div>
     </header>
     <div class="offline-warning" id="offlineWarning">
         <i class="fas fa-wifi-slash"></i> Вы в офлайн-режиме. Данные сохраняются локально.
@@ -3728,108 +3726,98 @@
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent) || (window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
         }
         function showSuccessDialog(fileName, fileType, fileBlob) {
-    const modal = document.createElement('div');
-    modal.style.position = 'fixed';
-    modal.style.top = '0';
-    modal.style.left = '0';
-    modal.style.width = '100%';
-    modal.style.height = '100%';
-    modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
-    modal.style.zIndex = '10000';
-    modal.style.display = 'flex';
-    modal.style.alignItems = 'center';
-    modal.style.justifyContent = 'center';
-    
-    const content = document.createElement('div');
-    content.style.backgroundColor = 'var(--bg-card)';
-    content.style.borderRadius = '20px';
-    content.style.padding = '24px';
-    content.style.maxWidth = '320px';
-    content.style.width = '90%';
-    content.style.textAlign = 'center';
-    content.style.boxShadow = 'var(--shadow-lg)';
-    content.style.border = `2px solid var(--color-primary)`;
-    
-    content.innerHTML = `
-        <i class="fas fa-check-circle" style="font-size: 48px; color: var(--color-success); margin-bottom: 16px;"></i>
-        <h3 style="margin-bottom: 8px;">Файл сохранён</h3>
-        <p style="margin-bottom: 20px; color: var(--text-muted); word-break: break-all;">${fileName}</p>
-        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-            <button id="successOpenFolder" style="padding: 10px 20px; background: var(--color-primary); color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer;"><i class="fas fa-folder-open"></i> Открыть папку</button>
-            ${fileType === 'json' ? '<button id="successShareFile" style="padding: 10px 20px; background: var(--color-secondary); color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer;"><i class="fas fa-share-alt"></i> Поделиться</button>' : ''}
-            ${fileType === 'html' ? '<button id="successOpenBrowser" style="padding: 10px 20px; background: var(--color-secondary); color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer;"><i class="fas fa-external-link-alt"></i> Открыть в браузере</button>' : ''}
-        </div>
-    `;
-    
-    modal.appendChild(content);
-    document.body.appendChild(modal);
-    
-    // Кнопка "Открыть папку"
-    document.getElementById('successOpenFolder')?.addEventListener('click', () => {
-        if (navigator.userAgent.match(/Android/i)) {
-            try {
-                window.location.href = 'intent://#Intent;scheme=file;package=com.android.documentsui;end;';
-                showNotification('Попробуйте открыть папку "Загрузки" в файловом менеджере');
-            } catch(e) { 
-                showNotification('Откройте папку "Загрузки" вручную'); 
-            }
-        } else {
-            showNotification('Файл сохранён в папке "Загрузки"');
-        }
-        modal.remove();
-    });
-    
-    // Кнопка "Поделиться" для JSON
-    if (fileType === 'json') {
-        document.getElementById('successShareFile')?.addEventListener('click', async () => {
-            try {
-                // СОЗДАЁМ ПРАВИЛЬНЫЙ FILE ОБЪЕКТ
-                const file = new File([fileBlob], fileName, { type: 'application/json' });
-                
-                // ПРОВЕРЯЕМ ПОДДЕРЖКУ
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        title: 'Мой Дневник Тренировок',
-                        text: 'Экспорт данных тренировок',
-                        files: [file]
-                    });
-                    showNotification('✅ Файл отправлен');
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
+            modal.style.zIndex = '10000';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+
+            const content = document.createElement('div');
+            content.style.backgroundColor = 'var(--bg-card)';
+            content.style.borderRadius = '20px';
+            content.style.padding = '24px';
+            content.style.maxWidth = '320px';
+            content.style.width = '90%';
+            content.style.textAlign = 'center';
+            content.style.boxShadow = 'var(--shadow-lg)';
+            content.style.border = `2px solid var(--color-primary)`;
+
+            content.innerHTML = `
+                <i class="fas fa-check-circle" style="font-size: 48px; color: var(--color-success); margin-bottom: 16px;"></i>
+                <h3 style="margin-bottom: 8px;">Файл сохранён</h3>
+                <p style="margin-bottom: 20px; color: var(--text-muted); word-break: break-all;">${fileName}</p>
+                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                    <button id="successOpenFolder" style="padding: 10px 20px; background: var(--color-primary); color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer;"><i class="fas fa-folder-open"></i> Где найти файл?</button>
+                    ${fileType === 'json' ? '<button id="successShareFile" style="padding: 10px 20px; background: var(--color-secondary); color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer;"><i class="fas fa-share-alt"></i> Поделиться</button>' : ''}
+                    ${fileType === 'html' ? '<button id="successOpenBrowser" style="padding: 10px 20px; background: var(--color-secondary); color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer;"><i class="fas fa-external-link-alt"></i> Открыть в браузере</button>' : ''}
+                </div>
+            `;
+
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+
+            // Кнопка "Где найти файл?" — сообщение зависит от среды
+            document.getElementById('successOpenFolder')?.addEventListener('click', () => {
+                if (isInTelegram()) {
+                    showNotification('📂 Файл сохранён в Telegram. Найти можно в настройках Telegram → Данные и память → Хранилище', true);
                 } else {
-                    // FALLBACK: пробуем поделиться только ссылкой
-                    if (navigator.share) {
-                        await navigator.share({
-                            title: 'Мой Дневник Тренировок',
-                            text: `Экспорт данных: ${fileName}`,
-                            url: window.location.href
-                        });
-                        showNotification('✅ Ссылка на приложение отправлена');
-                    } else {
-                        showNotification('Поделиться файлом можно из папки "Загрузки"', false);
+                    showNotification('📂 Файл сохранён в папке «Загрузки» вашего устройства', true);
+                }
+                modal.remove();
+            });
+
+            // Кнопка "Поделиться" для JSON
+            if (fileType === 'json') {
+                document.getElementById('successShareFile')?.addEventListener('click', async () => {
+                    try {
+                        const file = new File([fileBlob], fileName, { type: 'application/json' });
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            await navigator.share({
+                                title: 'Мой Дневник Тренировок',
+                                text: 'Экспорт данных тренировок',
+                                files: [file]
+                            });
+                            showNotification('✅ Файл отправлен');
+                        } else {
+                            if (navigator.share) {
+                                await navigator.share({
+                                    title: 'Мой Дневник Тренировок',
+                                    text: `Экспорт данных: ${fileName}`,
+                                    url: window.location.href
+                                });
+                                showNotification('✅ Ссылка на приложение отправлена');
+                            } else {
+                                showNotification('Поделиться файлом можно из папки «Загрузки»', false);
+                            }
+                        }
+                    } catch (err) {
+                        if (err.name !== 'AbortError') {
+                            console.error('Ошибка при шеринге:', err);
+                            showNotification('Поделиться файлом можно из папки «Загрузки»', false);
+                        }
                     }
-                }
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    console.error('Ошибка при шеринге:', err);
-                    showNotification('Поделиться файлом можно из папки "Загрузки"' , false);
-                }
+                    modal.remove();
+                });
             }
-            modal.remove();
-        });
-    }
-    
-    // Кнопка "Открыть в браузере" для HTML отчёта
-    if (fileType === 'html') {
-        document.getElementById('successOpenBrowser')?.addEventListener('click', () => {
-            const url = URL.createObjectURL(fileBlob);
-            window.open(url, '_blank');
-            modal.remove();
-        });
-    }
-    
-    modal.addEventListener('click', (e) => { 
-        if (e.target === modal) modal.remove(); 
-    });
-}
+
+            // Кнопка "Открыть в браузере" для HTML отчёта (используем location.href вместо window.open)
+            if (fileType === 'html') {
+                document.getElementById('successOpenBrowser')?.addEventListener('click', () => {
+                    const url = URL.createObjectURL(fileBlob);
+                    window.location.href = url;
+                });
+            }
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+        }
         async function exportAllData() {
             try {
                 const allData = {
@@ -4199,16 +4187,13 @@ const APP_URL = window.location.origin + window.location.pathname;
 const APP_NAME = 'Мой Дневник Тренировок';
 const APP_DESC = 'Бесплатный трекер для фитнеса. Веди дневник, следи за прогрессом!';
 
-// Ссылка на Mini App внутри Telegram (замени на своего бота)
 const TELEGRAM_APP_URL = 'https://t.me/new_workout_diary_bot/diary';
 const TELEGRAM_BOT_USERNAME = 'new_workout_diary_bot';
 
-// Проверка: запущено ли приложение внутри Telegram
 function isInTelegram() {
     return !!(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData);
 }
 
-// ==== ПОДЕЛИТЬСЯ ====
 async function shareApp() {
     if (isInTelegram()) {
         const tg = window.Telegram.WebApp;
@@ -4251,7 +4236,6 @@ async function shareApp() {
     }
 }
 
-// ==== НАПИСАТЬ РАЗРАБОТЧИКУ ====
 function sendFeedback() {
     if (isInTelegram()) {
         const tg = window.Telegram.WebApp;
@@ -4266,7 +4250,7 @@ function sendFeedback() {
         }
     }
 
-    const version = document.getElementById('appVersion')?.textContent || 'V2.4.3';
+    const version = document.getElementById('appVersion')?.textContent || 'V2.4.7';
     const theme = document.body.classList.value.match(/theme-(\w+)/)?.[1] || 'dark';
     const workouts = loadWorkoutLog?.() || [];
     const exercises = loadExercises?.() || [];
@@ -4465,9 +4449,6 @@ if (window.scrollY === 0 && touchStartY && !isRefreshing) {
         });
 
         // ========== ИНТЕГРАЦИЯ С TELEGRAM MINI APP ==========
-        // Скрипт Telegram загружается АСИНХРОННО, чтобы блокировка telegram.org
-        // в России не тормозила загрузку PWA. Если SDK не загрузился за 3 секунды,
-        // приложение продолжает работать как обычный PWA.
         (function() {
             let tgInited = false;
             
