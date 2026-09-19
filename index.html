@@ -3762,7 +3762,6 @@
             modal.appendChild(content);
             document.body.appendChild(modal);
 
-            // Кнопка "Где найти файл?" — сообщение зависит от среды
             document.getElementById('successOpenFolder')?.addEventListener('click', () => {
                 if (isInTelegram()) {
                     showNotification('📂 Файл сохранён в Telegram. Найти можно в настройках Telegram → Данные и память → Хранилище', true);
@@ -3772,7 +3771,6 @@
                 modal.remove();
             });
 
-            // Кнопка "Поделиться" для JSON
             if (fileType === 'json') {
                 document.getElementById('successShareFile')?.addEventListener('click', async () => {
                     try {
@@ -3806,7 +3804,6 @@
                 });
             }
 
-            // Кнопка "Открыть в браузере" для HTML отчёта (используем location.href вместо window.open)
             if (fileType === 'html') {
                 document.getElementById('successOpenBrowser')?.addEventListener('click', () => {
                     const url = URL.createObjectURL(fileBlob);
@@ -4061,7 +4058,56 @@
             const periodNames = { 'all': 'все_тренировки', 'week': 'неделя', 'month': 'месяц', 'custom': 'период' };
             const fileName = `отчет_тренировок_${periodNames[period]}_${new Date().toISOString().slice(0, 10)}.html`;
             const htmlContent = `<!DOCTYPE html>
-<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Отчет о тренировках</title><style>body{font-family:'Segoe UI',system-ui,sans-serif;line-height:1.6;color:#333;max-width:800px;margin:20px auto;padding:20px;white-space:pre-wrap;}h1{color:#9d4edd;}</style></head><body><h1>Отчёт о тренировках</h1><pre>${content}</pre></body></html>`;
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Отчет о тренировках</title>
+<style>
+    :root {
+        --report-bg: #ffffff;
+        --report-text: #222222;
+        --report-heading: #9d4edd;
+        --report-border: #e0e0e0;
+    }
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --report-bg: #1a1a2e;
+            --report-text: #f0f0f0;
+            --report-heading: #d4af37;
+            --report-border: #333;
+        }
+    }
+    * { box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        line-height: 1.6;
+        color: var(--report-text);
+        background-color: var(--report-bg);
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+    }
+    h1 {
+        color: var(--report-heading);
+        border-bottom: 2px solid var(--report-border);
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        font-size: 0.95rem;
+        margin: 0;
+    }
+</style>
+</head>
+<body>
+<h1>Отчёт о тренировках</h1>
+<pre>${content}</pre>
+</body>
+</html>`;
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
             if (isMobileDevice()) {
                 const url = URL.createObjectURL(blob);
