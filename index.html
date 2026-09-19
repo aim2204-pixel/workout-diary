@@ -2032,7 +2032,7 @@
             <div class="subtitle" id="pageSubtitle">Сила в дисциплине. Прресс в деталях.</div>
         </div>
         <button class="header-add-btn" id="globalAddBtn" title="Добавить новую тренировку">+</button>
-        <div class="app-version" id="appVersion">V2.4.5</div>
+        <div class="app-version" id="appVersion">V2.4.6</div>
     </header>
     <div class="offline-warning" id="offlineWarning">
         <i class="fas fa-wifi-slash"></i> Вы в офлайн-режиме. Данные сохраняются локально.
@@ -4199,7 +4199,34 @@ const APP_URL = window.location.origin + window.location.pathname;
 const APP_NAME = 'Мой Дневник Тренировок';
 const APP_DESC = 'Бесплатный трекер для фитнеса. Веди дневник, следи за прогрессом!';
 
+// Ссылка на Mini App внутри Telegram (замени на своего бота)
+const TELEGRAM_APP_URL = 'https://t.me/new_workout_diary_bot/diary';
+const TELEGRAM_BOT_USERNAME = 'new_workout_diary_bot';
+
+// Проверка: запущено ли приложение внутри Telegram
+function isInTelegram() {
+    return !!(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData);
+}
+
+// ==== ПОДЕЛИТЬСЯ ====
 async function shareApp() {
+    if (isInTelegram()) {
+        const tg = window.Telegram.WebApp;
+        try {
+            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(TELEGRAM_APP_URL)}&text=${encodeURIComponent(APP_DESC)}`);
+            return;
+        } catch (err) {
+            console.error('Ошибка Telegram-шеринга:', err);
+            try {
+                await navigator.clipboard.writeText(TELEGRAM_APP_URL);
+                showNotification('🔗 Ссылка на приложение скопирована!');
+            } catch (e) {
+                showNotification('❌ Не удалось поделиться', false);
+            }
+            return;
+        }
+    }
+
     if (navigator.share) {
         try {
             await navigator.share({
@@ -4224,7 +4251,21 @@ async function shareApp() {
     }
 }
 
+// ==== НАПИСАТЬ РАЗРАБОТЧИКУ ====
 function sendFeedback() {
+    if (isInTelegram()) {
+        const tg = window.Telegram.WebApp;
+        try {
+            tg.openTelegramLink(`https://t.me/${TELEGRAM_BOT_USERNAME}?start=feedback`);
+            showNotification('✉️ Открывается чат с ботом. Напишите ваше сообщение.');
+            return;
+        } catch (err) {
+            console.error('Ошибка открытия чата с ботом:', err);
+            showNotification('❌ Не удалось открыть чат. Напишите на workout-diary22@mail.ru', false);
+            return;
+        }
+    }
+
     const version = document.getElementById('appVersion')?.textContent || 'V2.4.3';
     const theme = document.body.classList.value.match(/theme-(\w+)/)?.[1] || 'dark';
     const workouts = loadWorkoutLog?.() || [];
